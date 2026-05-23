@@ -3,6 +3,8 @@ from fastapi import APIRouter, UploadFile, File, HTTPException
 
 from app.chutes import chutes
 from app.keywords import extract_keywords
+from app.parser import parse_contact_info
+from app.storage import upload_resume_file
 from app.db import insert_candidate, get_candidate
 from app.extractor import extract_text
 from app.models import UploadResponse, CandidateDetail
@@ -14,14 +16,25 @@ _EMBED_CHAR_LIMIT = 6000  # gemini-embedding-001 token cap (~2048 tokens ≈ 600
 
 @router.post("/upload", response_model=UploadResponse)
 async def upload_resume(file: UploadFile = File(...)):
-    full_text = await extract_text(file)
+    try:
+        full_text = await extract_text(file)
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc))
 
     if not full_text or len(full_text.strip()) < 50:
         raise HTTPException(status_code=422, detail="Could not extract enough text from the file.")
 
-    embedding, keywords = await asyncio.gather(
+    # Re-read file bytes for storage (extractor already consumed the stream; seek resets it).
+    await file.seek(0)
+    file_bytes = await file.read()
+    filename = file.filename or "unknown"
+
+    # Run all four tasks in parallel — none depend on each other.
+    embedding, keywords, contact, file_url = await asyncio.gather(
         asyncio.to_thread(chutes.embed, full_text[:_EMBED_CHAR_LIMIT]),
         asyncio.to_thread(extract_keywords, full_text),
+        asyncio.to_thread(parse_contact_info, full_text),
+        asyncio.to_thread(upload_resume_file, file_bytes, filename),
     )
 
     candidate_id = await asyncio.to_thread(
@@ -29,6 +42,9 @@ async def upload_resume(file: UploadFile = File(...)):
         full_text,
         embedding,
         keywords,
+        name=contact.get("name"),
+        email=contact.get("email"),
+        file_url=file_url,
     )
 
     return UploadResponse(id=candidate_id, message="uploaded")

@@ -8,4 +8,5 @@ __pycache__/
 .DS_Store
 .claude
 HANDOVER.md
-
+audit.log
+2ndHandover.md
