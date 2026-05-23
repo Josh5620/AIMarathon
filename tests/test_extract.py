@@ -1,11 +1,11 @@
-"""Tests for ingestion.extract — text extraction from PDF and DOCX."""
+"""Tests for app.ingestion.extract — text extraction from PDF and DOCX."""
 import sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 import pytest
 
-from ingestion.extract import extract_text, EncryptedFileError
+from app.ingestion.extract import extract_text, EncryptedFileError
 from tests.conftest import make_pdf, make_docx
 
 
@@ -82,8 +82,7 @@ class TestOcrCascade:
     def test_text_pdf_does_not_trigger_ocr(self, monkeypatch):
         """Rich text PDF: OCR must never fire."""
         triggered = []
-        monkeypatch.setattr("ingestion.extract._ocr_pdf", lambda doc: triggered.append(1) or "")
-        # make_pdf produces text well above OCR_MIN_CHARS (100 chars)
+        monkeypatch.setattr("app.ingestion.extract._ocr_pdf", lambda doc: triggered.append(1) or "")
         long_text = (
             "Alice Smith — alice@example.com\n"
             "Senior Software Engineer, 8 years Python, FastAPI, PostgreSQL, Docker."
@@ -95,7 +94,7 @@ class TestOcrCascade:
     def test_scanned_pdf_triggers_ocr(self, monkeypatch):
         """Blank PDF (< 100 chars direct text): OCR fallback must be invoked and its text returned."""
         monkeypatch.setattr(
-            "ingestion.extract._ocr_pdf",
+            "app.ingestion.extract._ocr_pdf",
             lambda doc: "OCR-recovered: Jane Doe, Senior Engineer.",
         )
         result = extract_text(self._blank_pdf_bytes(), "scanned.pdf")
@@ -103,6 +102,6 @@ class TestOcrCascade:
 
     def test_ocr_unavailable_degrades_gracefully(self, monkeypatch):
         """If pytesseract is not importable, OCR silently returns '' — no crash."""
-        monkeypatch.setattr("ingestion.extract._OCR_AVAILABLE", False)
+        monkeypatch.setattr("app.ingestion.extract._OCR_AVAILABLE", False)
         result = extract_text(self._blank_pdf_bytes(), "scanned.pdf")
         assert isinstance(result, str)  # did not raise

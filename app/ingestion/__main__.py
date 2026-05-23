@@ -1,14 +1,14 @@
-"""CLI entry point: python -m ingestion <path-to-resume>"""
+"""CLI entry point: python -m app.ingestion <path-to-resume>"""
 import json
 import sys
 from pathlib import Path
 
-from ingestion import ingest_resume
+from app.ingestion import ingest_resume
 
 
 def main() -> int:
     if len(sys.argv) != 2:
-        print("usage: python -m ingestion <path-to-resume>", file=sys.stderr)
+        print("usage: python -m app.ingestion <path-to-resume>", file=sys.stderr)
         return 2
     path = Path(sys.argv[1])
     if not path.exists():

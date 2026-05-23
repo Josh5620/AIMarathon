@@ -6,7 +6,7 @@ import fitz  # PyMuPDF
 import docx
 import pytest
 
-import ingestion.audit as audit_module
+import app.ingestion.audit as audit_module
 
 
 @pytest.fixture()

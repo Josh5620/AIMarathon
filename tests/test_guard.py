@@ -1,11 +1,11 @@
-"""Tests for ingestion.guard — input guardrail logic."""
+"""Tests for app.ingestion.guard — input guardrail logic."""
 import sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 import pytest
 
-from ingestion.guard import guard_input, MAX_TEXT_CHARS, INJECTION_PATTERNS
+from app.ingestion.guard import guard_input, MAX_TEXT_CHARS, INJECTION_PATTERNS
 
 
 NORMAL_RESUME = (

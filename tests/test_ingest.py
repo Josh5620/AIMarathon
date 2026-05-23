@@ -1,4 +1,4 @@
-"""Tests for ingestion.ingest — orchestration, pre-checks, and audit logging."""
+"""Tests for app.ingestion.ingest — orchestration, pre-checks, and audit logging."""
 import json
 import sys
 from pathlib import Path
@@ -6,7 +6,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 
 import pytest
 
-from ingestion.ingest import ingest_resume, MAX_FILE_BYTES
+from app.ingestion.ingest import ingest_resume, MAX_FILE_BYTES
 from tests.conftest import make_pdf, make_docx
 
 

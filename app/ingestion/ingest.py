@@ -1,5 +1,5 @@
-from ingestion.audit import log_decision
-from ingestion.extract import extract_text, EncryptedFileError, ALLOWED_EXTENSIONS
+from app.ingestion.audit import log_decision
+from app.ingestion.extract import extract_text, EncryptedFileError, ALLOWED_EXTENSIONS
 
 MAX_FILE_BYTES = 10 * 1024 * 1024  # 10 MB
 
@@ -57,7 +57,7 @@ def ingest_resume(file_bytes: bytes, filename: str) -> dict:
         return result
 
     # ── Guard ─────────────────────────────────────────────────────────────────
-    from ingestion.guard import guard_input  # local import avoids circular at module level
+    from app.ingestion.guard import guard_input  # local import avoids circular at module level
     result = guard_input(text)
     log_decision(filename, result)
     return result
