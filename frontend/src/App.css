@@ -1,0 +1,95 @@
+.app {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Nav bar ──────────────────────────────────── */
+.app-nav {
+  display: flex;
+  background: #000080;
+  padding: 0;
+  border-bottom: 2px solid #00006a;
+}
+
+.app-nav a {
+  flex: 1;
+  padding: 14px 28px;
+  color: rgba(255, 255, 255, 0.7);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.95rem;
+  border-bottom: 3px solid transparent;
+  transition: color 0.2s, border-color 0.2s;
+  text-align: center;
+}
+
+.app-nav a:hover {
+  color: #fff;
+}
+
+.app-nav a.active {
+  color: #fff;
+  border-bottom-color: #808000;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.app-nav a:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: -2px;
+}
+
+@media (min-width: 769px) {
+  .app-nav a {
+    flex: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .app-nav a {
+    padding: 12px 12px;
+    font-size: 0.85rem;
+  }
+}
+
+/* ── Banner ───────────────────────────────────── */
+.banner {
+  padding: 12px 24px;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+.banner-error {
+  background: #fbe9e7;
+  color: #bf360c;
+  border-bottom: 1px solid #ffccbc;
+}
+
+@media (max-width: 480px) {
+  .banner {
+    padding: 10px 16px;
+    font-size: 0.85rem;
+  }
+}
+
+/* ── Main content ─────────────────────────────── */
+main {
+  flex: 1;
+  padding: 32px 48px;
+  max-width: 960px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+@media (max-width: 768px) {
+  main {
+    padding: 24px 24px;
+  }
+}
+
+@media (max-width: 480px) {
+  main {
+    padding: 16px 16px;
+  }
+}
