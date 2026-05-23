@@ -1,5 +1,5 @@
 import asyncio
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 
 from app.chutes import chutes
 from app.keywords import extract_keywords
@@ -35,26 +35,35 @@ def _explain(jd_text: str, resume_text: str, overlap_keywords: list[str]) -> str
 async def search(body: SearchRequest):
     jd_text = body.jobDescription
 
-    jd_vector, jd_keywords = await asyncio.gather(
-        asyncio.to_thread(chutes.embed, jd_text[:_EMBED_CHAR_LIMIT]),
-        asyncio.to_thread(extract_keywords, jd_text),
-    )
+    try:
+        jd_vector, jd_keywords = await asyncio.gather(
+            asyncio.to_thread(chutes.embed, jd_text[:_EMBED_CHAR_LIMIT]),
+            asyncio.to_thread(extract_keywords, jd_text),
+        )
+    except Exception as exc:
+        raise HTTPException(status_code=502, detail=f"Embedding/keyword step failed: {exc}")
 
-    matches = await asyncio.to_thread(
-        search_candidates,
-        jd_vector,
-        jd_keywords,
-        5,
-        min_years_experience=body.min_years_experience,
-        required_languages=body.required_languages,
-        required_certifications=body.required_certifications,
-        seniority_in=body.seniority_in,
-        location_contains=body.location_contains,
-    )
+    try:
+        matches = await asyncio.to_thread(
+            search_candidates,
+            jd_vector,
+            jd_keywords,
+            5,
+            min_years_experience=body.min_years_experience,
+            required_languages=body.required_languages,
+            required_certifications=body.required_certifications,
+            seniority_in=body.seniority_in,
+            location_contains=body.location_contains,
+        )
+    except Exception as exc:
+        raise HTTPException(status_code=502, detail=f"Database search failed: {exc}")
 
     explanations = []
     for m in matches:
-        explanation = await asyncio.to_thread(_explain, jd_text, m["full_text"], m["overlap_keywords"])
+        try:
+            explanation = await asyncio.to_thread(_explain, jd_text, m["full_text"], m["overlap_keywords"])
+        except Exception:
+            explanation = "Explanation unavailable."
         explanations.append(explanation)
 
     results = [
