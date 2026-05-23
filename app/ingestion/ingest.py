@@ -2,6 +2,7 @@ from app.ingestion.audit import log_decision
 from app.ingestion.extract import extract_text, EncryptedFileError, ALLOWED_EXTENSIONS
 
 MAX_FILE_BYTES = 10 * 1024 * 1024  # 10 MB
+MAX_PDF_PAGES = 2
 
 
 def ingest_resume(file_bytes: bytes, filename: str) -> dict:
@@ -26,6 +27,26 @@ def ingest_resume(file_bytes: bytes, filename: str) -> dict:
         }
         log_decision(filename, result)
         return result
+
+    # ── Pre-check: PDF page count ─────────────────────────────────────────────
+    if filename.lower().endswith(".pdf"):
+        try:
+            import fitz
+            _doc = fitz.open(stream=file_bytes, filetype="pdf")
+            page_count = len(_doc)
+            _doc.close()
+            if page_count > MAX_PDF_PAGES:
+                result = {
+                    "clean_text": "",
+                    "status": "blocked",
+                    "reasons": [
+                        f"resume is {page_count} pages — maximum allowed is {MAX_PDF_PAGES} pages"
+                    ],
+                }
+                log_decision(filename, result)
+                return result
+        except Exception:
+            pass  # corrupt PDF — let extraction handle and report it
 
     # ── Extraction ────────────────────────────────────────────────────────────
     text: str

@@ -147,6 +147,92 @@ def search_candidates(
     return [dict(zip(cols, row)) for row in rows]
 
 
+def get_candidates_for_dedup() -> list[dict]:
+    """Return all candidates with the fields needed for deduplication comparison."""
+    sql = """
+        SELECT name, email, full_text, keywords, skills, certifications,
+               languages, years_experience::float, seniority, location, profile
+        FROM candidates;
+    """
+    with _connect() as conn:
+        with conn.cursor() as cur:
+            cur.execute(sql)
+            cols = [desc[0] for desc in cur.description]
+            rows = cur.fetchall()
+    return [dict(zip(cols, row)) for row in rows]
+
+
+def update_candidate_by_email(
+    email: str,
+    full_text: str,
+    embedding: list[float],
+    keywords: list[str],
+    *,
+    file_url: str | None = None,
+    skills: list[str] | None = None,
+    certifications: list[str] | None = None,
+    languages: list[str] | None = None,
+    years_experience: float | None = None,
+    seniority: str | None = None,
+    location: str | None = None,
+    profile: dict | None = None,
+) -> str:
+    """Update an existing candidate row matched by email. Returns the updated UUID."""
+    sql = """
+        UPDATE candidates SET
+            full_text        = %(full_text)s,
+            embedding        = %(embedding)s,
+            keywords         = %(keywords)s,
+            skills           = %(skills)s,
+            certifications   = %(certifications)s,
+            languages        = %(languages)s,
+            years_experience = %(years_experience)s,
+            seniority        = %(seniority)s,
+            location         = %(location)s,
+            profile          = %(profile)s::jsonb,
+            file_url         = %(file_url)s
+        WHERE LOWER(email) = LOWER(%(email)s)
+        RETURNING id::text;
+    """
+    with _connect() as conn:
+        with conn.cursor() as cur:
+            cur.execute(sql, {
+                "email": email,
+                "full_text": full_text,
+                "embedding": embedding,
+                "keywords": keywords,
+                "skills": skills or [],
+                "certifications": certifications or [],
+                "languages": languages or [],
+                "years_experience": years_experience,
+                "seniority": seniority,
+                "location": location,
+                "profile": json.dumps(profile or {}),
+                "file_url": file_url,
+            })
+            row = cur.fetchone()
+        conn.commit()
+    return row[0]
+
+
+def find_candidate_by_email(email: str) -> dict | None:
+    """Return the first candidate row matching this email, or None."""
+    sql = """
+        SELECT id::text, name, email
+        FROM candidates
+        WHERE LOWER(email) = LOWER(%(email)s)
+        LIMIT 1;
+    """
+    with _connect() as conn:
+        with conn.cursor() as cur:
+            cur.execute(sql, {"email": email})
+            row = cur.fetchone()
+            if row is None:
+                return None
+            cols = [desc[0] for desc in cur.description]
+    return dict(zip(cols, row))
+
+
 def get_candidate(candidate_id: str) -> dict | None:
     """Fetch a single candidate by UUID. Returns None if not found."""
     sql = """
