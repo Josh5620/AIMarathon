@@ -35,3 +35,39 @@ app.include_router(recruiter.router, prefix="/api")
 @app.get("/api/health", response_model=HealthResponse)
 def health():
     return HealthResponse(status="ok", timestamp=datetime.now(timezone.utc).isoformat())
+
+
+@app.get("/api/diagnose")
+async def diagnose():
+    """Tests each backend component individually. Use this to find what's broken."""
+    import asyncio
+    from app.chutes import chutes
+    from app.db import _connect
+
+    results = {}
+
+    # 1. Test Google embedding
+    try:
+        vec = await asyncio.to_thread(chutes.embed, "test")
+        results["embed"] = f"OK — got {len(vec)}-dim vector"
+    except Exception as exc:
+        results["embed"] = f"FAIL — {exc}"
+
+    # 2. Test Chutes chat
+    try:
+        reply = await asyncio.to_thread(
+            chutes.chat, [{"role": "user", "content": "Say the word OK and nothing else."}]
+        )
+        results["chat"] = f"OK — model replied: {reply[:60]}"
+    except Exception as exc:
+        results["chat"] = f"FAIL — {exc}"
+
+    # 3. Test DB connection
+    try:
+        conn = await asyncio.to_thread(_connect)
+        conn.close()
+        results["db"] = "OK — connected to Supabase"
+    except Exception as exc:
+        results["db"] = f"FAIL — {exc}"
+
+    return results
