@@ -2,14 +2,11 @@ import time
 import httpx
 from app.config import settings
 
-EMBED_DIM: int = settings.EMBED_DIM  # read from .env so it matches the active provider
+EMBED_DIM: int = settings.EMBED_DIM
 
 _RETRYABLE = {429, 500, 502, 503, 504}
 
-# When base URL is Google's generativelanguage API, embeddings use a different
-# native endpoint and request/response format (not OpenAI-compat).
-_GOOGLE_BASE = "generativelanguage.googleapis.com"
-_IS_GOOGLE = _GOOGLE_BASE in settings.CHUTES_BASE_URL
+_GOOGLE_EMBED_BASE = "https://generativelanguage.googleapis.com/v1beta"
 
 
 def _with_retry(fn, max_attempts: int = 5):
@@ -29,50 +26,41 @@ def _with_retry(fn, max_attempts: int = 5):
 
 class ChutesClient:
     def __init__(self) -> None:
-        self._client = httpx.Client(
+        # Chat client — Chutes (OpenAI-compatible)
+        self._chat_client = httpx.Client(
             base_url=settings.CHUTES_BASE_URL,
             headers={"Authorization": f"Bearer {settings.CHUTES_API_KEY}"},
             timeout=60.0,
         )
-        # Separate client for Google native embedding API (uses ?key= auth, different base)
-        if _IS_GOOGLE:
-            self._google_embed_client = httpx.Client(
-                base_url="https://generativelanguage.googleapis.com/v1beta",
-                timeout=60.0,
-            )
+        # Embed client — Google Gemini native (Chutes has no embeddings endpoint)
+        self._embed_client = httpx.Client(
+            base_url=_GOOGLE_EMBED_BASE,
+            timeout=60.0,
+        )
 
     def embed(self, text: str) -> list[float]:
-        if _IS_GOOGLE:
-            return self._google_embed(text)
-        resp = _with_retry(lambda: self._client.post(
-            "/embeddings",
-            json={"model": settings.CHUTES_EMBED_MODEL, "input": text},
-        ))
-        return resp.json()["data"][0]["embedding"]
-
-    def _google_embed(self, text: str) -> list[float]:
-        """Google's native embedContent endpoint (not OpenAI-compat)."""
-        resp = _with_retry(lambda: self._google_embed_client.post(
+        """Embed text using Google Gemini native embedContent endpoint."""
+        resp = _with_retry(lambda: self._embed_client.post(
             f"/models/{settings.CHUTES_EMBED_MODEL}:embedContent",
-            params={"key": settings.CHUTES_API_KEY},
+            params={"key": settings.GOOGLE_API_KEY},
             json={"content": {"parts": [{"text": text}]}},
         ))
         return resp.json()["embedding"]["values"]
 
     def chat(self, messages: list[dict], json_mode: bool = False) -> str:
+        """Chat completion using Chutes (OpenAI-compatible)."""
         payload: dict = {
             "model": settings.CHUTES_CHAT_MODEL,
             "messages": messages,
         }
         if json_mode:
             payload["response_format"] = {"type": "json_object"}
-        resp = _with_retry(lambda: self._client.post("/chat/completions", json=payload))
+        resp = _with_retry(lambda: self._chat_client.post("/chat/completions", json=payload))
         return resp.json()["choices"][0]["message"]["content"]
 
     def close(self) -> None:
-        self._client.close()
-        if _IS_GOOGLE:
-            self._google_embed_client.close()
+        self._chat_client.close()
+        self._embed_client.close()
 
     def __enter__(self):
         return self
