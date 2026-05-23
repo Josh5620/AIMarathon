@@ -40,12 +40,12 @@ async def search(body: SearchRequest):
         asyncio.to_thread(extract_keywords, jd_text),
     )
 
-    matches = await asyncio.to_thread(search_candidates, jd_vector, jd_keywords, 10)
+    matches = await asyncio.to_thread(search_candidates, jd_vector, jd_keywords, 5)
 
-    explanations = await asyncio.gather(*[
-        asyncio.to_thread(_explain, jd_text, m["full_text"], m["overlap_keywords"])
-        for m in matches
-    ])
+    explanations = []
+    for m in matches:
+        explanation = await asyncio.to_thread(_explain, jd_text, m["full_text"], m["overlap_keywords"])
+        explanations.append(explanation)
 
     results = [
         MatchResult(
