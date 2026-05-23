@@ -1,0 +1,120 @@
+.access-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 16px;
+}
+
+.access-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 32px;
+  width: 100%;
+  max-width: 420px;
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.18);
+  animation: access-in 0.18s ease;
+  text-align: center;
+}
+
+@keyframes access-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.access-title {
+  margin: 0 0 4px;
+}
+
+.access-sub {
+  color: var(--text);
+  opacity: 0.7;
+  margin: 0 0 24px;
+  font-size: 0.95rem;
+}
+
+.access-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 13px 18px;
+  border-radius: 8px;
+  font-family: var(--sans);
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: background 0.15s, border-color 0.15s, opacity 0.15s;
+}
+
+.access-btn + .access-btn {
+  margin-top: 12px;
+}
+
+.access-btn-primary {
+  background: var(--accent);
+  color: #fff;
+}
+.access-btn-primary:hover {
+  background: #00006a;
+}
+
+.access-btn-ghost {
+  background: #fff;
+  color: var(--text);
+  border-color: var(--border);
+}
+.access-btn-ghost:hover {
+  background: var(--bg);
+}
+
+.access-btn:focus-visible {
+  outline: 2px solid var(--complement);
+  outline-offset: 2px;
+}
+
+.access-g {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #fff;
+  color: var(--accent);
+  font-weight: 700;
+  font-size: 0.85rem;
+  line-height: 1;
+}
+
+/* Inline status + denial states (rendered inside <main>) */
+.auth-status {
+  padding: 48px 0;
+  text-align: center;
+  color: var(--text);
+  opacity: 0.7;
+}
+
+.access-denied {
+  max-width: 480px;
+  margin: 48px auto;
+  text-align: center;
+}
+.access-denied h2 {
+  margin-bottom: 12px;
+}
+.access-denied-sub {
+  color: var(--text);
+  opacity: 0.7;
+  font-size: 0.9rem;
+  margin: 8px 0 24px;
+}
+.access-denied .access-btn {
+  max-width: 200px;
+  margin: 0 auto;
+}

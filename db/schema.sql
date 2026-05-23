@@ -44,3 +44,27 @@ CREATE INDEX candidates_languages_idx      ON candidates USING gin (languages);
 -- B-tree indexes for range/equality filters on scalar fields
 CREATE INDEX candidates_yoe_idx            ON candidates (years_experience);
 CREATE INDEX candidates_seniority_idx      ON candidates (seniority);
+
+-- ── Recruiter allowlist ──────────────────────────────────────────────────────
+-- Pre-approved Gmail accounts allowed into the recruiter side (Google sign-in).
+-- Independent of the candidates recreate cycle above — do NOT drop this when
+-- switching embedding providers, or you'll wipe the allowlist. Managed via SQL.
+CREATE TABLE IF NOT EXISTS recruiters (
+  email      TEXT        PRIMARY KEY,   -- store lowercase
+  active     BOOLEAN     NOT NULL DEFAULT TRUE,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+ALTER TABLE recruiters ENABLE ROW LEVEL SECURITY;
+
+-- A signed-in user may read ONLY their own row (anon gets nothing; no one can
+-- enumerate the list). This powers the frontend allowlist check.
+DROP POLICY IF EXISTS recruiters_select_own ON recruiters;
+CREATE POLICY recruiters_select_own ON recruiters
+  FOR SELECT TO authenticated
+  USING (auth.email() = email);
+
+-- RLS controls which rows are visible, but the role still needs table-level
+-- SELECT. Tables created via raw SQL don't get Supabase's default grants, so
+-- grant it explicitly (only logged-in users; anon gets nothing).
+GRANT SELECT ON recruiters TO authenticated;

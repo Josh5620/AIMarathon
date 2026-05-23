@@ -40,6 +40,56 @@
   outline-offset: -2px;
 }
 
+/* ── Signed-in auth area (right side of nav) ──── */
+.app-auth {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 20px;
+}
+
+.app-auth-email {
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.85rem;
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.app-auth-btn {
+  background: transparent;
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 6px;
+  padding: 6px 14px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  font-family: var(--sans);
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.app-auth-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.7);
+}
+
+.app-auth-btn:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+
+@media (max-width: 600px) {
+  .app-auth-email {
+    display: none;
+  }
+  .app-auth {
+    padding: 0 12px;
+  }
+}
+
 @media (min-width: 769px) {
   .app-nav a {
     flex: none;
