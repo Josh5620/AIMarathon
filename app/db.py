@@ -84,3 +84,20 @@ def search_candidates(
             rows = cur.fetchall()
 
     return [dict(zip(cols, row)) for row in rows]
+
+
+def get_candidate(candidate_id: str) -> dict | None:
+    """Fetch a single candidate by UUID. Returns None if not found."""
+    sql = """
+        SELECT id::text, name, email, full_text, keywords, file_url, created_at
+        FROM candidates
+        WHERE id = %(id)s::uuid;
+    """
+    with _connect() as conn:
+        with conn.cursor() as cur:
+            cur.execute(sql, {"id": candidate_id})
+            row = cur.fetchone()
+            if row is None:
+                return None
+            cols = [desc[0] for desc in cur.description]
+    return dict(zip(cols, row))
