@@ -78,6 +78,45 @@ describe('searchCandidates', () => {
     expect(result).toEqual(mockResults)
   })
 
+  it('includes filter fields in request body when provided', async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: () => Promise.resolve({ results: [] }),
+    })
+
+    await searchCandidates('Python dev', {
+      min_years_experience: 3,
+      seniority_in: ['senior', 'lead'],
+      required_certifications: ['aws certified solutions architect'],
+      required_languages: ['french'],
+      location_contains: 'Berlin',
+    })
+
+    const body = JSON.parse(mockFetch.mock.calls[0][1].body)
+    expect(body.jobDescription).toBe('Python dev')
+    expect(body.min_years_experience).toBe(3)
+    expect(body.seniority_in).toEqual(['senior', 'lead'])
+    expect(body.required_certifications).toEqual(['aws certified solutions architect'])
+    expect(body.required_languages).toEqual(['french'])
+    expect(body.location_contains).toBe('Berlin')
+  })
+
+  it('omits empty/null filter fields from request body', async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: () => Promise.resolve({ results: [] }),
+    })
+
+    await searchCandidates('Python dev', {
+      min_years_experience: null,
+      seniority_in: [],
+      location_contains: '  ',
+    })
+
+    const body = JSON.parse(mockFetch.mock.calls[0][1].body)
+    expect(body).toEqual({ jobDescription: 'Python dev' })
+  })
+
   it('throws on non-OK response', async () => {
     mockFetch.mockResolvedValueOnce({ ok: false, status: 500 })
     await expect(searchCandidates('test')).rejects.toThrow('Search failed (500)')

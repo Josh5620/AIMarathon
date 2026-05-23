@@ -38,13 +38,22 @@ export async function uploadResume(file) {
   return res.json()
 }
 
-export async function searchCandidates(jobDescription) {
+export async function searchCandidates(jobDescription, filters = {}) {
+  const body = { jobDescription }
+
+  // Only include filter fields that are actually set — omitting keeps the backend behaving as before
+  if (filters.min_years_experience != null) body.min_years_experience = filters.min_years_experience
+  if (filters.seniority_in?.length)         body.seniority_in = filters.seniority_in
+  if (filters.required_certifications?.length) body.required_certifications = filters.required_certifications
+  if (filters.required_languages?.length)   body.required_languages = filters.required_languages
+  if (filters.location_contains?.trim())    body.location_contains = filters.location_contains.trim()
+
   let res
   try {
     res = await fetch(`${API_BASE}/api/recruiter/search`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ jobDescription }),
+      body: JSON.stringify(body),
     })
   } catch {
     throw connectionError()

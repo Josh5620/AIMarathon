@@ -471,6 +471,569 @@
   font-size: 0.9rem;
 }
 
+/* ── Filter panel ─────────────────────────────── */
+.filter-panel {
+  margin-bottom: 24px;
+  border: 1px solid #d6d2cf;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.filter-toggle {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  background: none;
+  border: none;
+  font-size: 0.9rem;
+  font-weight: 600;
+  font-family: inherit;
+  color: #3B3430;
+  cursor: pointer;
+  text-align: left;
+}
+
+.filter-toggle:hover {
+  background: rgba(0, 0, 128, 0.03);
+}
+
+.filter-toggle:focus-visible {
+  outline: 2px solid #000080;
+  outline-offset: -2px;
+}
+
+.filter-badge {
+  padding: 2px 8px;
+  border-radius: 10px;
+  background: #000080;
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.filter-body {
+  border-top: 1px solid #e8e5e3;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.filter-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.filter-field-label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #6e665f;
+}
+
+.filter-input {
+  padding: 8px 10px;
+  font-size: 0.9rem;
+  font-family: inherit;
+  border: 1px solid #c4bfba;
+  border-radius: 6px;
+  background: #faf9f8;
+  color: #3B3430;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.filter-input:focus {
+  outline: 2px solid #000080;
+  outline-offset: -1px;
+  border-color: #000080;
+  background: #fff;
+}
+
+.filter-input-sm {
+  max-width: 120px;
+}
+
+.seniority-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.tag-input-row {
+  display: flex;
+  gap: 8px;
+}
+
+.tag-input-row .filter-input {
+  flex: 1;
+}
+
+.tag-add-btn {
+  padding: 8px 14px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  font-family: inherit;
+  border: 1px solid #000080;
+  border-radius: 6px;
+  background: transparent;
+  color: #000080;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.tag-add-btn:hover:not(:disabled) {
+  background: rgba(0, 0, 128, 0.06);
+}
+
+.tag-add-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.tag-add-btn:focus-visible {
+  outline: 2px solid #000080;
+  outline-offset: 1px;
+}
+
+.tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px 3px 10px;
+  border-radius: 12px;
+  background: rgba(0, 0, 128, 0.08);
+  color: #000080;
+  font-size: 0.82rem;
+  font-weight: 500;
+}
+
+.tag-remove {
+  background: none;
+  border: none;
+  color: #000080;
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0 0 0 2px;
+  opacity: 0.6;
+  font-family: inherit;
+}
+
+.tag-remove:hover {
+  opacity: 1;
+}
+
+.clear-filters-btn {
+  align-self: flex-start;
+  background: none;
+  border: none;
+  color: #c62828;
+  font-size: 0.82rem;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  padding: 4px 0;
+}
+
+.clear-filters-btn:hover {
+  text-decoration: underline;
+}
+
+/* ── Result card — meta row ───────────────────── */
+.card-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.seniority-badge {
+  display: inline-block;
+  padding: 2px 9px;
+  border-radius: 10px;
+  font-size: 0.73rem;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+}
+
+.seniority-junior  { background: #e3f2fd; color: #1565c0; }
+.seniority-mid     { background: #e8f5e9; color: #2e7d32; }
+.seniority-senior  { background: rgba(0, 0, 128, 0.1); color: #000080; }
+.seniority-lead    { background: #f3e5f5; color: #6a1b9a; }
+.seniority-principal { background: #fff8e1; color: #f57f17; }
+
+.meta-item {
+  font-size: 0.82rem;
+  color: #6e665f;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.meta-item::before {
+  content: '·';
+  opacity: 0.5;
+}
+
+.meta-location::before {
+  content: '📍';
+  opacity: 1;
+  font-style: normal;
+}
+
+/* ── Result card — summary blurb ──────────────── */
+.card-summary {
+  font-size: 0.88rem;
+  color: #5a534d;
+  line-height: 1.55;
+  font-style: italic;
+  margin: 0 0 12px;
+  padding: 8px 12px;
+  border-left: 3px solid rgba(0, 0, 128, 0.2);
+  background: rgba(0, 0, 128, 0.02);
+  border-radius: 0 4px 4px 0;
+}
+
+/* ── Result card — matched / skills sections ──── */
+.card-section {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+
+.section-label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #9e9892;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  padding-top: 3px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.chip-match {
+  background: rgba(0, 0, 128, 0.08);
+  color: #000080;
+}
+
+.chip-skill {
+  background: rgba(128, 128, 0, 0.08);
+  color: #5a5a00;
+}
+
+/* ── Card actions (view profile button) ──────── */
+.card-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 12px;
+  border-top: 1px solid #e8e5e3;
+  padding-top: 10px;
+}
+
+.view-profile-btn {
+  padding: 6px 16px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  font-family: inherit;
+  border: 1px solid #000080;
+  border-radius: 6px;
+  background: transparent;
+  color: #000080;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.view-profile-btn:hover {
+  background: rgba(0, 0, 128, 0.06);
+}
+
+.view-profile-btn:focus-visible {
+  outline: 2px solid #000080;
+  outline-offset: 2px;
+}
+
+/* ── Candidate detail modal ───────────────────── */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 1000;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 40px 16px;
+  overflow-y: auto;
+}
+
+.modal-content {
+  background: #fff;
+  border-radius: 12px;
+  padding: 32px;
+  width: 100%;
+  max-width: 620px;
+  position: relative;
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.18);
+  animation: modal-in 0.18s ease;
+}
+
+@keyframes modal-in {
+  from { opacity: 0; transform: translateY(-10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.modal-close {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: none;
+  font-size: 1.4rem;
+  line-height: 1;
+  color: #9e9892;
+  cursor: pointer;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: inherit;
+}
+
+.modal-close:hover {
+  background: rgba(0, 0, 0, 0.06);
+  color: #3B3430;
+}
+
+.modal-close:focus-visible {
+  outline: 2px solid #000080;
+  outline-offset: 1px;
+}
+
+.modal-loading {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 24px 0;
+  color: #6e665f;
+  font-size: 0.9rem;
+}
+
+.modal-error {
+  color: #bf360c;
+  background: #fbe9e7;
+  border-radius: 6px;
+  padding: 12px 16px;
+  font-size: 0.9rem;
+}
+
+.modal-header {
+  margin-bottom: 16px;
+  padding-right: 32px;
+}
+
+.modal-header h2 {
+  margin: 0 0 8px;
+  font-size: 1.3rem;
+  color: #3B3430;
+}
+
+.modal-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.modal-email {
+  display: block;
+  font-size: 0.85rem;
+  color: #000080;
+  text-decoration: none;
+  margin: 2px 0 8px;
+  opacity: 0.75;
+}
+
+.modal-email:hover {
+  opacity: 1;
+  text-decoration: underline;
+}
+
+.modal-link-download {
+  border-color: #808000;
+  color: #5a5a00;
+}
+
+.modal-link-download:hover {
+  border-color: #808000;
+  background: rgba(128, 128, 0, 0.05);
+}
+
+.modal-summary {
+  font-size: 0.9rem;
+  color: #5a534d;
+  line-height: 1.6;
+  font-style: italic;
+  margin: 0 0 16px;
+  padding: 10px 14px;
+  border-left: 3px solid rgba(0, 0, 128, 0.2);
+  background: rgba(0, 0, 128, 0.02);
+  border-radius: 0 4px 4px 0;
+}
+
+.modal-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.modal-link-btn {
+  display: inline-block;
+  padding: 6px 16px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  font-family: inherit;
+  border: 1px solid #c4bfba;
+  border-radius: 6px;
+  background: #faf9f8;
+  color: #000080;
+  text-decoration: none;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.modal-link-btn:hover {
+  border-color: #000080;
+  background: rgba(0, 0, 128, 0.04);
+}
+
+.modal-section {
+  margin-bottom: 18px;
+  padding-top: 14px;
+  border-top: 1px solid #e8e5e3;
+}
+
+.modal-section-title {
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: #9e9892;
+  margin: 0 0 8px;
+}
+
+.edu-entry {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px 10px;
+  margin-bottom: 6px;
+  font-size: 0.88rem;
+  color: #3B3430;
+}
+
+.edu-degree {
+  font-weight: 600;
+}
+
+.edu-institution {
+  color: #6e665f;
+}
+
+.edu-institution::before {
+  content: '·';
+  margin-right: 6px;
+  opacity: 0.5;
+}
+
+.edu-year {
+  color: #9e9892;
+  font-size: 0.82rem;
+}
+
+.modal-text {
+  font-size: 0.88rem;
+  color: #5a534d;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.modal-resume-details {
+  border-top: 1px solid #e8e5e3;
+  padding-top: 14px;
+  margin-top: 4px;
+}
+
+.modal-resume-details summary {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #000080;
+  cursor: pointer;
+  list-style: none;
+  padding: 4px 0;
+}
+
+.modal-resume-details summary::before {
+  content: '\25B6  ';
+  font-size: 0.65rem;
+  display: inline-block;
+}
+
+.modal-resume-details[open] summary::before {
+  content: '\25BC  ';
+}
+
+.modal-resume-text {
+  margin-top: 12px;
+  padding: 12px;
+  background: #faf9f8;
+  border: 1px solid #e8e5e3;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  color: #5a534d;
+  white-space: pre-wrap;
+  word-break: break-word;
+  max-height: 320px;
+  overflow-y: auto;
+  font-family: 'Courier New', Courier, monospace;
+  line-height: 1.5;
+}
+
+@media (max-width: 480px) {
+  .modal-overlay {
+    padding: 0;
+    align-items: flex-end;
+  }
+  .modal-content {
+    border-radius: 12px 12px 0 0;
+    padding: 24px 16px;
+    max-width: 100%;
+  }
+}
+
 /* ── Show more ────────────────────────────────── */
 .show-more-btn {
   display: block;

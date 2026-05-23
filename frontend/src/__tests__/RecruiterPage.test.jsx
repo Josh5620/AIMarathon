@@ -63,7 +63,8 @@ describe('RecruiterPage', () => {
     await user.click(button)
 
     expect(searchCandidates).toHaveBeenCalledTimes(1)
-    expect(searchCandidates).toHaveBeenCalledWith('Looking for a senior Python engineer')
+    // First arg is the job description; second is the filters object (may be empty)
+    expect(searchCandidates.mock.calls[0][0]).toBe('Looking for a senior Python engineer')
   })
 
   it('displays candidate results from the backend', async () => {

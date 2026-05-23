@@ -40,7 +40,17 @@ async def search(body: SearchRequest):
         asyncio.to_thread(extract_keywords, jd_text),
     )
 
-    matches = await asyncio.to_thread(search_candidates, jd_vector, jd_keywords, 5)
+    matches = await asyncio.to_thread(
+        search_candidates,
+        jd_vector,
+        jd_keywords,
+        5,
+        min_years_experience=body.min_years_experience,
+        required_languages=body.required_languages,
+        required_certifications=body.required_certifications,
+        seniority_in=body.seniority_in,
+        location_contains=body.location_contains,
+    )
 
     explanations = []
     for m in matches:
@@ -54,6 +64,11 @@ async def search(body: SearchRequest):
             distance=m["distance"],
             overlap_keywords=m["overlap_keywords"],
             explanation=explanations[i],
+            skills=m.get("skills") or [],
+            years_experience=m.get("years_experience"),
+            seniority=m.get("seniority"),
+            location=m.get("location"),
+            summary=(m.get("profile") or {}).get("summary"),
         )
         for i, m in enumerate(matches)
     ]

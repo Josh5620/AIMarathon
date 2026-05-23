@@ -2,7 +2,7 @@ import asyncio
 from fastapi import APIRouter, UploadFile, File, HTTPException
 
 from app.chutes import chutes
-from app.keywords import extract_keywords
+from app.keywords import extract_profile
 from app.parser import parse_contact_info
 from app.storage import upload_resume_file
 from app.db import insert_candidate, get_candidate
@@ -30,9 +30,9 @@ async def upload_resume(file: UploadFile = File(...)):
     filename = file.filename or "unknown"
 
     # Run all four tasks in parallel — none depend on each other.
-    embedding, keywords, contact, file_url = await asyncio.gather(
+    embedding, profile, contact, file_url = await asyncio.gather(
         asyncio.to_thread(chutes.embed, full_text[:_EMBED_CHAR_LIMIT]),
-        asyncio.to_thread(extract_keywords, full_text),
+        asyncio.to_thread(extract_profile, full_text),
         asyncio.to_thread(parse_contact_info, full_text),
         asyncio.to_thread(upload_resume_file, file_bytes, filename),
     )
@@ -41,10 +41,22 @@ async def upload_resume(file: UploadFile = File(...)):
         insert_candidate,
         full_text,
         embedding,
-        keywords,
+        profile.keywords,
         name=contact.get("name"),
         email=contact.get("email"),
         file_url=file_url,
+        skills=profile.skills,
+        certifications=profile.certifications,
+        languages=profile.languages,
+        years_experience=profile.years_experience,
+        seniority=profile.seniority,
+        location=profile.location,
+        profile={
+            "education": [e.model_dump(exclude_none=True) for e in profile.education],
+            "links": profile.links.model_dump(exclude_none=True),
+            "summary": profile.summary,
+            "work_authorization": profile.work_authorization,
+        },
     )
 
     return UploadResponse(id=candidate_id, message="uploaded")
