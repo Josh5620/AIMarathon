@@ -9,19 +9,19 @@ export default function CandidateProfilePage() {
   const navigate = useNavigate()
   const { email: recruiterEmail, providerToken, reauthorize } = useAuth()
 
-  const [app, setApp]               = useState(null)
-  const [loading, setLoading]       = useState(true)
-  const [error, setError]           = useState('')
+  const [app, setApp] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
 
-  const [crossFit, setCrossFit]     = useState(null)
+  const [crossFit, setCrossFit] = useState(null)
   const [crossFitLoading, setCrossFitLoading] = useState(false)
 
-  const [showMeetModal, setShowMeetModal]   = useState(false)
+  const [showMeetModal, setShowMeetModal] = useState(false)
   const [showEmailDialog, setShowEmailDialog] = useState(false)
   const [selectedPosting, setSelectedPosting] = useState(null)
-  const [sendingEmail, setSendingEmail]     = useState(false)
-  const [emailSent, setEmailSent]           = useState(false)
-  const [emailError, setEmailError]         = useState('')
+  const [sendingEmail, setSendingEmail] = useState(false)
+  const [emailSent, setEmailSent] = useState(false)
+  const [emailError, setEmailError] = useState('')
 
   useEffect(() => {
     getApplication(applicationId)
@@ -30,6 +30,7 @@ export default function CandidateProfilePage() {
       .finally(() => setLoading(false))
   }, [applicationId])
 
+  /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
     if (!app) return
     setCrossFitLoading(true)
@@ -38,6 +39,7 @@ export default function CandidateProfilePage() {
       .catch(() => setCrossFit([]))
       .finally(() => setCrossFitLoading(false))
   }, [app, applicationId])
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   async function handleInterested() {
     try {
@@ -79,199 +81,241 @@ export default function CandidateProfilePage() {
     }
   }
 
-  if (loading) return <div style={{ padding: '2rem', color: '#6e665f' }}>Loading…</div>
-  if (error)   return <div style={{ padding: '2rem', color: '#c0392b' }}>{error}</div>
+  if (loading) return (
+    <div className="flex items-center justify-center p-page-margin text-on-surface-variant">
+      <span className="material-symbols-outlined animate-spin mr-sm">progress_activity</span> Loading…
+    </div>
+  )
+  if (error) return <div className="p-page-margin text-error">{error}</div>
 
   const profile = app.profile || {}
-  const links   = profile.links || {}
-  const pct     = app.rank_score != null ? Math.round(app.rank_score * 100) : null
+  const links = profile.links || {}
+  const pct = app.rank_score != null ? Math.round(app.rank_score * 100) : null
+  const scoreColor = pct == null ? 'text-on-surface-variant' : pct >= 75 ? 'text-picture-book-green' : pct >= 50 ? 'text-amber-600' : 'text-error'
 
   return (
-    <div style={{ maxWidth: 860, margin: '0 auto', padding: '2rem 1rem' }}>
-      <button
-        onClick={() => navigate(`/recruiter/postings/${postingId}`)}
-        style={backBtnStyle}
-      >
-        ← Back to applicants
-      </button>
+    <div className="p-page-margin">
+      {/* Breadcrumb */}
+      <nav className="flex items-center gap-xs text-meta text-on-surface-variant mb-gutter">
+        <button onClick={() => navigate('/recruiter')} className="hover:text-primary transition-colors">Dashboard</button>
+        <span className="material-symbols-outlined text-[14px]">chevron_right</span>
+        <button onClick={() => navigate(`/recruiter/postings/${postingId}`)} className="hover:text-primary transition-colors truncate max-w-xs">
+          Applicants
+        </button>
+        <span className="material-symbols-outlined text-[14px]">chevron_right</span>
+        <span className="text-on-surface font-semibold">{app.name || 'Candidate'}</span>
+      </nav>
 
-      {/* Hero card */}
-      <div style={{
-        background: '#fff', border: '1px solid #e0dbd5', borderRadius: 14,
-        padding: '28px 28px 20px', marginTop: 20, marginBottom: 24,
-      }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 16 }}>
-          <div>
-            <h1 style={{ fontSize: '1.6rem', fontWeight: 700, margin: '0 0 4px' }}>{app.name || 'Unknown Candidate'}</h1>
-            {app.email && <p style={{ color: '#6e665f', margin: '0 0 12px', fontSize: '0.9rem' }}>{app.email}</p>}
+      <div className="flex gap-gutter flex-col xl:flex-row">
+        {/* Left column — main content */}
+        <div className="flex-1 min-w-0 flex flex-col gap-gutter">
 
-            {/* Meta row */}
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, fontSize: '0.875rem', color: '#555' }}>
-              {app.seniority && <MetaChip>{app.seniority}</MetaChip>}
-              {app.years_experience != null && <MetaChip>{app.years_experience}y experience</MetaChip>}
-              {app.location && <MetaChip>{app.location}</MetaChip>}
-            </div>
-          </div>
-
-          {/* Score + interested */}
-          <div style={{ textAlign: 'center', flexShrink: 0 }}>
-            {pct != null && (
-              <>
-                <div style={{
-                  fontSize: '2rem', fontWeight: 800,
-                  color: pct >= 75 ? '#2e7d32' : pct >= 50 ? '#e65100' : '#c0392b',
-                }}>
-                  {pct}%
+          {/* Hero card */}
+          <section className="bg-surface-container-lowest border border-outline-variant rounded-xl p-card-padding shadow-sm overflow-hidden relative">
+            <div className="flex justify-between items-start gap-md">
+              <div className="flex-1 min-w-0">
+                <h1 className="text-page-title font-bold text-on-surface mb-xs">{app.name || 'Unknown Candidate'}</h1>
+                {app.email && <p className="text-body-md text-on-surface-variant mb-md">{app.email}</p>}
+                <div className="flex flex-wrap gap-sm mb-md">
+                  {app.seniority && (
+                    <span className="px-sm py-xs rounded-full text-meta font-semibold bg-blue-50 text-blue-700">{app.seniority}</span>
+                  )}
+                  {app.years_experience != null && (
+                    <span className="px-sm py-xs rounded-full text-meta font-semibold bg-surface-container text-on-surface-variant">
+                      {app.years_experience}y experience
+                    </span>
+                  )}
+                  {app.location && (
+                    <span className="flex items-center gap-xs px-sm py-xs rounded-full text-meta bg-surface-container text-on-surface-variant">
+                      <span className="material-symbols-outlined text-[14px]">location_on</span>
+                      {app.location}
+                    </span>
+                  )}
                 </div>
-                <div style={{ fontSize: '0.75rem', color: '#9e9892' }}>match score</div>
-              </>
-            )}
-            <button
-              onClick={handleInterested}
-              style={{
-                marginTop: 10, background: 'none', border: 'none',
-                cursor: 'pointer', fontSize: '1.6rem',
-                color: app.is_interested ? '#f59e0b' : '#c4bfba',
-              }}
-              title={app.is_interested ? 'Remove from interested' : 'Mark as interested'}
-            >
-              ★
-            </button>
-            <div style={{ fontSize: '0.7rem', color: '#9e9892' }}>
-              {app.is_interested ? 'Interested' : 'Not marked'}
-            </div>
-          </div>
-        </div>
 
-        {/* Links */}
-        {(links.linkedin || links.github || links.portfolio || app.file_url) && (
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, marginTop: 16 }}>
-            {links.linkedin && (
-              <a href={links.linkedin} target="_blank" rel="noopener noreferrer" style={linkBtnStyle}>
-                LinkedIn ↗
-              </a>
-            )}
-            {links.github && (
-              <a href={links.github} target="_blank" rel="noopener noreferrer" style={linkBtnStyle}>
-                GitHub ↗
-              </a>
-            )}
-            {links.portfolio && (
-              <a href={links.portfolio} target="_blank" rel="noopener noreferrer" style={linkBtnStyle}>
-                Portfolio ↗
-              </a>
-            )}
-            {app.file_url && (
-              <a href={app.file_url} target="_blank" rel="noopener noreferrer" style={{ ...linkBtnStyle, background: '#000080', color: '#fff', border: 'none' }}>
-                Download CV ↓
-              </a>
-            )}
-          </div>
-        )}
+                {/* Links */}
+                <div className="flex flex-wrap gap-sm">
+                  {links.linkedin && (
+                    <a href={links.linkedin} target="_blank" rel="noopener noreferrer"
+                      className="flex items-center gap-xs px-md py-xs border border-outline-variant rounded-lg text-label-sm text-on-surface hover:bg-surface-container transition-colors">
+                      <span className="material-symbols-outlined text-[16px]">link</span> LinkedIn
+                    </a>
+                  )}
+                  {links.github && (
+                    <a href={links.github} target="_blank" rel="noopener noreferrer"
+                      className="flex items-center gap-xs px-md py-xs border border-outline-variant rounded-lg text-label-sm text-on-surface hover:bg-surface-container transition-colors">
+                      <span className="material-symbols-outlined text-[16px]">code</span> GitHub
+                    </a>
+                  )}
+                  {links.portfolio && (
+                    <a href={links.portfolio} target="_blank" rel="noopener noreferrer"
+                      className="flex items-center gap-xs px-md py-xs border border-outline-variant rounded-lg text-label-sm text-on-surface hover:bg-surface-container transition-colors">
+                      <span className="material-symbols-outlined text-[16px]">open_in_new</span> Portfolio
+                    </a>
+                  )}
+                  {app.file_url && (
+                    <a href={app.file_url} target="_blank" rel="noopener noreferrer"
+                      className="flex items-center gap-xs px-md py-xs bg-primary text-on-primary rounded-lg text-label-sm font-semibold hover:bg-accent-hover transition-colors">
+                      <span className="material-symbols-outlined text-[16px]">download</span> Download CV
+                    </a>
+                  )}
+                </div>
+              </div>
 
-        {/* Action buttons */}
-        <div style={{ display: 'flex', gap: 10, marginTop: 16, flexWrap: 'wrap' }}>
-          <button
-            onClick={() => setShowMeetModal(true)}
-            disabled={!app.email}
-            style={{
-              padding: '8px 18px', fontWeight: 600, fontSize: '0.875rem',
-              border: 'none', borderRadius: 8,
-              background: app.email ? '#000080' : '#aaa',
-              color: '#fff', cursor: app.email ? 'pointer' : 'not-allowed',
-            }}
-          >
-            Schedule Interview
-          </button>
-          {crossFit?.length > 0 && (
-            <button
-              onClick={() => setShowEmailDialog(true)}
-              style={{
-                padding: '8px 18px', fontWeight: 600, fontSize: '0.875rem',
-                border: '1px solid #000080', borderRadius: 8,
-                background: '#fff', color: '#000080', cursor: 'pointer',
-              }}
-            >
-              Suggest Other Role
-            </button>
-          )}
-        </div>
-      </div>
-
-      {/* AI explanation */}
-      {app.explanation && (
-        <Section title="Why This Candidate Fits">
-          <p style={{ lineHeight: 1.7, color: '#2a2a2a', margin: 0 }}>{app.explanation}</p>
-        </Section>
-      )}
-
-      {/* Summary */}
-      {profile.summary && (
-        <Section title="Professional Summary">
-          <p style={{ lineHeight: 1.7, color: '#2a2a2a', margin: 0 }}>{profile.summary}</p>
-        </Section>
-      )}
-
-      {/* Skills */}
-      {app.skills?.length > 0 && (
-        <Section title="Skills">
-          <TagCloud tags={app.skills} color="#e3f2fd" text="#1565c0" />
-        </Section>
-      )}
-
-      {/* Certifications */}
-      {app.certifications?.length > 0 && (
-        <Section title="Certifications">
-          <TagCloud tags={app.certifications} color="#fce4ec" text="#880e4f" />
-        </Section>
-      )}
-
-      {/* Languages */}
-      {app.languages?.length > 0 && (
-        <Section title="Languages">
-          <TagCloud tags={app.languages} color="#f3e5f5" text="#6a1b9a" />
-        </Section>
-      )}
-
-      {/* Matched keywords */}
-      {app.overlap_keywords?.length > 0 && (
-        <Section title="Matched Keywords">
-          <TagCloud tags={app.overlap_keywords} color="#e8f5e9" text="#2e7d32" />
-        </Section>
-      )}
-
-      {/* Education */}
-      {profile.education?.length > 0 && (
-        <Section title="Education">
-          {profile.education.map((edu, i) => (
-            <div key={i} style={{ marginBottom: 10 }}>
-              <span style={{ fontWeight: 600 }}>{edu.degree}{edu.field ? ` in ${edu.field}` : ''}</span>
-              {edu.institution && <span style={{ color: '#6e665f' }}> — {edu.institution}</span>}
-              {edu.year && <span style={{ color: '#9e9892', fontSize: '0.85rem' }}> ({edu.year})</span>}
-            </div>
-          ))}
-        </Section>
-      )}
-
-      {/* Cross-fit suggestions */}
-      {!crossFitLoading && crossFit?.length > 0 && (
-        <Section title="Better-Fit Roles at the Same Company">
-          <p style={{ fontSize: '0.875rem', color: '#6e665f', marginBottom: 12 }}>
-            This candidate ranks in the top {crossFit[0]?.position_in_posting} for the following other openings from the same recruiter:
-          </p>
-          {crossFit.map(fit => (
-            <div key={fit.id} style={{
-              border: '1px solid #e0dbd5', borderRadius: 8, padding: '12px 16px',
-              marginBottom: 8, background: '#fefefe',
-            }}>
-              <div style={{ fontWeight: 700 }}>{fit.position_title} <span style={{ color: '#6e665f', fontWeight: 400 }}>at {fit.company_name}</span></div>
-              <div style={{ fontSize: '0.8rem', color: '#6e665f', marginTop: 4 }}>
-                Rank #{fit.position_in_posting} · {Math.round(fit.rank_score * 100)}% match
+              {/* Score + star */}
+              <div className="flex flex-col items-center gap-sm flex-shrink-0">
+                {pct != null && (
+                  <div className="bg-surface-container-low border border-outline-variant rounded-xl px-lg py-md text-center hover:bg-secondary-container/10 transition-colors cursor-default">
+                    <div className={`text-headline-lg font-bold ${scoreColor}`}>{pct}%</div>
+                    <div className="text-meta text-on-surface-variant">match</div>
+                  </div>
+                )}
+                <button
+                  onClick={handleInterested}
+                  className={`flex flex-col items-center gap-xs p-sm rounded-lg transition-all active:scale-95 ${
+                    app.is_interested ? 'text-yellow-500 hover:text-yellow-600' : 'text-outline-variant hover:text-yellow-500'
+                  }`}
+                  title={app.is_interested ? 'Remove from interested' : 'Mark as interested'}
+                >
+                  <span className="material-symbols-outlined text-[28px]" style={{ fontVariationSettings: app.is_interested ? "'FILL' 1" : "'FILL' 0" }}>
+                    star
+                  </span>
+                  <span className="text-meta">{app.is_interested ? 'Interested' : 'Mark'}</span>
+                </button>
               </div>
             </div>
-          ))}
-        </Section>
-      )}
+
+            {/* Action buttons */}
+            <div className="flex gap-sm flex-wrap mt-gutter pt-gutter border-t border-outline-variant">
+              <button
+                onClick={() => setShowMeetModal(true)}
+                disabled={!app.email}
+                className="flex items-center gap-xs bg-primary hover:bg-accent-hover disabled:opacity-50 disabled:cursor-not-allowed text-on-primary font-bold text-label-sm px-lg py-sm rounded-xl transition-all active:scale-95 shadow-sm"
+              >
+                <span className="material-symbols-outlined text-[18px]">calendar_add_on</span>
+                Schedule Interview
+              </button>
+
+              {crossFit?.length > 0 && (
+                <button
+                  onClick={() => setShowEmailDialog(true)}
+                  className="flex items-center gap-xs border border-primary text-primary hover:bg-surface-container font-semibold text-label-sm px-lg py-sm rounded-xl transition-all active:scale-95"
+                >
+                  <span className="material-symbols-outlined text-[18px]">forward_to_inbox</span>
+                  Suggest Other Role
+                </button>
+              )}
+
+              <button
+                onClick={() => navigate(`/recruiter/postings/${postingId}/report`)}
+                className="flex items-center gap-xs border border-outline-variant text-on-surface-variant hover:bg-surface-container text-label-sm px-lg py-sm rounded-xl transition-all"
+              >
+                <span className="material-symbols-outlined text-[18px]">bar_chart</span>
+                View Report
+              </button>
+            </div>
+          </section>
+
+          {/* AI Professional Summary */}
+          {profile.summary && (
+            <ProfileSection title="AI Professional Summary" icon="psychology">
+              <p className="text-body-md text-on-surface leading-relaxed">{profile.summary}</p>
+            </ProfileSection>
+          )}
+
+          {/* AI Explanation */}
+          {app.explanation && (
+            <section className="bg-primary text-on-primary rounded-xl p-card-padding shadow-xl relative overflow-hidden">
+              <div className="absolute inset-0 opacity-10 pointer-events-none" style={{ background: 'radial-gradient(circle at 80% 20%, #74C365 0%, transparent 60%)' }} />
+              <h2 className="text-section-head font-bold uppercase tracking-wider text-on-primary/80 mb-md flex items-center gap-sm">
+                <span className="material-symbols-outlined text-[20px]">auto_awesome</span>
+                AI Insights
+              </h2>
+              <p className="text-body-md leading-relaxed">{app.explanation}</p>
+            </section>
+          )}
+
+          {/* Skills */}
+          {app.skills?.length > 0 && (
+            <ProfileSection title="Skill Expertise" icon="psychology_alt">
+              <TagCloud tags={app.skills} colorClass="bg-blue-50 text-blue-700" />
+            </ProfileSection>
+          )}
+
+          {/* Certifications */}
+          {app.certifications?.length > 0 && (
+            <ProfileSection title="Certifications" icon="verified">
+              <TagCloud tags={app.certifications} colorClass="bg-pink-50 text-pink-700" />
+            </ProfileSection>
+          )}
+
+          {/* Languages */}
+          {app.languages?.length > 0 && (
+            <ProfileSection title="Languages" icon="translate">
+              <TagCloud tags={app.languages} colorClass="bg-purple-50 text-purple-700" />
+            </ProfileSection>
+          )}
+
+          {/* Matched keywords */}
+          {app.overlap_keywords?.length > 0 && (
+            <ProfileSection title="Matched Keywords" icon="key">
+              <TagCloud tags={app.overlap_keywords} colorClass="bg-green-50 text-picture-book-green" />
+            </ProfileSection>
+          )}
+
+          {/* Education */}
+          {profile.education?.length > 0 && (
+            <ProfileSection title="Education & Certs" icon="school">
+              <div className="flex flex-col gap-md">
+                {profile.education.map((edu, i) => (
+                  <div key={i}>
+                    <div className="text-headline-md-mobile font-bold text-on-surface">
+                      {edu.degree}{edu.field ? ` in ${edu.field}` : ''}
+                    </div>
+                    {edu.institution && <div className="text-body-md text-on-surface-variant">{edu.institution}</div>}
+                    {edu.year && <div className="text-meta text-on-surface-variant">{edu.year}</div>}
+                  </div>
+                ))}
+              </div>
+            </ProfileSection>
+          )}
+
+          {/* Cross-fit — note: not in Stitch design, kept as extra section */}
+          {!crossFitLoading && crossFit?.length > 0 && (
+            <ProfileSection title="Better-Fit Roles" icon="compare_arrows">
+              <p className="text-body-md text-on-surface-variant mb-md">
+                This candidate also ranks highly for other open roles:
+              </p>
+              <div className="flex flex-col gap-sm">
+                {crossFit.map(fit => (
+                  <div key={fit.id} className="border border-outline-variant rounded-lg p-md bg-surface-container-low">
+                    <div className="text-label-sm font-bold text-on-surface">
+                      {fit.position_title} <span className="font-normal text-on-surface-variant">at {fit.company_name}</span>
+                    </div>
+                    <div className="text-meta text-on-surface-variant mt-xs">
+                      Rank #{fit.position_in_posting} · {Math.round(fit.rank_score * 100)}% match
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </ProfileSection>
+          )}
+        </div>
+
+        {/* Right sidebar — Candidate Vitals */}
+        <aside className="xl:w-64 flex-shrink-0">
+          <div className="bg-surface-container-low border border-outline-variant rounded-xl p-card-padding shadow-sm sticky top-24">
+            <h3 className="text-label-sm font-bold text-primary uppercase tracking-widest mb-lg">Candidate Vitals</h3>
+            <div className="flex flex-col gap-md">
+              {app.seniority && <Vital icon="grade" label="Seniority" value={app.seniority} />}
+              {app.years_experience != null && <Vital icon="history" label="Experience" value={`${app.years_experience} years`} />}
+              {app.location && <Vital icon="location_on" label="Location" value={app.location} />}
+              {profile.work_authorization && <Vital icon="badge" label="Work Auth" value={profile.work_authorization} />}
+              {pct != null && <Vital icon="percent" label="Match Score" value={`${pct}%`} valueClass={scoreColor} />}
+            </div>
+          </div>
+        </aside>
+      </div>
 
       {/* Schedule modal */}
       {showMeetModal && (
@@ -285,68 +329,61 @@ export default function CandidateProfilePage() {
       {/* Email dialog */}
       {showEmailDialog && !emailSent && (
         <div
-          style={{
-            position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000,
-          }}
+          className="fixed inset-0 z-50 flex items-center justify-center p-md"
+          style={{ background: 'rgba(0,0,0,0.45)' }}
           onClick={e => { if (e.target === e.currentTarget) setShowEmailDialog(false) }}
         >
-          <div style={{
-            background: '#fff', borderRadius: 14, padding: '28px 28px 24px',
-            maxWidth: 520, width: '90%', boxShadow: '0 8px 32px rgba(0,0,0,0.14)',
-          }}>
-            <h3 style={{ margin: '0 0 8px', fontSize: '1.1rem' }}>Suggest a Better-Fit Role</h3>
-            <p style={{ color: '#6e665f', fontSize: '0.875rem', marginBottom: 16 }}>
+          <div className="bg-surface-container-lowest rounded-xl p-card-padding max-w-lg w-full shadow-modal">
+            <h3 className="text-headline-md font-bold text-on-surface mb-xs">Suggest a Better-Fit Role</h3>
+            <p className="text-body-md text-on-surface-variant mb-gutter">
               Select a role to suggest to <strong>{app.name || app.email}</strong>. An email will be sent via your Gmail.
             </p>
-
-            {crossFit.map(fit => (
-              <label
-                key={fit.id}
-                style={{
-                  display: 'flex', alignItems: 'center', gap: 10,
-                  padding: '10px 12px', border: `1px solid ${selectedPosting?.id === fit.id ? '#000080' : '#e0dbd5'}`,
-                  borderRadius: 8, cursor: 'pointer', marginBottom: 8,
-                  background: selectedPosting?.id === fit.id ? '#f0f0ff' : '#fff',
-                }}
-              >
-                <input
-                  type="radio"
-                  name="target_posting"
-                  value={fit.id}
-                  checked={selectedPosting?.id === fit.id}
-                  onChange={() => setSelectedPosting(fit)}
-                  style={{ accentColor: '#000080' }}
-                />
-                <div>
-                  <div style={{ fontWeight: 600 }}>{fit.position_title}</div>
-                  <div style={{ fontSize: '0.78rem', color: '#6e665f' }}>
-                    {fit.company_name} · #{fit.position_in_posting} · {Math.round(fit.rank_score * 100)}% match
+            <div className="flex flex-col gap-sm mb-gutter">
+              {crossFit.map(fit => (
+                <label
+                  key={fit.id}
+                  className={`flex items-center gap-md p-md border rounded-xl cursor-pointer transition-colors ${
+                    selectedPosting?.id === fit.id
+                      ? 'border-primary bg-blue-50'
+                      : 'border-outline-variant hover:bg-surface-container'
+                  }`}
+                >
+                  <input
+                    type="radio"
+                    name="target_posting"
+                    value={fit.id}
+                    checked={selectedPosting?.id === fit.id}
+                    onChange={() => setSelectedPosting(fit)}
+                    className="accent-primary"
+                  />
+                  <div>
+                    <div className="text-label-sm font-bold text-on-surface">{fit.position_title}</div>
+                    <div className="text-meta text-on-surface-variant">
+                      {fit.company_name} · #{fit.position_in_posting} · {Math.round(fit.rank_score * 100)}% match
+                    </div>
                   </div>
-                </div>
-              </label>
-            ))}
-
-            {emailError && <p style={{ color: '#c0392b', fontSize: '0.875rem', marginTop: 8 }}>{emailError}</p>}
+                </label>
+              ))}
+            </div>
+            {emailError && <p className="text-error text-label-sm mb-md">{emailError}</p>}
             {emailError?.includes('expired') && (
-              <button onClick={reauthorize} style={{ color: '#000080', background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline', fontSize: '0.875rem' }}>
+              <button onClick={reauthorize} className="text-primary underline text-label-sm mb-md">
                 Re-authorize Gmail
               </button>
             )}
-
-            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10, marginTop: 20 }}>
-              <button onClick={() => setShowEmailDialog(false)} style={cancelBtnStyle}>Cancel</button>
+            <div className="flex justify-end gap-sm">
+              <button onClick={() => setShowEmailDialog(false)}
+                className="px-lg py-sm border border-outline-variant rounded-xl text-label-sm text-on-surface-variant hover:bg-surface-container transition-colors">
+                Cancel
+              </button>
               <button
                 onClick={handleSendEmail}
                 disabled={!selectedPosting || sendingEmail}
-                style={{
-                  padding: '8px 20px', fontWeight: 700, fontSize: '0.9rem',
-                  border: 'none', borderRadius: 8,
-                  background: !selectedPosting || sendingEmail ? '#aaa' : '#000080',
-                  color: '#fff', cursor: !selectedPosting || sendingEmail ? 'not-allowed' : 'pointer',
-                }}
+                className="flex items-center gap-xs bg-primary hover:bg-accent-hover disabled:opacity-50 disabled:cursor-not-allowed text-on-primary font-bold text-label-sm px-lg py-sm rounded-xl transition-all active:scale-95"
               >
-                {sendingEmail ? 'Sending…' : 'Send Email'}
+                {sendingEmail ? (
+                  <><span className="material-symbols-outlined animate-spin text-[18px]">progress_activity</span> Sending…</>
+                ) : 'Send Email'}
               </button>
             </div>
           </div>
@@ -354,22 +391,17 @@ export default function CandidateProfilePage() {
       )}
 
       {emailSent && (
-        <div
-          style={{
-            position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000,
-          }}
-        >
-          <div style={{
-            background: '#fff', borderRadius: 14, padding: '36px 28px',
-            maxWidth: 420, width: '90%', textAlign: 'center',
-          }}>
-            <div style={{ fontSize: '2.5rem', marginBottom: 12 }}>✉️</div>
-            <h3 style={{ margin: '0 0 8px' }}>Email sent!</h3>
-            <p style={{ color: '#6e665f', fontSize: '0.875rem', marginBottom: 20 }}>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-md" style={{ background: 'rgba(0,0,0,0.45)' }}>
+          <div className="bg-surface-container-lowest rounded-xl p-card-padding max-w-sm w-full shadow-modal text-center">
+            <span className="material-symbols-outlined text-[48px] text-picture-book-green mb-md block">mark_email_read</span>
+            <h3 className="text-headline-md font-bold text-on-surface mb-xs">Email sent!</h3>
+            <p className="text-body-md text-on-surface-variant mb-gutter">
               Suggestion for <strong>{selectedPosting?.position_title}</strong> was sent to <strong>{app.email}</strong>.
             </p>
-            <button onClick={() => { setEmailSent(false); setShowEmailDialog(false) }} style={cancelBtnStyle}>Close</button>
+            <button onClick={() => { setEmailSent(false); setShowEmailDialog(false) }}
+              className="px-xl py-sm border border-outline-variant rounded-xl text-label-sm text-on-surface-variant hover:bg-surface-container transition-colors">
+              Close
+            </button>
           </div>
         </div>
       )}
@@ -377,25 +409,23 @@ export default function CandidateProfilePage() {
   )
 }
 
-function Section({ title, children }) {
+function ProfileSection({ title, icon, children }) {
   return (
-    <div style={{
-      background: '#fff', border: '1px solid #e0dbd5', borderRadius: 12,
-      padding: '18px 22px', marginBottom: 16,
-    }}>
-      <h2 style={{ fontSize: '0.9rem', fontWeight: 700, color: '#6e665f', textTransform: 'uppercase', letterSpacing: '0.05em', margin: '0 0 10px' }}>
+    <section className="bg-surface-container-lowest border border-outline-variant rounded-xl p-card-padding shadow-sm">
+      <h2 className="text-section-head font-bold text-primary uppercase tracking-wider flex items-center gap-sm mb-md">
+        {icon && <span className="material-symbols-outlined text-[18px]">{icon}</span>}
         {title}
       </h2>
       {children}
-    </div>
+    </section>
   )
 }
 
-function TagCloud({ tags, color, text }) {
+function TagCloud({ tags, colorClass }) {
   return (
-    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+    <div className="flex flex-wrap gap-sm">
       {tags.map(tag => (
-        <span key={tag} style={{ padding: '3px 10px', borderRadius: 20, fontSize: '0.78rem', background: color, color: text }}>
+        <span key={tag} className={`px-sm py-xs rounded-full text-meta font-medium ${colorClass}`}>
           {tag}
         </span>
       ))}
@@ -403,31 +433,14 @@ function TagCloud({ tags, color, text }) {
   )
 }
 
-function MetaChip({ children }) {
+function Vital({ icon, label, value, valueClass = 'text-on-surface' }) {
   return (
-    <span style={{
-      padding: '3px 10px', borderRadius: 20, fontSize: '0.78rem',
-      background: '#f5f5f5', color: '#555',
-    }}>
-      {children}
-    </span>
+    <div className="flex items-center gap-sm">
+      <span className="material-symbols-outlined text-[18px] text-primary flex-shrink-0">{icon}</span>
+      <div className="min-w-0">
+        <div className="text-meta text-on-surface-variant">{label}</div>
+        <div className={`text-label-sm font-semibold truncate ${valueClass}`}>{value}</div>
+      </div>
+    </div>
   )
-}
-
-const backBtnStyle = {
-  background: 'none', border: 'none', cursor: 'pointer',
-  color: '#000080', fontSize: '0.9rem', padding: 0, textDecoration: 'underline',
-}
-
-const linkBtnStyle = {
-  padding: '6px 14px', fontSize: '0.8rem', fontWeight: 500,
-  border: '1px solid #c4bfba', borderRadius: 6,
-  background: '#fff', color: '#1a1a1a',
-  textDecoration: 'none', display: 'inline-block',
-}
-
-const cancelBtnStyle = {
-  padding: '8px 18px', fontSize: '0.9rem', fontFamily: 'inherit',
-  border: '1px solid #c4bfba', borderRadius: 8,
-  background: 'transparent', color: '#6e665f', cursor: 'pointer',
 }

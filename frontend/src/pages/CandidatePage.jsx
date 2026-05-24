@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef } from 'react'
+import { useState, useCallback, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { listOpenPostings, getPosting, applyToPosting } from '../api'
 import usePagination from '../hooks/usePagination'
@@ -7,23 +7,34 @@ import Pagination from '../components/Pagination'
 export default function CandidatePage() {
   const navigate = useNavigate()
 
-  // list
   const fetcher = useCallback((page, limit) => listOpenPostings(page, limit), [])
   const { data, loading, error, page, totalPages, setPage } = usePagination(fetcher, 10)
 
-  // modal
+  // modal state
   const [selectedPostingId, setSelectedPostingId] = useState(null)
-  const [modalPosting, setModalPosting]           = useState(null)
-  const [modalLoading, setModalLoading]           = useState(false)
-  const [modalError, setModalError]               = useState('')
+  const [modalPosting, setModalPosting] = useState(null)
+  const [modalLoading, setModalLoading] = useState(false)
+  const [modalError, setModalError] = useState('')
+  const [modalVisible, setModalVisible] = useState(false)
+  const [modalAnimating, setModalAnimating] = useState(false)
 
-  // apply form (inside modal)
-  const [file, setFile]             = useState(null)
-  const [dragging, setDragging]     = useState(false)
-  const [applying, setApplying]     = useState(false)
+  // apply form
+  const [file, setFile] = useState(null)
+  const [dragging, setDragging] = useState(false)
+  const [applying, setApplying] = useState(false)
   const [applyError, setApplyError] = useState('')
-  const [applied, setApplied]       = useState(false)
+  const [applied, setApplied] = useState(false)
   const fileInputRef = useRef(null)
+
+  // Lock body scroll when modal is open
+  useEffect(() => {
+    if (modalVisible) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = ''
+    }
+    return () => { document.body.style.overflow = '' }
+  }, [modalVisible])
 
   async function openPosting(id) {
     setSelectedPostingId(id)
@@ -33,6 +44,11 @@ export default function CandidatePage() {
     setApplied(false)
     setApplyError('')
     setModalLoading(true)
+    // Show modal immediately (starts hidden/scaled for animation)
+    setModalVisible(true)
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => setModalAnimating(true))
+    })
     try {
       const p = await getPosting(id)
       if (!p) setModalError('Posting not found.')
@@ -45,11 +61,15 @@ export default function CandidatePage() {
   }
 
   function closeModal() {
-    setSelectedPostingId(null)
-    setModalPosting(null)
-    setFile(null)
-    setApplied(false)
-    setApplyError('')
+    setModalAnimating(false)
+    setTimeout(() => {
+      setModalVisible(false)
+      setSelectedPostingId(null)
+      setModalPosting(null)
+      setFile(null)
+      setApplied(false)
+      setApplyError('')
+    }, 300)
   }
 
   function handleDrop(e) {
@@ -78,262 +98,240 @@ export default function CandidatePage() {
   }
 
   return (
-    <div style={{ maxWidth: 900, margin: '0 auto', padding: '2rem 1rem' }}>
-      <button
-        type="button"
-        onClick={() => navigate('/')}
-        style={{
-          background: 'none',
-          border: 'none',
-          cursor: 'pointer',
-          color: 'var(--accent)',
-          fontSize: '0.95rem',
-          fontWeight: 600,
-          padding: '0 0 20px',
-          display: 'flex',
-          alignItems: 'center',
-          gap: 6,
-          fontFamily: 'var(--sans)',
-        }}
-      >
-        ← Back
-      </button>
+    <div className="min-h-screen bg-surface">
+      {/* Header */}
+      <header className="sticky top-0 z-40 bg-surface border-b border-outline-variant px-page-margin h-16 flex items-center gap-md">
+        <button
+          onClick={() => navigate('/')}
+          className="flex items-center gap-xs text-label-sm text-on-surface-variant hover:text-primary transition-colors"
+        >
+          <span className="material-symbols-outlined text-[20px]">arrow_back</span>
+          Back
+        </button>
+        <div className="flex items-center gap-sm ml-auto">
+          <img src="/logo.png" alt="HireLite" className="w-7 h-7 object-contain" />
+          <span className="text-section-head font-bold text-primary">HireLite</span>
+        </div>
+      </header>
 
-      <h1 style={{ fontSize: '1.6rem', fontWeight: 700, marginBottom: 4 }}>Open Positions</h1>
-      <p style={{ color: '#6e665f', marginBottom: 24 }}>
-        Browse available roles and apply by uploading your CV.
-      </p>
+      {/* Page content */}
+      <div className="max-w-3xl mx-auto px-page-margin py-gutter">
+        <h1 className="text-page-title font-bold text-on-surface mb-xs">Open Positions</h1>
+        <p className="text-body-md text-on-surface-variant mb-gutter">
+          Browse available roles and apply by uploading your CV. No account required.
+        </p>
 
-      {loading && <p style={{ color: '#6e665f' }}>Loading postings…</p>}
-      {error   && <p style={{ color: '#c0392b' }}>{error}</p>}
-
-      {!loading && data?.items?.length === 0 && (
-        <p style={{ color: '#6e665f' }}>No open positions right now. Check back soon.</p>
-      )}
-
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-        {data?.items?.map(posting => (
-          <div
-            key={posting.id}
-            onClick={() => openPosting(posting.id)}
-            style={{
-              border: '1px solid #e0dbd5',
-              borderRadius: 10,
-              padding: '20px 24px',
-              cursor: 'pointer',
-              background: '#fff',
-              transition: 'box-shadow 0.15s',
-            }}
-            onMouseEnter={e => e.currentTarget.style.boxShadow = '0 2px 12px rgba(0,0,0,0.08)'}
-            onMouseLeave={e => e.currentTarget.style.boxShadow = 'none'}
-          >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12 }}>
-              <div>
-                <div style={{ fontSize: '1.1rem', fontWeight: 700, color: '#1a1a1a', marginBottom: 4 }}>
-                  {posting.position_title}
-                </div>
-                <div style={{ fontSize: '0.9rem', color: '#6e665f', marginBottom: 8 }}>
-                  {posting.company_name}
-                </div>
-              </div>
-              <span style={{
-                padding: '4px 10px',
-                borderRadius: 20,
-                fontSize: '0.75rem',
-                fontWeight: 600,
-                background: posting.status === 'open' ? '#e8f5e9' : '#fce4ec',
-                color: posting.status === 'open' ? '#2e7d32' : '#880e4f',
-                whiteSpace: 'nowrap',
-              }}>
-                {posting.status === 'open' ? 'Open' : 'Closed'}
-              </span>
-            </div>
-            <p style={{
-              fontSize: '0.875rem',
-              color: '#4a4a4a',
-              margin: 0,
-              display: '-webkit-box',
-              WebkitLineClamp: 2,
-              WebkitBoxOrient: 'vertical',
-              overflow: 'hidden',
-            }}>
-              {posting.description}
-            </p>
-            <div style={{ marginTop: 12, fontSize: '0.78rem', color: '#9e9892', display: 'flex', gap: 16 }}>
-              <span>{posting.applicant_count ?? 0} applicant{posting.applicant_count !== 1 ? 's' : ''}</span>
-              <span>Posted {new Date(posting.created_at).toLocaleDateString()}</span>
-            </div>
+        {loading && (
+          <div className="flex items-center gap-sm text-on-surface-variant text-body-md py-xl">
+            <span className="material-symbols-outlined animate-spin text-[20px]">progress_activity</span>
+            Loading positions…
           </div>
-        ))}
+        )}
+        {error && <p className="text-error text-body-md">{error}</p>}
+
+        {!loading && data?.items?.length === 0 && (
+          <div className="text-center py-xl text-on-surface-variant text-body-md">
+            No open positions right now. Check back soon.
+          </div>
+        )}
+
+        {/* Job cards */}
+        <div className="flex flex-col gap-md">
+          {data?.items?.map(posting => (
+            <button
+              key={posting.id}
+              onClick={() => openPosting(posting.id)}
+              className="w-full text-left bg-surface-container-lowest border border-outline-variant rounded-xl p-card-padding hover:shadow-card transition-all duration-200 group"
+            >
+              <div className="flex justify-between items-start gap-md">
+                <div className="flex-1 min-w-0">
+                  <h2 className="text-headline-md font-bold text-on-surface mb-xs group-hover:text-primary transition-colors truncate">
+                    {posting.position_title}
+                  </h2>
+                  <p className="text-body-md text-on-surface-variant mb-sm">{posting.company_name}</p>
+                </div>
+                <span className={`flex-shrink-0 px-sm py-xs rounded-full text-meta font-semibold ${
+                  posting.status === 'open'
+                    ? 'bg-green-50 text-picture-book-green'
+                    : 'bg-pink-50 text-pink-700'
+                }`}>
+                  {posting.status === 'open' ? 'Open' : 'Closed'}
+                </span>
+              </div>
+              <p className="text-body-md text-on-surface line-clamp-2 mb-md">{posting.description}</p>
+              <div className="flex gap-md text-meta text-on-surface-variant">
+                <span>{posting.applicant_count ?? 0} applicant{posting.applicant_count !== 1 ? 's' : ''}</span>
+                <span>Posted {new Date(posting.created_at).toLocaleDateString()}</span>
+              </div>
+            </button>
+          ))}
+        </div>
+
+        <Pagination page={page} totalPages={totalPages} onChange={setPage} />
       </div>
 
-      <Pagination page={page} totalPages={totalPages} onChange={setPage} />
-
-      {/* ── Posting detail modal ─────────────────── */}
-      {selectedPostingId && (
+      {/* Modal */}
+      {modalVisible && (
         <div
           onClick={closeModal}
-          style={{
-            position: 'fixed',
-            inset: 0,
-            background: 'var(--overlay)',
-            zIndex: 50,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: '24px 16px',
-          }}
+          className={`fixed inset-0 z-50 flex items-center justify-center p-md transition-opacity duration-300 ${
+            modalAnimating ? 'opacity-100' : 'opacity-0'
+          }`}
+          style={{ background: 'rgba(0,0,0,0.45)' }}
         >
           <div
             onClick={e => e.stopPropagation()}
-            style={{
-              background: 'var(--card-bg)',
-              borderRadius: 14,
-              maxWidth: 700,
-              width: '100%',
-              maxHeight: '85vh',
-              overflowY: 'auto',
-              padding: '32px',
-              position: 'relative',
-              boxShadow: '0 12px 48px var(--shadow)',
-            }}
+            className={`bg-surface-container-lowest rounded-xl w-full max-w-2xl max-h-[85vh] overflow-y-auto shadow-modal relative transition-all duration-300 ${
+              modalAnimating ? 'opacity-100 scale-100' : 'opacity-0 scale-95'
+            }`}
           >
+            {/* Close button */}
             <button
-              type="button"
               onClick={closeModal}
-              style={{
-                position: 'absolute',
-                top: 14,
-                right: 16,
-                background: 'none',
-                border: 'none',
-                fontSize: '1.4rem',
-                cursor: 'pointer',
-                color: '#6e665f',
-                lineHeight: 1,
-                padding: 4,
-              }}
+              className="absolute top-md right-md z-10 w-8 h-8 flex items-center justify-center rounded-full hover:bg-surface-container text-on-surface-variant transition-colors"
               aria-label="Close"
             >
-              ×
+              <span className="material-symbols-outlined text-[20px]">close</span>
             </button>
 
-            {modalLoading && (
-              <p style={{ color: '#6e665f', padding: '32px 0', textAlign: 'center' }}>Loading…</p>
-            )}
-
-            {modalError && (
-              <p style={{ color: '#c0392b' }}>{modalError}</p>
-            )}
-
-            {modalPosting && (
-              <>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12, marginBottom: 4, paddingRight: 32 }}>
-                  <h2 style={{ fontSize: '1.5rem', fontWeight: 700, margin: 0 }}>{modalPosting.position_title}</h2>
-                  <span style={{
-                    padding: '4px 12px', borderRadius: 20, fontSize: '0.8rem', fontWeight: 600,
-                    background: modalPosting.status === 'open' ? '#e8f5e9' : '#fce4ec',
-                    color: modalPosting.status === 'open' ? '#2e7d32' : '#880e4f',
-                    whiteSpace: 'nowrap',
-                  }}>
-                    {modalPosting.status === 'open' ? 'Open' : 'Closed'}
-                  </span>
+            <div className="p-card-padding">
+              {modalLoading && (
+                <div className="flex items-center justify-center py-xl gap-sm text-on-surface-variant">
+                  <span className="material-symbols-outlined animate-spin">progress_activity</span>
+                  Loading…
                 </div>
-                <p style={{ color: '#6e665f', marginBottom: 24, fontSize: '1rem' }}>{modalPosting.company_name}</p>
+              )}
 
-                <section style={{ marginBottom: 28 }}>
-                  <h3 style={sectionHeadStyle}>Job Description</h3>
-                  <p style={{ whiteSpace: 'pre-wrap', lineHeight: 1.7, color: '#2a2a2a' }}>{modalPosting.description}</p>
-                </section>
+              {modalError && <p className="text-error text-body-md">{modalError}</p>}
 
-                {modalPosting.requirements && (
-                  <section style={{ marginBottom: 28 }}>
-                    <h3 style={sectionHeadStyle}>Requirements</h3>
-                    <p style={{ whiteSpace: 'pre-wrap', lineHeight: 1.7, color: '#2a2a2a' }}>{modalPosting.requirements}</p>
-                  </section>
-                )}
-
-                {modalPosting.status === 'open' && !applied && (
-                  <section>
-                    <h3 style={sectionHeadStyle}>Apply for this Role</h3>
-                    <p style={{ fontSize: '0.875rem', color: '#6e665f', marginBottom: 12 }}>
-                      Upload your CV (PDF or DOCX). No account required.
-                    </p>
-
-                    <div
-                      onClick={() => fileInputRef.current?.click()}
-                      onDrop={handleDrop}
-                      onDragOver={e => { e.preventDefault(); setDragging(true) }}
-                      onDragLeave={() => setDragging(false)}
-                      style={{
-                        border: `2px dashed ${dragging ? 'var(--accent)' : '#c4bfba'}`,
-                        borderRadius: 10,
-                        padding: '32px 20px',
-                        textAlign: 'center',
-                        cursor: 'pointer',
-                        background: dragging ? 'var(--accent-light)' : '#faf9f8',
-                        marginBottom: 12,
-                      }}
-                    >
-                      <input
-                        ref={fileInputRef}
-                        type="file"
-                        accept=".pdf,.docx,.doc,.png,.jpg,.jpeg"
-                        style={{ display: 'none' }}
-                        onChange={e => { const f = e.target.files?.[0]; if (f) { setFile(f); setApplyError('') } }}
-                      />
-                      {file
-                        ? <p style={{ margin: 0, fontWeight: 600, color: 'var(--accent)' }}>{file.name}</p>
-                        : <p style={{ margin: 0, color: '#6e665f', fontSize: '0.9rem' }}>
-                            Drop your CV here or <span style={{ color: 'var(--accent)', textDecoration: 'underline' }}>browse files</span>
-                          </p>
-                      }
-                    </div>
-
-                    {applyError && <p style={{ color: '#c0392b', fontSize: '0.875rem', marginBottom: 8 }}>{applyError}</p>}
-
-                    <button
-                      type="button"
-                      onClick={handleApply}
-                      disabled={!file || applying}
-                      style={{
-                        padding: '10px 28px', fontSize: '0.95rem', fontWeight: 700,
-                        border: 'none', borderRadius: 8,
-                        background: !file || applying ? '#aaa' : 'var(--accent)',
-                        color: '#fff', cursor: !file || applying ? 'not-allowed' : 'pointer',
-                      }}
-                    >
-                      {applying ? 'Submitting…' : 'Submit Application'}
-                    </button>
-                  </section>
-                )}
-
-                {modalPosting.status !== 'open' && (
-                  <p style={{ color: '#888', fontStyle: 'italic' }}>This position is no longer accepting applications.</p>
-                )}
-
-                {applied && (
-                  <div style={{
-                    background: '#e8f5e9', border: '1px solid #a5d6a7', borderRadius: 10,
-                    padding: '20px 24px', textAlign: 'center',
-                  }}>
-                    <div style={{ fontSize: '2rem', marginBottom: 8 }}>✓</div>
-                    <h3 style={{ margin: '0 0 8px', color: '#2e7d32' }}>Application received!</h3>
-                    <p style={{ margin: 0, color: '#4a4a4a', fontSize: '0.9rem' }}>
-                      Your CV has been submitted for <strong>{modalPosting.position_title}</strong> at <strong>{modalPosting.company_name}</strong>.
-                    </p>
+              {modalPosting && (
+                <div>
+                  {/* Header */}
+                  <div className="flex justify-between items-start gap-md mb-xs pr-xl">
+                    <h2 className="text-headline-lg font-bold text-on-surface">{modalPosting.position_title}</h2>
+                    <span className={`flex-shrink-0 px-sm py-xs rounded-full text-meta font-semibold ${
+                      modalPosting.status === 'open'
+                        ? 'bg-green-50 text-picture-book-green'
+                        : 'bg-pink-50 text-pink-700'
+                    }`}>
+                      {modalPosting.status === 'open' ? 'Open' : 'Closed'}
+                    </span>
                   </div>
-                )}
-              </>
-            )}
+                  <p className="text-body-md text-on-surface-variant mb-gutter">{modalPosting.company_name}</p>
+
+                  {/* Job Description */}
+                  <section className="mb-gutter">
+                    <h3 className="text-section-head font-bold text-primary uppercase tracking-wider border-b border-outline-variant pb-xs mb-md">
+                      Job Description
+                    </h3>
+                    <p className="text-body-md text-on-surface whitespace-pre-wrap leading-relaxed">{modalPosting.description}</p>
+                  </section>
+
+                  {/* Requirements */}
+                  {modalPosting.requirements && (
+                    <section className="mb-gutter">
+                      <h3 className="text-section-head font-bold text-primary uppercase tracking-wider border-b border-outline-variant pb-xs mb-md">
+                        Requirements
+                      </h3>
+                      <p className="text-body-md text-on-surface whitespace-pre-wrap leading-relaxed">{modalPosting.requirements}</p>
+                    </section>
+                  )}
+
+                  {/* Apply section */}
+                  {modalPosting.status === 'open' && !applied && (
+                    <section>
+                      <h3 className="text-section-head font-bold text-primary uppercase tracking-wider border-b border-outline-variant pb-xs mb-md">
+                        Apply for this Role
+                      </h3>
+                      <p className="text-body-md text-on-surface-variant mb-md">
+                        Upload your CV (PDF or DOCX). No account required.
+                      </p>
+
+                      {/* Dropzone */}
+                      <div
+                        onClick={() => fileInputRef.current?.click()}
+                        onDrop={handleDrop}
+                        onDragOver={e => { e.preventDefault(); setDragging(true) }}
+                        onDragLeave={() => setDragging(false)}
+                        className={`border-2 border-dashed rounded-xl p-xl text-center cursor-pointer transition-all duration-200 mb-md ${
+                          dragging
+                            ? 'border-primary bg-blue-50'
+                            : file
+                              ? 'border-mantis bg-green-50'
+                              : 'border-outline-variant hover:border-primary hover:bg-surface-container-low'
+                        }`}
+                      >
+                        <input
+                          ref={fileInputRef}
+                          type="file"
+                          accept=".pdf,.docx,.doc,.png,.jpg,.jpeg"
+                          className="hidden"
+                          onChange={e => {
+                            const f = e.target.files?.[0]
+                            if (f) { setFile(f); setApplyError('') }
+                          }}
+                        />
+                        {file ? (
+                          <div className="flex items-center justify-center gap-sm">
+                            <span className="material-symbols-outlined text-picture-book-green">description</span>
+                            <span className="text-label-sm font-semibold text-picture-book-green">{file.name}</span>
+                          </div>
+                        ) : (
+                          <div>
+                            <span className="material-symbols-outlined text-[32px] text-on-surface-variant mb-sm block">upload_file</span>
+                            <p className="text-body-md text-on-surface-variant">
+                              Drop your CV here or{' '}
+                              <span className="text-primary underline">browse files</span>
+                            </p>
+                            <p className="text-meta text-on-surface-variant mt-xs">PDF, DOCX, DOC, PNG, JPG accepted</p>
+                          </div>
+                        )}
+                      </div>
+
+                      {applyError && (
+                        <p className="text-error text-label-sm mb-md">{applyError}</p>
+                      )}
+
+                      <button
+                        onClick={handleApply}
+                        disabled={!file || applying}
+                        className="flex items-center justify-center gap-sm bg-primary hover:bg-accent-hover disabled:opacity-50 disabled:cursor-not-allowed text-on-primary font-bold text-section-head py-3 px-xl rounded-lg transition-all duration-200 active:scale-95"
+                      >
+                        {applying ? (
+                          <>
+                            <span className="material-symbols-outlined animate-spin text-[18px]">progress_activity</span>
+                            Sending…
+                          </>
+                        ) : 'Submit Application'}
+                      </button>
+                    </section>
+                  )}
+
+                  {/* Closed state */}
+                  {modalPosting.status !== 'open' && (
+                    <p className="text-on-surface-variant italic text-body-md">
+                      This position is no longer accepting applications.
+                    </p>
+                  )}
+
+                  {/* Success state */}
+                  {applied && (
+                    <div className="bg-green-50 border border-mantis rounded-xl p-card-padding text-center">
+                      <span className="material-symbols-outlined text-[40px] text-picture-book-green mb-sm block">check_circle</span>
+                      <h3 className="text-headline-md font-bold text-picture-book-green mb-sm">Application received!</h3>
+                      <p className="text-body-md text-on-surface">
+                        Your CV has been submitted for{' '}
+                        <strong>{modalPosting.position_title}</strong> at{' '}
+                        <strong>{modalPosting.company_name}</strong>.
+                      </p>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
         </div>
       )}
     </div>
   )
-}
-
-const sectionHeadStyle = {
-  fontSize: '1rem', fontWeight: 700, color: '#3B3430',
-  marginBottom: 8, borderBottom: '1px solid #e0dbd5', paddingBottom: 4,
 }

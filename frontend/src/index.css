@@ -1,5 +1,67 @@
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
+@layer components {
+  .form-input {
+    @apply w-full px-md py-sm border border-outline-variant rounded-lg bg-surface-container-low text-on-surface text-body-md font-sans
+      focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent
+      placeholder:text-on-surface-variant transition-all duration-150;
+  }
+}
+
+/* ── HireLite semantic design tokens (light) ─── */
+:root {
+  --hl-primary:                 #1E488F;
+  --hl-primary-container:       #1E488F;
+  --hl-on-primary-container:    #9bbaff;
+  --hl-secondary:               #476083;
+  --hl-secondary-container:     #bdd6ff;
+  --hl-on-secondary-container:  #445d80;
+  --hl-surface:                 #F6F7ED;
+  --hl-surface-dim:             #dadbd1;
+  --hl-surface-bright:          #F6F7ED;
+  --hl-surface-container-lowest: #ffffff;
+  --hl-surface-container-low:   #f3f4ea;
+  --hl-surface-container:       #eeefe5;
+  --hl-surface-container-high:  #e8e9df;
+  --hl-surface-container-highest: #e2e3da;
+  --hl-on-surface:              #1a1c17;
+  --hl-on-surface-variant:      #434751;
+  --hl-outline:                 #747782;
+  --hl-outline-variant:         #c3c6d2;
+}
+
+/* ── HireLite semantic design tokens (dark) ──── */
+.dark {
+  /* Update legacy vars so global html background + text also flip */
+  --bg:       #0d1b2e;
+  --text:     #e4eaf2;
+  --text-h:   #e4eaf2;
+  --card-bg:  #152236;
+  --code-bg:  #09131e;
+
+  --hl-primary:                 #5b8dd4;
+  --hl-primary-container:       #1a3356;
+  --hl-on-primary-container:    #9bbaff;
+  --hl-secondary:               #8aabd4;
+  --hl-secondary-container:     #1a3356;
+  --hl-on-secondary-container:  #cce0ff;
+  --hl-surface:                 #0d1b2e;
+  --hl-surface-dim:             #090f18;
+  --hl-surface-bright:          #162030;
+  --hl-surface-container-lowest: #09131e;
+  --hl-surface-container-low:   #101e2c;
+  --hl-surface-container:       #152236;
+  --hl-surface-container-high:  #1e3048;
+  --hl-surface-container-highest: #26405e;
+  --hl-on-surface:              #e4eaf2;
+  --hl-on-surface-variant:      #7e9ab8;
+  --hl-outline:                 #3a5578;
+  --hl-outline-variant:         #1e3048;
+}
+
+/* ── Legacy CSS vars (kept for non-Tailwind references) ─ */
 :root {
   --text: #001F3F;
   --text-h: #001F3F;
@@ -64,8 +126,6 @@ body {
 
 #root {
   width: 100%;
-  max-width: 1366px;
-  margin: 0 auto;
   min-height: 100vh;
   min-height: 100dvh;
   display: flex;

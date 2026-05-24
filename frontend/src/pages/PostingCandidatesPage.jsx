@@ -8,10 +8,11 @@ export default function PostingCandidatesPage() {
   const { postingId } = useParams()
   const navigate = useNavigate()
 
-  const [posting, setPosting]       = useState(null)
+  const [posting, setPosting] = useState(null)
   const [postingLoading, setPostingLoading] = useState(true)
-  const [postingError, setPostingError]     = useState('')
+  const [postingError, setPostingError] = useState('')
   const [closingPosting, setClosingPosting] = useState(false)
+  const [helpOpen, setHelpOpen] = useState(false)
 
   useEffect(() => {
     getPosting(postingId)
@@ -72,194 +73,242 @@ export default function PostingCandidatesPage() {
     }
   }
 
-  const rankLabel = (score) => {
-    if (score == null) return '—'
-    const pct = Math.round(score * 100)
-    return `${pct}%`
+  const scoreLabel = (s) => s == null ? '—' : `${Math.round(s * 100)}%`
+  const scoreBg = (s) => {
+    if (s == null) return 'bg-surface-container text-on-surface-variant'
+    if (s >= 0.75) return 'bg-green-50 text-picture-book-green'
+    if (s >= 0.5)  return 'bg-amber-50 text-amber-700'
+    return 'bg-red-50 text-error'
   }
 
-  const rankColor = (score) => {
-    if (score == null) return '#9e9892'
-    if (score >= 0.75) return '#2e7d32'
-    if (score >= 0.5)  return '#e65100'
-    return '#c0392b'
-  }
-
-  if (postingLoading) return <div style={{ padding: '2rem', color: '#6e665f' }}>Loading…</div>
-  if (postingError)   return <div style={{ padding: '2rem', color: '#c0392b' }}>{postingError}</div>
+  if (postingLoading) return (
+    <div className="flex items-center justify-center p-page-margin text-on-surface-variant">
+      <span className="material-symbols-outlined animate-spin mr-sm">progress_activity</span> Loading…
+    </div>
+  )
+  if (postingError) return <div className="p-page-margin text-error">{postingError}</div>
 
   return (
-    <div style={{ maxWidth: 1000, margin: '0 auto', padding: '2rem 1rem' }}>
-      <button onClick={() => navigate('/recruiter')} style={backBtnStyle}>← All postings</button>
+    <div className="min-h-screen bg-surface">
+      {/* Sticky header bar with breadcrumb */}
+      <header className="sticky top-0 z-40 bg-surface border-b border-outline-variant px-page-margin h-16 flex items-center justify-between gap-md">
+        <nav className="flex items-center gap-xs text-meta text-on-surface-variant">
+          <button onClick={() => navigate('/recruiter')} className="hover:text-primary transition-colors">
+            Dashboard
+          </button>
+          <span className="material-symbols-outlined text-[14px]">chevron_right</span>
+          <span className="text-on-surface font-semibold truncate max-w-xs">{posting.position_title}</span>
+        </nav>
 
-      {/* Posting header */}
-      <div style={{
-        background: '#fff', border: '1px solid #e0dbd5', borderRadius: 12,
-        padding: '20px 24px', marginTop: 20, marginBottom: 28,
-      }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12 }}>
-          <div>
-            <h1 style={{ fontSize: '1.4rem', fontWeight: 700, margin: 0 }}>{posting.position_title}</h1>
-            <p style={{ color: '#6e665f', margin: '4px 0 0', fontSize: '0.9rem' }}>{posting.company_name}</p>
+        {/* ToDo: Notifications and Help buttons — no backend */}
+        <div className="flex items-center gap-sm">
+          <button
+            onClick={() => setHelpOpen(true)}
+            className="p-xs rounded-lg text-on-surface-variant hover:bg-surface-container transition-colors"
+            title="Help"
+          >
+            <span className="material-symbols-outlined text-[20px]">help</span>
+          </button>
+        </div>
+      </header>
+
+      <div className="p-page-margin">
+        {/* Posting header card */}
+        <section className="bg-surface-container-lowest border border-outline-variant rounded-xl p-card-padding shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-lg mb-gutter">
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-sm flex-wrap mb-xs">
+              <h1 className="text-headline-lg font-bold text-primary">{posting.position_title}</h1>
+              <span className={`px-sm py-xs rounded-full text-meta font-semibold ${
+                posting.status === 'open'
+                  ? 'bg-green-50 text-picture-book-green'
+                  : 'bg-pink-50 text-pink-700'
+              }`}>
+                {posting.status === 'open' ? 'Open' : 'Closed'}
+              </span>
+            </div>
+            <p className="text-body-md text-on-surface-variant">{posting.company_name}</p>
+            {data && (
+              <p className="text-meta text-on-surface-variant mt-xs">
+                {data.total} applicant{data.total !== 1 ? 's' : ''}
+              </p>
+            )}
           </div>
-          <div style={{ display: 'flex', gap: 10, flexShrink: 0, alignItems: 'center' }}>
-            <span style={{
-              padding: '4px 10px', borderRadius: 20, fontSize: '0.78rem', fontWeight: 600,
-              background: posting.status === 'open' ? '#e8f5e9' : '#fce4ec',
-              color: posting.status === 'open' ? '#2e7d32' : '#880e4f',
-            }}>
-              {posting.status === 'open' ? 'Open' : 'Closed'}
-            </span>
+          <div className="flex gap-sm flex-wrap flex-shrink-0">
             {posting.status === 'open'
-              ? <button onClick={handleClosePosting} disabled={closingPosting} style={actionBtnStyle}>Close posting</button>
-              : <button onClick={handleReopenPosting} disabled={closingPosting} style={actionBtnStyle}>Reopen posting</button>
+              ? <button onClick={handleClosePosting} disabled={closingPosting}
+                  className="flex items-center gap-xs px-lg py-sm border border-outline-variant rounded-xl text-label-sm text-on-surface-variant hover:bg-surface-container transition-colors disabled:opacity-50">
+                  <span className="material-symbols-outlined text-[16px]">lock</span>
+                  {closingPosting ? 'Closing…' : 'Close Posting'}
+                </button>
+              : <button onClick={handleReopenPosting} disabled={closingPosting}
+                  className="flex items-center gap-xs px-lg py-sm border border-mantis rounded-xl text-label-sm text-picture-book-green hover:bg-green-50 transition-colors disabled:opacity-50">
+                  <span className="material-symbols-outlined text-[16px]">lock_open</span>
+                  {closingPosting ? 'Reopening…' : 'Reopen Posting'}
+                </button>
             }
             <button
               onClick={() => navigate(`/recruiter/postings/${postingId}/report`)}
-              style={{ ...actionBtnStyle, background: '#000080', color: '#fff', border: 'none' }}
+              className="flex items-center gap-xs bg-primary hover:bg-accent-hover text-on-primary font-bold text-label-sm px-lg py-sm rounded-xl transition-all active:scale-95 shadow-sm"
             >
-              Print report
+              <span className="material-symbols-outlined text-[16px]">bar_chart</span>
+              Report
             </button>
           </div>
+        </section>
+
+        {/* Section header + ToDo filter controls */}
+        <div className="flex items-center justify-between mb-md">
+          <h2 className="text-section-head font-bold text-primary uppercase tracking-wider">
+            Ranked Applicants
+          </h2>
+          {/* ToDo: Filter/sort controls — not wired to API */}
+          <button disabled className="flex items-center gap-xs px-md py-xs border border-outline-variant rounded-lg text-label-sm text-on-surface-variant opacity-40 cursor-not-allowed">
+            <span className="material-symbols-outlined text-[16px]">filter_list</span>
+            Filter
+          </button>
         </div>
-      </div>
 
-      {/* Candidate list */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-        <h2 style={{ fontSize: '1.1rem', fontWeight: 700, margin: 0 }}>
-          Applicants {data ? `(${data.total})` : ''}
-        </h2>
-      </div>
+        {loading && (
+          <div className="flex items-center gap-sm text-on-surface-variant text-body-md py-xl">
+            <span className="material-symbols-outlined animate-spin text-[20px]">progress_activity</span>
+            Loading applicants…
+          </div>
+        )}
+        {error && <p className="text-error text-body-md">{error}</p>}
 
-      {loading && <p style={{ color: '#6e665f' }}>Loading applicants…</p>}
-      {error   && <p style={{ color: '#c0392b' }}>{error}</p>}
+        {!loading && data?.items?.length === 0 && (
+          <div className="border-2 border-dashed border-outline-variant rounded-xl p-xl text-center text-on-surface-variant text-body-md">
+            No applications yet. Share the job opening link with candidates.
+          </div>
+        )}
 
-      {!loading && data?.items?.length === 0 && (
-        <div style={{
-          border: '2px dashed #e0dbd5', borderRadius: 10, padding: '40px 24px',
-          textAlign: 'center', color: '#6e665f',
-        }}>
-          No applications yet. Share the job opening link with candidates.
-        </div>
-      )}
+        <div className="flex flex-col gap-md">
+          {data?.items?.map((app, idx) => {
+            const globalRank = (page - 1) * 10 + idx + 1
+            return (
+              <div
+                key={app.application_id}
+                onClick={() => navigate(`/recruiter/postings/${postingId}/candidates/${app.application_id}`)}
+                className={`bg-surface-container-lowest border rounded-xl p-card-padding cursor-pointer hover:shadow-card hover:-translate-y-0.5 transition-all duration-200 ${
+                  app.is_interested ? 'border-mantis' : 'border-outline-variant'
+                }`}
+              >
+                <div className="flex items-center gap-md">
+                  {/* Rank */}
+                  <div className="w-9 h-9 rounded-full bg-surface-container flex items-center justify-center text-label-sm font-bold text-on-surface-variant flex-shrink-0">
+                    #{globalRank}
+                  </div>
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-        {data?.items?.map((app, idx) => {
-          const globalRank = (page - 1) * 10 + idx + 1
-          return (
-            <div
-              key={app.application_id}
-              style={{
-                border: `1px solid ${app.is_interested ? '#a5d6a7' : '#e0dbd5'}`,
-                borderRadius: 10, padding: '16px 20px',
-                background: app.is_interested ? '#f9fff9' : '#fff',
-                cursor: 'pointer',
-                display: 'flex', alignItems: 'center', gap: 16,
-              }}
-              onClick={() => navigate(`/recruiter/postings/${postingId}/candidates/${app.application_id}`)}
-              onMouseEnter={e => e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.06)'}
-              onMouseLeave={e => e.currentTarget.style.boxShadow = 'none'}
-            >
-              {/* Rank badge */}
-              <div style={{
-                width: 36, height: 36, borderRadius: '50%', display: 'flex',
-                alignItems: 'center', justifyContent: 'center',
-                background: '#f0f0f0', fontWeight: 700, fontSize: '0.85rem',
-                color: '#555', flexShrink: 0,
-              }}>
-                #{globalRank}
-              </div>
-
-              {/* Main info */}
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-                  <span style={{ fontWeight: 700, fontSize: '0.975rem', color: '#1a1a1a' }}>
-                    {app.name || 'Unknown'}
-                  </span>
-                  {app.seniority && (
-                    <span style={{
-                      padding: '2px 7px', borderRadius: 20, fontSize: '0.7rem',
-                      background: '#e3f2fd', color: '#1565c0', fontWeight: 600,
-                    }}>
-                      {app.seniority}
-                    </span>
-                  )}
-                  {app.years_experience != null && (
-                    <span style={{ fontSize: '0.78rem', color: '#6e665f' }}>
-                      {app.years_experience}y exp
-                    </span>
-                  )}
-                </div>
-                {app.email && <div style={{ fontSize: '0.8rem', color: '#6e665f' }}>{app.email}</div>}
-                {app.overlap_keywords?.length > 0 && (
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, marginTop: 8 }}>
-                    {app.overlap_keywords.slice(0, 6).map(kw => (
-                      <span key={kw} style={{
-                        padding: '2px 8px', borderRadius: 20, fontSize: '0.7rem',
-                        background: '#e8f5e9', color: '#2e7d32',
-                      }}>{kw}</span>
-                    ))}
-                    {app.overlap_keywords.length > 6 && (
-                      <span style={{ fontSize: '0.7rem', color: '#9e9892', alignSelf: 'center' }}>
-                        +{app.overlap_keywords.length - 6} more
-                      </span>
+                  {/* Main info */}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-sm flex-wrap mb-xs">
+                      <span className="text-headline-md font-bold text-on-surface">{app.name || 'Unknown'}</span>
+                      {app.seniority && (
+                        <span className="px-sm py-xs rounded-full text-meta font-semibold bg-blue-50 text-blue-700">
+                          {app.seniority}
+                        </span>
+                      )}
+                      {app.years_experience != null && (
+                        <span className="text-meta text-on-surface-variant">{app.years_experience}y exp</span>
+                      )}
+                    </div>
+                    {app.email && <p className="text-label-sm text-on-surface-variant mb-sm">{app.email}</p>}
+                    {app.overlap_keywords?.length > 0 && (
+                      <div className="flex flex-wrap gap-xs">
+                        {app.overlap_keywords.slice(0, 6).map(kw => (
+                          <span key={kw} className="px-sm py-xs rounded-full text-meta font-medium bg-green-50 text-picture-book-green">
+                            {kw}
+                          </span>
+                        ))}
+                        {app.overlap_keywords.length > 6 && (
+                          <span className="text-meta text-on-surface-variant self-center">
+                            +{app.overlap_keywords.length - 6} more
+                          </span>
+                        )}
+                      </div>
                     )}
                   </div>
-                )}
-              </div>
 
-              {/* Score */}
-              <div style={{ textAlign: 'center', flexShrink: 0 }}>
-                <div style={{ fontSize: '1.2rem', fontWeight: 800, color: rankColor(app.rank_score) }}>
-                  {rankLabel(app.rank_score)}
+                  {/* Score badge */}
+                  <div className={`flex-shrink-0 px-md py-sm rounded-xl text-center min-w-[4rem] ${scoreBg(app.rank_score)}`}>
+                    <div className="text-headline-md font-bold">{scoreLabel(app.rank_score)}</div>
+                    <div className="text-meta opacity-70">match</div>
+                  </div>
+
+                  {/* Action buttons */}
+                  <div className="flex items-center gap-sm flex-shrink-0">
+                    {/* Star / interested toggle */}
+                    <button
+                      onClick={e => handleInterested(e, app.application_id, app.is_interested)}
+                      title={app.is_interested ? 'Remove from interested' : 'Mark as interested'}
+                      className={`p-xs rounded-lg transition-colors ${
+                        app.is_interested
+                          ? 'text-yellow-500 hover:text-yellow-600'
+                          : 'text-outline-variant hover:text-yellow-500'
+                      }`}
+                    >
+                      <span className="material-symbols-outlined text-[22px]" style={{ fontVariationSettings: app.is_interested ? "'FILL' 1" : "'FILL' 0" }}>
+                        star
+                      </span>
+                    </button>
+
+                    {/* View profile */}
+                    <button
+                      onClick={e => { e.stopPropagation(); navigate(`/recruiter/postings/${postingId}/candidates/${app.application_id}`) }}
+                      className="bg-primary hover:bg-accent-hover text-on-primary font-bold text-label-sm px-lg py-xs rounded-xl transition-all active:scale-95 shadow-sm"
+                    >
+                      View Profile
+                    </button>
+
+                    {/* Delete */}
+                    <button
+                      onClick={e => handleDelete(e, app.application_id, app.name)}
+                      title="Remove from this posting"
+                      className="p-xs rounded-lg text-outline-variant hover:text-error transition-colors"
+                    >
+                      <span className="material-symbols-outlined text-[18px]">delete</span>
+                    </button>
+                  </div>
                 </div>
-                <div style={{ fontSize: '0.7rem', color: '#9e9892' }}>match</div>
               </div>
+            )
+          })}
+        </div>
 
-              {/* Interested star */}
-              <button
-                onClick={e => handleInterested(e, app.application_id, app.is_interested)}
-                title={app.is_interested ? 'Remove from interested' : 'Mark as interested'}
-                style={{
-                  background: 'none', border: 'none', cursor: 'pointer',
-                  fontSize: '1.4rem', flexShrink: 0, padding: '0 4px',
-                  color: app.is_interested ? '#f59e0b' : '#c4bfba',
-                }}
-              >
-                ★
-              </button>
-
-              {/* Delete from this posting */}
-              <button
-                onClick={e => handleDelete(e, app.application_id, app.name)}
-                title="Remove from this posting"
-                style={{
-                  background: 'none', border: 'none', cursor: 'pointer',
-                  fontSize: '1.1rem', flexShrink: 0, padding: '0 4px',
-                  color: '#c4bfba',
-                }}
-                onMouseEnter={e => e.currentTarget.style.color = '#c0392b'}
-                onMouseLeave={e => e.currentTarget.style.color = '#c4bfba'}
-              >
-                ✕
-              </button>
-            </div>
-          )
-        })}
+        <Pagination page={page} totalPages={totalPages} onChange={setPage} />
       </div>
 
-      <Pagination page={page} totalPages={totalPages} onChange={setPage} />
+      {helpOpen && (
+        <div
+          className="fixed inset-0 z-[70] flex items-center justify-center bg-black/40 p-md"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setHelpOpen(false)
+          }}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="applicants-help-title"
+        >
+          <div className="w-full max-w-lg rounded-xl border border-outline-variant bg-surface-container-lowest shadow-modal">
+            <div className="flex items-center justify-between border-b border-outline-variant px-lg py-md">
+              <h3 id="applicants-help-title" className="text-headline-md font-bold text-on-surface">Applicants Help</h3>
+              <button
+                type="button"
+                onClick={() => setHelpOpen(false)}
+                className="w-8 h-8 rounded-full hover:bg-surface-container text-on-surface-variant"
+                aria-label="Close help"
+              >
+                <span className="material-symbols-outlined text-[18px]">close</span>
+              </button>
+            </div>
+            <div className="px-lg py-md text-body-md text-on-surface space-y-sm">
+              <p>Use rank and match score to review best-fit candidates first. Higher match percentages indicate stronger alignment to the posting.</p>
+              <p>Use the star to shortlist candidates. Starred applicants remain easy to identify while reviewing.</p>
+              <p>Use View Profile for complete candidate details, cross-fit options, and interview scheduling.</p>
+              <p>Use Report to open a printable summary of all applicants for this posting.</p>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
-}
-
-const backBtnStyle = {
-  background: 'none', border: 'none', cursor: 'pointer',
-  color: '#000080', fontSize: '0.9rem', padding: 0, textDecoration: 'underline',
-}
-
-const actionBtnStyle = {
-  padding: '6px 14px', fontSize: '0.8rem', fontWeight: 500,
-  border: '1px solid #c4bfba', borderRadius: 6,
-  background: '#fff', color: '#3B3430', cursor: 'pointer',
 }

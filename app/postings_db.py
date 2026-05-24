@@ -74,6 +74,57 @@ def list_postings_for_recruiter(
     return rows, total
 
 
+def count_open_postings() -> int:
+    """Return the total number of open job posts shown to applicants."""
+    sql = "SELECT COUNT(*)::int FROM job_postings WHERE status = 'open';"
+    with _connect() as conn:
+        with conn.cursor() as cur:
+            cur.execute(sql)
+            return cur.fetchone()[0]
+
+
+def get_posting_applicant_count(posting_id: str) -> int | None:
+    """Return applicant count for one posting, or None if the posting does not exist."""
+    sql = """
+        SELECT COUNT(applications.id)::int
+        FROM job_postings
+        LEFT JOIN applications ON applications.posting_id = job_postings.id
+        WHERE job_postings.id = %(id)s::uuid
+        GROUP BY job_postings.id;
+    """
+    with _connect() as conn:
+        with conn.cursor() as cur:
+            cur.execute(sql, {"id": posting_id})
+            row = cur.fetchone()
+    return row[0] if row else None
+
+
+def get_recruiter_open_posting_stats(recruiter_email: str) -> dict:
+    """
+    Return open-posting stats for one recruiter:
+      - total open postings
+      - total applicants across those open postings
+    """
+    sql = """
+        SELECT
+            COUNT(DISTINCT p.id)::int AS total_open_postings,
+            COUNT(a.id)::int AS total_open_posting_applicants
+        FROM job_postings p
+        LEFT JOIN applications a ON a.posting_id = p.id
+        WHERE p.recruiter_email = %(email)s
+          AND p.status = 'open';
+    """
+    with _connect() as conn:
+        with conn.cursor() as cur:
+            cur.execute(sql, {"email": recruiter_email})
+            row = cur.fetchone()
+    return {
+        "recruiter_email": recruiter_email,
+        "total_open_postings": row[0],
+        "total_open_posting_applicants": row[1],
+    }
+
+
 def list_open_postings(limit: int = 10, offset: int = 0) -> tuple[list[dict], int]:
     """Returns (rows, total_count) for the public guest postings list."""
     count_sql = "SELECT COUNT(*) FROM job_postings WHERE status = 'open';"

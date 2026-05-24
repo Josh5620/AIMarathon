@@ -176,6 +176,17 @@ export async function listMyPostings(recruiterEmail, page = 1, limit = 10) {
   return res.json()
 }
 
+export async function getMyPostingStats(recruiterEmail) {
+  let res
+  try {
+    res = await fetch(
+      `${API_BASE}/api/postings/mine/stats?recruiter_email=${encodeURIComponent(recruiterEmail)}`
+    )
+  } catch { throw connectionError() }
+  if (!res.ok) throw new Error(`Failed to load posting stats (${res.status})`)
+  return res.json()
+}
+
 export async function listOpenPostings(page = 1, limit = 10) {
   let res
   try {

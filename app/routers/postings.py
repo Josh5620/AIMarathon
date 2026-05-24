@@ -15,9 +15,12 @@ from app.ingestion.dedup import check_duplicate, normalize_name, normalize_email
 from app.ingestion.audit import log_decision
 from app.postings_db import (
     create_posting,
+    count_open_postings,
+    get_recruiter_open_posting_stats,
     list_postings_for_recruiter,
     list_open_postings,
     get_posting,
+    get_posting_applicant_count,
     get_posting_with_embedding,
     update_posting,
     delete_posting,
@@ -32,6 +35,9 @@ from app.applications_db import (
 from app.explain import generate_explanation
 from app.models import (
     PostingCreate,
+    PostingApplicantCountOut,
+    PostingCountOut,
+    RecruiterPostingStatsOut,
     PostingOut,
     PostingUpdate,
     PaginatedPostings,
@@ -95,6 +101,14 @@ async def list_my_postings(
     )
 
 
+@router.get("/mine/stats", response_model=RecruiterPostingStatsOut)
+async def get_my_open_posting_stats(
+    recruiter_email: str = Query(...),
+):
+    stats = await asyncio.to_thread(get_recruiter_open_posting_stats, recruiter_email)
+    return RecruiterPostingStatsOut(**stats)
+
+
 # ── Public: list open postings (candidate side) ───────────────────────────────
 
 @router.get("/", response_model=PaginatedPostings)
@@ -113,6 +127,20 @@ async def list_open_postings_endpoint(
 
 
 # ── Single posting detail ─────────────────────────────────────────────────────
+
+@router.get("/count", response_model=PostingCountOut)
+async def count_open_postings_endpoint():
+    total = await asyncio.to_thread(count_open_postings)
+    return PostingCountOut(total=total)
+
+
+@router.get("/{posting_id}/applicant-count", response_model=PostingApplicantCountOut)
+async def get_posting_applicant_count_endpoint(posting_id: str):
+    applicant_count = await asyncio.to_thread(get_posting_applicant_count, posting_id)
+    if applicant_count is None:
+        raise HTTPException(status_code=404, detail="Posting not found.")
+    return PostingApplicantCountOut(posting_id=posting_id, applicant_count=applicant_count)
+
 
 @router.get("/{posting_id}", response_model=PostingOut)
 async def get_posting_endpoint(posting_id: str):

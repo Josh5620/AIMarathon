@@ -9,8 +9,9 @@ import PostingCandidatesPage from './pages/PostingCandidatesPage'
 import PostingReportPage from './pages/PostingReportPage'
 import CandidateProfilePage from './pages/CandidateProfilePage'
 import Landing from './components/Landing'
+import RecruiterLayout from './components/RecruiterLayout'
 import ProtectedRoute from './components/ProtectedRoute'
-import './App.css'
+import ThemeToggle from './components/ThemeToggle'
 
 function GuestRoute({ children }) {
   const { session, loading } = useAuth()
@@ -21,58 +22,41 @@ function GuestRoute({ children }) {
 
 export default function App() {
   const [backendUp, setBackendUp] = useState(null)
-  const { session, signOut } = useAuth()
 
   useEffect(() => {
     checkHealth().then(setBackendUp)
   }, [])
 
   return (
-    <div className="app">
+    <div className="min-h-screen flex flex-col">
       {backendUp === false && (
-        <div className="banner banner-error" role="alert">
+        <div className="px-md py-sm text-label-sm text-center bg-red-50 text-error border-b border-red-200" role="alert">
           We're having trouble connecting to the server. Some features may be unavailable.
         </div>
       )}
 
-      <main>
-        <Routes>
-          <Route path="/" element={<Landing />} />
+      <Routes>
+        <Route path="/" element={<Landing />} />
 
-          {/* Candidate (guest) routes */}
-          <Route path="/candidate" element={<GuestRoute><CandidatePage /></GuestRoute>} />
+        {/* Candidate (guest) routes */}
+        <Route path="/candidate" element={<GuestRoute><CandidatePage /></GuestRoute>} />
 
-          {/* Recruiter (protected) routes */}
-          <Route
-            path="/recruiter"
-            element={<ProtectedRoute><RecruiterPage /></ProtectedRoute>}
-          />
-          <Route
-            path="/recruiter/postings/new"
-            element={<ProtectedRoute><PostingFormPage /></ProtectedRoute>}
-          />
-          <Route
-            path="/recruiter/postings/:postingId"
-            element={<ProtectedRoute><PostingCandidatesPage /></ProtectedRoute>}
-          />
-          <Route
-            path="/recruiter/postings/:postingId/report"
-            element={<ProtectedRoute><PostingReportPage /></ProtectedRoute>}
-          />
+        {/* Recruiter (protected) routes — all share RecruiterLayout sidebar */}
+        <Route element={<ProtectedRoute><RecruiterLayout /></ProtectedRoute>}>
+          <Route path="/recruiter" element={<RecruiterPage />} />
+          <Route path="/recruiter/postings/new" element={<PostingFormPage />} />
+          <Route path="/recruiter/postings/:postingId" element={<PostingCandidatesPage />} />
+          <Route path="/recruiter/postings/:postingId/report" element={<PostingReportPage />} />
           <Route
             path="/recruiter/postings/:postingId/candidates/:applicationId"
-            element={<ProtectedRoute><CandidateProfilePage /></ProtectedRoute>}
+            element={<CandidateProfilePage />}
           />
+        </Route>
 
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-      </main>
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
 
-      {session && (
-        <button type="button" className="floating-logout" onClick={signOut} title="Sign out">
-          Sign out
-        </button>
-      )}
+      <ThemeToggle />
     </div>
   )
 }

@@ -1,41 +1,50 @@
-import React from 'react'
+import React from 'react' // eslint-disable-line no-unused-vars
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render, screen, waitFor, within } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router-dom'
 import RecruiterPage from '../pages/RecruiterPage'
 
-vi.mock('../api', () => ({
-  searchCandidates: vi.fn(),
+vi.mock('../auth/AuthContext', () => ({
+  useAuth: () => ({ email: 'recruiter@test.com' }),
 }))
 
-import { searchCandidates } from '../api'
+vi.mock('../api', () => ({
+  listMyPostings: vi.fn(),
+  deletePosting: vi.fn(),
+  getMyPostingStats: vi.fn(),
+}))
 
-const MOCK_RESULTS = {
-  results: [
-    {
-      id: '1',
-      name: 'Alice',
-      distance: 0.15,
-      overlap_keywords: ['python', 'react'],
-      explanation: 'Strong match because of Python expertise.',
-    },
-    {
-      id: '2',
-      name: null,
-      distance: 0.4,
-      overlap_keywords: ['java'],
-      explanation: 'Decent Java background.',
-    },
-    {
-      id: '3',
-      name: 'Charlie',
-      distance: 0.25,
-      overlap_keywords: ['python', 'docker'],
-      explanation: 'Great DevOps skills.',
-    },
-  ],
+vi.mock('../components/Pagination', () => ({
+  default: () => null,
+}))
+
+const OPEN_POSTING = {
+  id: 'p1',
+  position_title: 'Senior Engineer',
+  company_name: 'Acme Corp',
+  status: 'open',
+  applicant_count: 5,
+  created_at: '2024-01-01T00:00:00Z',
 }
+
+const CLOSED_POSTING = {
+  id: 'p2',
+  position_title: 'Product Designer',
+  company_name: 'Beta Inc',
+  status: 'closed',
+  applicant_count: 2,
+  created_at: '2024-02-01T00:00:00Z',
+}
+
+const MOCK_PAGE = {
+  items: [OPEN_POSTING, CLOSED_POSTING],
+  total: 2,
+  page: 1,
+  total_pages: 1,
+}
+
+import { listMyPostings, deletePosting, getMyPostingStats } from '../api'
 
 function renderPage() {
   return render(
@@ -46,135 +55,85 @@ function renderPage() {
 }
 
 beforeEach(() => {
-  searchCandidates.mockReset()
+  listMyPostings.mockReset()
+  deletePosting.mockReset()
+  getMyPostingStats.mockReset()
+  getMyPostingStats.mockResolvedValue({
+    recruiter_email: 'recruiter@test.com',
+    total_open_postings: 1,
+    total_open_posting_applicants: 5,
+  })
 })
 
 describe('RecruiterPage', () => {
-  it('sends the job description to the backend when searching', async () => {
-    searchCandidates.mockResolvedValueOnce({ results: [] })
-    const user = userEvent.setup()
-
+  it('renders posting titles after load', async () => {
+    listMyPostings.mockResolvedValueOnce(MOCK_PAGE)
     renderPage()
-
-    const textarea = screen.getByPlaceholderText(/paste the job description/i)
-    const button = screen.getByRole('button', { name: /search/i })
-
-    await user.type(textarea, 'Looking for a senior Python engineer')
-    await user.click(button)
-
-    expect(searchCandidates).toHaveBeenCalledTimes(1)
-    // First arg is the job description; second is the filters object (may be empty)
-    expect(searchCandidates.mock.calls[0][0]).toBe('Looking for a senior Python engineer')
-  })
-
-  it('displays candidate results from the backend', async () => {
-    searchCandidates.mockResolvedValueOnce(MOCK_RESULTS)
-    const user = userEvent.setup()
-
-    renderPage()
-
-    await user.type(screen.getByPlaceholderText(/paste the job description/i), 'Python dev')
-    await user.click(screen.getByRole('button', { name: /search/i }))
 
     await waitFor(() => {
-      expect(screen.getByText('Alice')).toBeInTheDocument()
+      expect(screen.getByText('Senior Engineer')).toBeInTheDocument()
     })
 
-    // Name renders (or "Anonymous" for null)
-    expect(screen.getByText('Alice')).toBeInTheDocument()
-    expect(screen.getByText('Anonymous')).toBeInTheDocument()
-    expect(screen.getByText('Charlie')).toBeInTheDocument()
-
-    // Match scores render correctly
-    expect(screen.getByText('85% match')).toBeInTheDocument()
-    expect(screen.getByText('60% match')).toBeInTheDocument()
-    expect(screen.getByText('75% match')).toBeInTheDocument()
-
-    // Keyword chips render (python appears on multiple cards)
-    const cards = screen.getAllByText(/% match/)
-    expect(cards).toHaveLength(3)
-
-    // Explanations render (inside <details>)
-    const details = document.querySelectorAll('.explanation-details')
-    expect(details.length).toBe(3)
+    expect(screen.getByText('Product Designer')).toBeInTheDocument()
   })
 
-  it('shows "No matching candidates found" when results are empty', async () => {
-    searchCandidates.mockResolvedValueOnce({ results: [] })
-    const user = userEvent.setup()
-
+  it('shows open/closed status badges', async () => {
+    listMyPostings.mockResolvedValueOnce(MOCK_PAGE)
     renderPage()
 
-    await user.type(screen.getByPlaceholderText(/paste the job description/i), 'Some role')
-    await user.click(screen.getByRole('button', { name: /search/i }))
+    await waitFor(() => screen.getByText('Senior Engineer'))
+
+    expect(screen.getByText('Open')).toBeInTheDocument()
+    expect(screen.getByText('Closed')).toBeInTheDocument()
+  })
+
+  it('shows applicant counts', async () => {
+    listMyPostings.mockResolvedValueOnce(MOCK_PAGE)
+    renderPage()
+
+    await waitFor(() => screen.getByText('Senior Engineer'))
+
+    expect(screen.getByText('5 applicants')).toBeInTheDocument()
+    expect(screen.getByText('2 applicants')).toBeInTheDocument()
+  })
+
+  it('shows empty state when no postings', async () => {
+    listMyPostings.mockResolvedValueOnce({ items: [], total: 0, page: 1, total_pages: 0 })
+    renderPage()
 
     await waitFor(() => {
-      expect(screen.getByText(/no matching candidates found/i)).toBeInTheDocument()
+      expect(screen.getByText(/haven't posted any roles/i)).toBeInTheDocument()
     })
   })
 
-  it('shows loading message while searching', async () => {
-    let resolveSearch
-    searchCandidates.mockReturnValueOnce(
-      new Promise((resolve) => { resolveSearch = resolve })
-    )
+  it('calls deletePosting on confirm', async () => {
+    listMyPostings.mockResolvedValue(MOCK_PAGE)
+    deletePosting.mockResolvedValueOnce({})
+    vi.spyOn(window, 'confirm').mockReturnValueOnce(true)
     const user = userEvent.setup()
 
     renderPage()
 
-    await user.type(screen.getByPlaceholderText(/paste the job description/i), 'test')
-    await user.click(screen.getByRole('button', { name: /search/i }))
+    await waitFor(() => screen.getByText('Senior Engineer'))
 
-    expect(screen.getByText(/5-15 seconds/i)).toBeInTheDocument()
+    const deleteButtons = screen.getAllByTitle('Delete posting')
+    await user.click(deleteButtons[0])
 
-    resolveSearch({ results: [] })
-    await waitFor(() => {
-      expect(screen.queryByText(/5-15 seconds/i)).not.toBeInTheDocument()
-    })
+    expect(deletePosting).toHaveBeenCalledWith('p1')
   })
 
-  it('filters results by selected keyword', async () => {
-    searchCandidates.mockResolvedValueOnce(MOCK_RESULTS)
+  it('does not delete when confirm is cancelled', async () => {
+    listMyPostings.mockResolvedValue(MOCK_PAGE)
+    vi.spyOn(window, 'confirm').mockReturnValueOnce(false)
     const user = userEvent.setup()
 
     renderPage()
 
-    await user.type(screen.getByPlaceholderText(/paste the job description/i), 'dev')
-    await user.click(screen.getByRole('button', { name: /search/i }))
+    await waitFor(() => screen.getByText('Senior Engineer'))
 
-    await waitFor(() => {
-      expect(screen.getByText('Alice')).toBeInTheDocument()
-    })
+    const deleteButtons = screen.getAllByTitle('Delete posting')
+    await user.click(deleteButtons[0])
 
-    // Click "java" filter chip — only candidate #2 has java
-    const javaFilter = screen.getByRole('button', { name: 'java' })
-    await user.click(javaFilter)
-
-    // Only the java candidate should remain
-    expect(screen.getByText('Anonymous')).toBeInTheDocument()
-    expect(screen.queryByText('Alice')).not.toBeInTheDocument()
-    expect(screen.queryByText('Charlie')).not.toBeInTheDocument()
-  })
-
-  it('sorts results by name', async () => {
-    searchCandidates.mockResolvedValueOnce(MOCK_RESULTS)
-    const user = userEvent.setup()
-
-    renderPage()
-
-    await user.type(screen.getByPlaceholderText(/paste the job description/i), 'dev')
-    await user.click(screen.getByRole('button', { name: /search/i }))
-
-    await waitFor(() => {
-      expect(screen.getByText('Alice')).toBeInTheDocument()
-    })
-
-    // Sort by name A-Z
-    const sortSelect = screen.getByRole('combobox')
-    await user.selectOptions(sortSelect, 'name-asc')
-
-    const cards = screen.getAllByRole('heading', { level: 3 })
-    expect(cards[0]).toHaveTextContent('Alice')
-    expect(cards[1]).toHaveTextContent('Charlie')
+    expect(deletePosting).not.toHaveBeenCalled()
   })
 })

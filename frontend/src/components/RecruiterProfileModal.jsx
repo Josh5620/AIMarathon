@@ -1,37 +1,43 @@
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { updateRecruiter } from '../api'
 
 const FIELDS = [
-  { key: 'name',         label: 'Display Name',  type: 'text',     placeholder: 'Jane Smith' },
-  { key: 'organization', label: 'Organization',   type: 'text',     placeholder: 'Acme Corp' },
-  { key: 'job_title',    label: 'Job Title',      type: 'text',     placeholder: 'Senior Recruiter' },
-  { key: 'phone',        label: 'Phone',          type: 'tel',      placeholder: '+1 555 123 4567' },
-  { key: 'avatar_url',   label: 'Avatar URL',     type: 'url',      placeholder: 'https://...' },
-  { key: 'bio',          label: 'Bio',            type: 'textarea', placeholder: 'Short bio visible to your team' },
+  { key: 'name', label: 'Display Name', type: 'text', placeholder: 'Jane Smith' },
+  { key: 'organization', label: 'Organization', type: 'text', placeholder: 'Acme Corp' },
+  { key: 'job_title', label: 'Job Title', type: 'text', placeholder: 'Senior Recruiter' },
+  { key: 'phone', label: 'Phone', type: 'tel', placeholder: '+1 555 123 4567' },
+  { key: 'avatar_url', label: 'Avatar URL', type: 'url', placeholder: 'https://...' },
+  { key: 'bio', label: 'Bio', type: 'textarea', placeholder: 'Short bio visible to your team' },
 ]
 
 export default function RecruiterProfileModal({ email, profile, onClose, onSaved }) {
   const [form, setForm] = useState({
-    name: '', organization: '', job_title: '', bio: '', phone: '', avatar_url: '',
+    name: '',
+    organization: '',
+    job_title: '',
+    bio: '',
+    phone: '',
+    avatar_url: '',
   })
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
 
   useEffect(() => {
-    if (profile) {
-      setForm({
-        name:         profile.name         || '',
-        organization: profile.organization || '',
-        job_title:    profile.job_title    || '',
-        bio:          profile.bio          || '',
-        phone:        profile.phone        || '',
-        avatar_url:   profile.avatar_url   || '',
-      })
-    }
+    if (!profile) return
+    setForm({
+      name: profile.name || '',
+      organization: profile.organization || '',
+      job_title: profile.job_title || '',
+      bio: profile.bio || '',
+      phone: profile.phone || '',
+      avatar_url: profile.avatar_url || '',
+    })
   }, [profile])
 
   useEffect(() => {
-    function onKey(e) { if (e.key === 'Escape') onClose() }
+    function onKey(e) {
+      if (e.key === 'Escape') onClose()
+    }
     document.addEventListener('keydown', onKey)
     return () => document.removeEventListener('keydown', onKey)
   }, [onClose])
@@ -56,26 +62,40 @@ export default function RecruiterProfileModal({ email, profile, onClose, onSaved
 
   return (
     <div
-      className="modal-overlay"
-      onClick={(e) => { if (e.target === e.currentTarget) onClose() }}
+      className="fixed inset-0 z-[90] flex items-center justify-center p-md bg-black/45"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose()
+      }}
       role="dialog"
       aria-modal="true"
       aria-labelledby="profile-modal-title"
     >
-      <div className="modal-content">
-        <button className="modal-close" onClick={onClose} aria-label="Close">×</button>
-        <h2 id="profile-modal-title" style={{ marginBottom: 4 }}>Edit Profile</h2>
-        <p style={{ fontSize: '0.85rem', color: 'var(--text)', marginBottom: 20 }}>{email}</p>
+      <div className="w-full max-w-xl max-h-[90vh] overflow-y-auto rounded-xl bg-surface-container-lowest border border-outline-variant shadow-modal">
+        <div className="sticky top-0 z-10 flex items-center justify-between px-lg py-md border-b border-outline-variant bg-surface-container-lowest">
+          <div>
+            <h2 id="profile-modal-title" className="text-headline-md font-bold text-on-surface">Profile</h2>
+            <p className="text-meta text-on-surface-variant mt-xs">{email}</p>
+          </div>
+          <button
+            type="button"
+            className="w-9 h-9 rounded-full hover:bg-surface-container text-on-surface-variant"
+            onClick={onClose}
+            aria-label="Close"
+          >
+            <span className="material-symbols-outlined text-[20px]">close</span>
+          </button>
+        </div>
 
-        {error && <p className="modal-error" style={{ marginBottom: 16 }}>{error}</p>}
+        <form onSubmit={handleSave} className="p-lg space-y-md">
+          {error && (
+            <div className="rounded-lg border border-red-200 bg-red-50 text-error text-label-sm px-md py-sm">
+              {error}
+            </div>
+          )}
 
-        <form onSubmit={handleSave} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
           {FIELDS.map(({ key, label, type, placeholder }) => (
-            <div key={key} style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-              <label
-                htmlFor={`pf-${key}`}
-                style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--text)' }}
-              >
+            <div key={key} className="space-y-xs">
+              <label htmlFor={`pf-${key}`} className="block text-label-sm font-semibold text-on-surface">
                 {label}
               </label>
               {type === 'textarea' ? (
@@ -84,12 +104,8 @@ export default function RecruiterProfileModal({ email, profile, onClose, onSaved
                   value={form[key]}
                   onChange={(e) => setForm((f) => ({ ...f, [key]: e.target.value }))}
                   placeholder={placeholder}
-                  rows={3}
-                  style={{
-                    padding: '8px 10px', fontSize: '0.9rem', fontFamily: 'inherit',
-                    border: '1px solid var(--border)', borderRadius: 6, background: 'var(--bg)',
-                    color: 'var(--text-h)', resize: 'vertical',
-                  }}
+                  rows={4}
+                  className="w-full rounded-lg border border-outline-variant bg-surface px-md py-sm text-body-md text-on-surface placeholder:text-on-surface-variant/70 outline-none focus:border-primary"
                 />
               ) : (
                 <input
@@ -98,38 +114,26 @@ export default function RecruiterProfileModal({ email, profile, onClose, onSaved
                   value={form[key]}
                   onChange={(e) => setForm((f) => ({ ...f, [key]: e.target.value }))}
                   placeholder={placeholder}
-                  style={{
-                    padding: '8px 10px', fontSize: '0.9rem', fontFamily: 'inherit',
-                    border: '1px solid var(--border)', borderRadius: 6, background: 'var(--bg)',
-                    color: 'var(--text-h)',
-                  }}
+                  className="w-full rounded-lg border border-outline-variant bg-surface px-md py-sm text-body-md text-on-surface placeholder:text-on-surface-variant/70 outline-none focus:border-primary"
                 />
               )}
             </div>
           ))}
 
-          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10, marginTop: 8 }}>
+          <div className="flex items-center justify-end gap-sm pt-sm">
             <button
               type="button"
               onClick={onClose}
-              style={{
-                padding: '8px 20px', fontSize: '0.9rem', fontFamily: 'inherit',
-                border: '1px solid var(--border)', borderRadius: 6, background: 'transparent',
-                color: 'var(--text)', cursor: 'pointer',
-              }}
+              className="px-lg py-sm rounded-lg border border-outline-variant text-label-sm text-on-surface-variant hover:bg-surface-container transition-colors"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={saving}
-              style={{
-                padding: '8px 20px', fontSize: '0.9rem', fontWeight: 600, fontFamily: 'inherit',
-                border: 'none', borderRadius: 6, background: 'var(--accent)',
-                color: '#fff', cursor: saving ? 'not-allowed' : 'pointer', opacity: saving ? 0.7 : 1,
-              }}
+              className="px-lg py-sm rounded-lg bg-primary text-on-primary text-label-sm font-bold hover:bg-accent-hover disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
             >
-              {saving ? 'Saving…' : 'Save'}
+              {saving ? 'Saving...' : 'Save'}
             </button>
           </div>
         </form>

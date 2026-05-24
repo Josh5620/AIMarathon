@@ -179,6 +179,21 @@ class PaginatedPostings(BaseModel):
     total: int
 
 
+class PostingCountOut(BaseModel):
+    total: int
+
+
+class PostingApplicantCountOut(BaseModel):
+    posting_id: str
+    applicant_count: int
+
+
+class RecruiterPostingStatsOut(BaseModel):
+    recruiter_email: str
+    total_open_postings: int
+    total_open_posting_applicants: int
+
+
 # ── Applications ───────────────────────────────────────────────────────────────
 
 class ApplicationOut(BaseModel):

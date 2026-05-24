@@ -19,7 +19,7 @@ export default function usePagination(fetcher, limit = 10) {
     }
   }, [fetcher, limit])
 
-  useEffect(() => { load(page) }, [page, load])
+  useEffect(() => { load(page) }, [page, load]) // eslint-disable-line react-hooks/set-state-in-effect
 
   const totalPages = data ? Math.ceil(data.total / limit) : 0
 
