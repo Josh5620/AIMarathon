@@ -216,9 +216,10 @@ async def apply_to_posting(
         # Still link this candidate to the posting even on duplicate
         existing_candidate = await asyncio.to_thread(find_candidate_by_email, contact.get("email", ""))
         if existing_candidate:
-            _link_application(
+            await asyncio.to_thread(
+                _link_application,
                 posting_id, existing_candidate["id"], embedding,
-                posting["jd_embedding"], posting["jd_keywords"], profile.keywords
+                posting["jd_embedding"], posting["jd_keywords"], profile.keywords,
             )
         raise HTTPException(status_code=409, detail="Resume already exists — no changes detected.")
 

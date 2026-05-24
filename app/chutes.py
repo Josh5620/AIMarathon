@@ -47,16 +47,42 @@ class ChutesClient:
         ))
         return resp.json()["embedding"]["values"]
 
+    def _chat_gemini(self, messages: list[dict], json_mode: bool = False) -> str:
+        """Fallback chat via Google Gemini generateContent."""
+        system_parts = [m["content"] for m in messages if m["role"] == "system"]
+        turns = [
+            {"role": "model" if m["role"] == "assistant" else "user",
+             "parts": [{"text": m["content"]}]}
+            for m in messages if m["role"] != "system"
+        ]
+        payload: dict = {"contents": turns}
+        if system_parts:
+            payload["systemInstruction"] = {"parts": [{"text": "\n".join(system_parts)}]}
+        if json_mode:
+            payload["generationConfig"] = {"responseMimeType": "application/json"}
+        resp = _with_retry(lambda: self._embed_client.post(
+            f"/models/{settings.GEMINI_CHAT_MODEL}:generateContent",
+            params={"key": settings.GOOGLE_API_KEY},
+            json=payload,
+        ))
+        return resp.json()["candidates"][0]["content"]["parts"][0]["text"]
+
     def chat(self, messages: list[dict], json_mode: bool = False) -> str:
-        """Chat completion using Chutes (OpenAI-compatible)."""
+        """Chat completion using Chutes (OpenAI-compatible), with Gemini fallback."""
         payload: dict = {
             "model": settings.CHUTES_CHAT_MODEL,
             "messages": messages,
         }
         if json_mode:
             payload["response_format"] = {"type": "json_object"}
-        resp = _with_retry(lambda: self._chat_client.post("/chat/completions", json=payload))
-        return resp.json()["choices"][0]["message"]["content"]
+        try:
+            resp = _with_retry(lambda: self._chat_client.post("/chat/completions", json=payload))
+            return resp.json()["choices"][0]["message"]["content"]
+        except Exception as exc:
+            print(f"  [chutes] chat failed ({exc}), falling back to Gemini ({settings.GEMINI_CHAT_MODEL})")
+            result = self._chat_gemini(messages, json_mode=json_mode)
+            print(f"  [chutes] Gemini fallback succeeded")
+            return result
 
     def close(self) -> None:
         self._chat_client.close()
