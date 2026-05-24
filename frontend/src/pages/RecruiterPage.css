@@ -7,7 +7,7 @@
 }
 
 .page-subtitle {
-  color: #6e665f;
+  color: var(--text);
   margin-bottom: 28px;
 }
 
@@ -22,7 +22,7 @@
 .form-label {
   font-weight: 600;
   font-size: 0.9rem;
-  color: #3B3430;
+  color: var(--text-h);
   margin-bottom: 2px;
 }
 
@@ -30,10 +30,10 @@
   width: 100%;
   padding: 12px;
   font-size: 0.95rem;
-  border: 1px solid #c4bfba;
+  border: 1px solid var(--border);
   border-radius: 8px;
   background: #fff;
-  color: #3B3430;
+  color: var(--text-h);
   resize: vertical;
   font-family: inherit;
   box-sizing: border-box;
@@ -41,9 +41,9 @@
 }
 
 .recruiter-page textarea:focus {
-  outline: 2px solid #000080;
+  outline: 2px solid var(--accent);
   outline-offset: -1px;
-  border-color: #000080;
+  border-color: var(--accent);
 }
 
 .form-footer {
@@ -56,7 +56,7 @@
 
 .char-count {
   font-size: 0.8rem;
-  color: #9e9892;
+  color: var(--text);
 }
 
 .recruiter-page form button {
@@ -66,7 +66,7 @@
   font-family: inherit;
   border: none;
   border-radius: 8px;
-  background: #000080;
+  background: var(--accent);
   color: #fff;
   cursor: pointer;
   transition: opacity 0.2s;
@@ -84,7 +84,7 @@
 }
 
 .recruiter-page form button:focus-visible {
-  outline: 2px solid #000080;
+  outline: 2px solid var(--accent);
   outline-offset: 2px;
 }
 
@@ -108,7 +108,7 @@
 /* ── Loading card ─────────────────────────────── */
 .loading-card {
   background: #fff;
-  border: 1px solid #d6d2cf;
+  border: 1px solid var(--border);
   border-radius: 12px;
   padding: 32px;
   text-align: center;
@@ -128,14 +128,14 @@
   align-items: center;
   gap: 12px;
   font-size: 0.9rem;
-  color: #3B3430;
+  color: var(--text-h);
 }
 
 .spinner-sm {
   width: 18px;
   height: 18px;
-  border: 2px solid #d6d2cf;
-  border-top-color: #000080;
+  border: 2px solid var(--border);
+  border-top-color: var(--accent);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
   flex-shrink: 0;
@@ -146,7 +146,7 @@
 }
 
 .loading-hint {
-  color: #9e9892;
+  color: var(--text);
   font-size: 0.85rem;
 }
 
@@ -158,21 +158,21 @@
 
 /* ── Error card ───────────────────────────────── */
 .error-card {
-  background: #fbe9e7;
-  border: 1px solid #ffccbc;
+  background: var(--error-bg);
+  border: 1px solid var(--error-border);
   border-radius: 10px;
   padding: 20px;
   text-align: center;
 }
 
 .error-card strong {
-  color: #bf360c;
+  color: var(--error);
   display: block;
   margin-bottom: 4px;
 }
 
 .error-card p {
-  color: #5d4037;
+  color: var(--text);
   font-size: 0.9rem;
   margin-bottom: 12px;
 }
@@ -182,10 +182,10 @@
   font-size: 0.9rem;
   font-weight: 600;
   font-family: inherit;
-  border: 1px solid #bf360c;
+  border: 1px solid var(--error);
   border-radius: 6px;
   background: transparent;
-  color: #bf360c;
+  color: var(--error);
   cursor: pointer;
 }
 
@@ -196,7 +196,7 @@
 /* ── Empty state ──────────────────────────────── */
 .empty-card {
   background: #fff;
-  border: 1px solid #d6d2cf;
+  border: 1px solid var(--border);
   border-radius: 10px;
   padding: 32px;
   text-align: center;
@@ -204,12 +204,12 @@
 
 .no-results {
   font-weight: 600;
-  color: #3B3430;
+  color: var(--text-h);
   margin-bottom: 4px;
 }
 
 .empty-hint {
-  color: #9e9892;
+  color: var(--text);
   font-size: 0.9rem;
 }
 
@@ -225,7 +225,7 @@
 
 .results-count {
   font-size: 0.85rem;
-  color: #6e665f;
+  color: var(--text);
   font-weight: 500;
 }
 
@@ -233,15 +233,15 @@
   padding: 6px 12px;
   font-size: 0.85rem;
   font-family: inherit;
-  border: 1px solid #c4bfba;
+  border: 1px solid var(--border);
   border-radius: 6px;
   background: #fff;
-  color: #3B3430;
+  color: var(--text-h);
   cursor: pointer;
 }
 
 .sort-select:focus-visible {
-  outline: 2px solid #000080;
+  outline: 2px solid var(--accent);
   outline-offset: 1px;
 }
 
@@ -277,7 +277,7 @@
 }
 
 .filter-label {
-  color: #6e665f;
+  color: var(--text);
   font-size: 0.85rem;
   font-weight: 600;
   margin-right: 2px;
@@ -286,9 +286,9 @@
 .filter-chip {
   padding: 4px 12px;
   border-radius: 16px;
-  border: 1px solid #c4bfba;
+  border: 1px solid var(--border);
   background: #fff;
-  color: #3B3430;
+  color: var(--text-h);
   font-size: 0.85rem;
   font-family: inherit;
   cursor: pointer;
@@ -296,18 +296,18 @@
 }
 
 .filter-chip:hover {
-  border-color: #000080;
-  color: #000080;
+  border-color: var(--accent);
+  color: var(--accent);
 }
 
 .filter-chip:focus-visible {
-  outline: 2px solid #000080;
+  outline: 2px solid var(--accent);
   outline-offset: 1px;
 }
 
 .filter-chip.active {
-  background: #000080;
-  border-color: #000080;
+  background: var(--accent);
+  border-color: var(--accent);
   color: #fff;
 }
 
@@ -338,7 +338,7 @@
 
 /* ── Result card ──────────────────────────────── */
 .result-card {
-  border: 1px solid #d6d2cf;
+  border: 1px solid var(--border);
   border-radius: 10px;
   padding: 20px;
   margin-bottom: 16px;
@@ -352,7 +352,7 @@
   right: 16px;
   font-size: 0.75rem;
   font-weight: 700;
-  color: #9e9892;
+  color: var(--text);
   text-transform: uppercase;
   letter-spacing: 0.3px;
 }
@@ -378,7 +378,7 @@
 .score {
   font-size: 1rem;
   font-weight: 700;
-  color: #808000;
+  color: var(--complement);
   white-space: nowrap;
   flex-shrink: 0;
 }
@@ -402,7 +402,7 @@
 /* ── Score bar ────────────────────────────────── */
 .score-bar {
   height: 6px;
-  background: #e8e5e3;
+  background: var(--code-bg);
   border-radius: 3px;
   margin-bottom: 12px;
   overflow: hidden;
@@ -410,7 +410,7 @@
 
 .score-fill {
   height: 100%;
-  background: linear-gradient(90deg, #000080, #808000);
+  background: linear-gradient(90deg, var(--accent), var(--success-light));
   border-radius: 3px;
   transition: width 0.4s ease;
 }
@@ -426,22 +426,22 @@
 .chip {
   padding: 3px 10px;
   border-radius: 12px;
-  background: rgba(0, 0, 128, 0.08);
-  color: #000080;
+  background: var(--accent-light);
+  color: var(--accent);
   font-size: 0.8rem;
   font-weight: 500;
 }
 
 /* ── Explanation (collapsible) ────────────────── */
 .explanation-details {
-  border-top: 1px solid #e8e5e3;
+  border-top: 1px solid var(--code-bg);
   padding-top: 10px;
 }
 
 .explanation-details summary {
   font-size: 0.85rem;
   font-weight: 600;
-  color: #000080;
+  color: var(--accent);
   cursor: pointer;
   padding: 4px 0;
   list-style: none;
@@ -459,13 +459,13 @@
 }
 
 .explanation-details summary:focus-visible {
-  outline: 2px solid #000080;
+  outline: 2px solid var(--accent);
   outline-offset: 2px;
   border-radius: 4px;
 }
 
 .explanation {
-  color: #5a534d;
+  color: var(--text);
   line-height: 1.6;
   margin: 8px 0 0;
   font-size: 0.9rem;
@@ -474,7 +474,7 @@
 /* ── Filter panel ─────────────────────────────── */
 .filter-panel {
   margin-bottom: 24px;
-  border: 1px solid #d6d2cf;
+  border: 1px solid var(--border);
   border-radius: 10px;
   overflow: hidden;
   background: #fff;
@@ -491,31 +491,31 @@
   font-size: 0.9rem;
   font-weight: 600;
   font-family: inherit;
-  color: #3B3430;
+  color: var(--text-h);
   cursor: pointer;
   text-align: left;
 }
 
 .filter-toggle:hover {
-  background: rgba(0, 0, 128, 0.03);
+  background: var(--accent-light);
 }
 
 .filter-toggle:focus-visible {
-  outline: 2px solid #000080;
+  outline: 2px solid var(--accent);
   outline-offset: -2px;
 }
 
 .filter-badge {
   padding: 2px 8px;
   border-radius: 10px;
-  background: #000080;
+  background: var(--accent);
   color: #fff;
   font-size: 0.75rem;
   font-weight: 600;
 }
 
 .filter-body {
-  border-top: 1px solid #e8e5e3;
+  border-top: 1px solid var(--code-bg);
   padding: 16px;
   display: flex;
   flex-direction: column;
@@ -531,25 +531,25 @@
 .filter-field-label {
   font-size: 0.82rem;
   font-weight: 600;
-  color: #6e665f;
+  color: var(--text);
 }
 
 .filter-input {
   padding: 8px 10px;
   font-size: 0.9rem;
   font-family: inherit;
-  border: 1px solid #c4bfba;
+  border: 1px solid var(--border);
   border-radius: 6px;
-  background: #faf9f8;
-  color: #3B3430;
+  background: var(--bg);
+  color: var(--text-h);
   width: 100%;
   box-sizing: border-box;
 }
 
 .filter-input:focus {
-  outline: 2px solid #000080;
+  outline: 2px solid var(--accent);
   outline-offset: -1px;
-  border-color: #000080;
+  border-color: var(--accent);
   background: #fff;
 }
 
@@ -577,17 +577,17 @@
   font-size: 0.85rem;
   font-weight: 600;
   font-family: inherit;
-  border: 1px solid #000080;
+  border: 1px solid var(--accent);
   border-radius: 6px;
   background: transparent;
-  color: #000080;
+  color: var(--accent);
   cursor: pointer;
   white-space: nowrap;
   flex-shrink: 0;
 }
 
 .tag-add-btn:hover:not(:disabled) {
-  background: rgba(0, 0, 128, 0.06);
+  background: var(--accent-light);
 }
 
 .tag-add-btn:disabled {
@@ -596,7 +596,7 @@
 }
 
 .tag-add-btn:focus-visible {
-  outline: 2px solid #000080;
+  outline: 2px solid var(--accent);
   outline-offset: 1px;
 }
 
@@ -613,8 +613,8 @@
   gap: 4px;
   padding: 3px 10px 3px 10px;
   border-radius: 12px;
-  background: rgba(0, 0, 128, 0.08);
-  color: #000080;
+  background: var(--accent-light);
+  color: var(--accent);
   font-size: 0.82rem;
   font-weight: 500;
 }
@@ -622,7 +622,7 @@
 .tag-remove {
   background: none;
   border: none;
-  color: #000080;
+  color: var(--accent);
   font-size: 1rem;
   line-height: 1;
   cursor: pointer;
@@ -670,15 +670,15 @@
   text-transform: uppercase;
 }
 
-.seniority-junior  { background: #e3f2fd; color: #1565c0; }
-.seniority-mid     { background: #e8f5e9; color: #2e7d32; }
-.seniority-senior  { background: rgba(0, 0, 128, 0.1); color: #000080; }
-.seniority-lead    { background: #f3e5f5; color: #6a1b9a; }
-.seniority-principal { background: #fff8e1; color: #f57f17; }
+.seniority-junior  { background: var(--accent-light); color: var(--accent); }
+.seniority-mid     { background: rgba(116, 195, 101, 0.15); color: var(--success); }
+.seniority-senior  { background: rgba(0, 31, 63, 0.1); color: var(--nav-bg); }
+.seniority-lead    { background: rgba(219, 230, 76, 0.2); color: var(--success); }
+.seniority-principal { background: rgba(219, 230, 76, 0.15); color: var(--nav-bg); }
 
 .meta-item {
   font-size: 0.82rem;
-  color: #6e665f;
+  color: var(--text);
   display: flex;
   align-items: center;
   gap: 4px;
@@ -698,13 +698,13 @@
 /* ── Result card — summary blurb ──────────────── */
 .card-summary {
   font-size: 0.88rem;
-  color: #5a534d;
+  color: var(--text);
   line-height: 1.55;
   font-style: italic;
   margin: 0 0 12px;
   padding: 8px 12px;
-  border-left: 3px solid rgba(0, 0, 128, 0.2);
-  background: rgba(0, 0, 128, 0.02);
+  border-left: 3px solid var(--accent-border);
+  background: var(--accent-light);
   border-radius: 0 4px 4px 0;
 }
 
@@ -720,7 +720,7 @@
 .section-label {
   font-size: 0.78rem;
   font-weight: 700;
-  color: #9e9892;
+  color: var(--text);
   text-transform: uppercase;
   letter-spacing: 0.3px;
   padding-top: 3px;
@@ -735,13 +735,13 @@
 }
 
 .chip-match {
-  background: rgba(0, 0, 128, 0.08);
-  color: #000080;
+  background: var(--accent-light);
+  color: var(--accent);
 }
 
 .chip-skill {
-  background: rgba(128, 128, 0, 0.08);
-  color: #5a5a00;
+  background: var(--accent-light);
+  color: var(--success);
 }
 
 /* ── Card actions (view profile button) ──────── */
@@ -749,7 +749,7 @@
   display: flex;
   justify-content: flex-end;
   margin-top: 12px;
-  border-top: 1px solid #e8e5e3;
+  border-top: 1px solid var(--code-bg);
   padding-top: 10px;
 }
 
@@ -758,20 +758,20 @@
   font-size: 0.85rem;
   font-weight: 600;
   font-family: inherit;
-  border: 1px solid #000080;
+  border: 1px solid var(--accent);
   border-radius: 6px;
   background: transparent;
-  color: #000080;
+  color: var(--accent);
   cursor: pointer;
   transition: background 0.15s;
 }
 
 .view-profile-btn:hover {
-  background: rgba(0, 0, 128, 0.06);
+  background: var(--accent-light);
 }
 
 .view-profile-btn:focus-visible {
-  outline: 2px solid #000080;
+  outline: 2px solid var(--accent);
   outline-offset: 2px;
 }
 
@@ -814,7 +814,7 @@
   background: none;
   font-size: 1.4rem;
   line-height: 1;
-  color: #9e9892;
+  color: var(--text);
   cursor: pointer;
   border-radius: 50%;
   display: flex;
@@ -825,11 +825,11 @@
 
 .modal-close:hover {
   background: rgba(0, 0, 0, 0.06);
-  color: #3B3430;
+  color: var(--text-h);
 }
 
 .modal-close:focus-visible {
-  outline: 2px solid #000080;
+  outline: 2px solid var(--accent);
   outline-offset: 1px;
 }
 
@@ -838,13 +838,13 @@
   align-items: center;
   gap: 12px;
   padding: 24px 0;
-  color: #6e665f;
+  color: var(--text);
   font-size: 0.9rem;
 }
 
 .modal-error {
-  color: #bf360c;
-  background: #fbe9e7;
+  color: var(--error);
+  background: var(--error-bg);
   border-radius: 6px;
   padding: 12px 16px;
   font-size: 0.9rem;
@@ -858,7 +858,7 @@
 .modal-header h2 {
   margin: 0 0 8px;
   font-size: 1.3rem;
-  color: #3B3430;
+  color: var(--text-h);
 }
 
 .modal-meta {
@@ -871,7 +871,7 @@
 .modal-email {
   display: block;
   font-size: 0.85rem;
-  color: #000080;
+  color: var(--accent);
   text-decoration: none;
   margin: 2px 0 8px;
   opacity: 0.75;
@@ -883,24 +883,24 @@
 }
 
 .modal-link-download {
-  border-color: #808000;
-  color: #5a5a00;
+  border-color: var(--complement);
+  color: var(--success);
 }
 
 .modal-link-download:hover {
-  border-color: #808000;
-  background: rgba(128, 128, 0, 0.05);
+  border-color: var(--complement);
+  background: var(--accent-light);
 }
 
 .modal-summary {
   font-size: 0.9rem;
-  color: #5a534d;
+  color: var(--text);
   line-height: 1.6;
   font-style: italic;
   margin: 0 0 16px;
   padding: 10px 14px;
-  border-left: 3px solid rgba(0, 0, 128, 0.2);
-  background: rgba(0, 0, 128, 0.02);
+  border-left: 3px solid var(--accent-border);
+  background: var(--accent-light);
   border-radius: 0 4px 4px 0;
 }
 
@@ -917,23 +917,23 @@
   font-size: 0.85rem;
   font-weight: 600;
   font-family: inherit;
-  border: 1px solid #c4bfba;
+  border: 1px solid var(--border);
   border-radius: 6px;
-  background: #faf9f8;
-  color: #000080;
+  background: var(--bg);
+  color: var(--accent);
   text-decoration: none;
   transition: border-color 0.15s, background 0.15s;
 }
 
 .modal-link-btn:hover {
-  border-color: #000080;
-  background: rgba(0, 0, 128, 0.04);
+  border-color: var(--accent);
+  background: var(--accent-light);
 }
 
 .modal-section {
   margin-bottom: 18px;
   padding-top: 14px;
-  border-top: 1px solid #e8e5e3;
+  border-top: 1px solid var(--code-bg);
 }
 
 .modal-section-title {
@@ -941,7 +941,7 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.4px;
-  color: #9e9892;
+  color: var(--text);
   margin: 0 0 8px;
 }
 
@@ -952,7 +952,7 @@
   gap: 6px 10px;
   margin-bottom: 6px;
   font-size: 0.88rem;
-  color: #3B3430;
+  color: var(--text-h);
 }
 
 .edu-degree {
@@ -960,7 +960,7 @@
 }
 
 .edu-institution {
-  color: #6e665f;
+  color: var(--text);
 }
 
 .edu-institution::before {
@@ -970,19 +970,19 @@
 }
 
 .edu-year {
-  color: #9e9892;
+  color: var(--text);
   font-size: 0.82rem;
 }
 
 .modal-text {
   font-size: 0.88rem;
-  color: #5a534d;
+  color: var(--text);
   margin: 0;
   line-height: 1.5;
 }
 
 .modal-resume-details {
-  border-top: 1px solid #e8e5e3;
+  border-top: 1px solid var(--code-bg);
   padding-top: 14px;
   margin-top: 4px;
 }
@@ -990,7 +990,7 @@
 .modal-resume-details summary {
   font-size: 0.85rem;
   font-weight: 600;
-  color: #000080;
+  color: var(--accent);
   cursor: pointer;
   list-style: none;
   padding: 4px 0;
@@ -1009,11 +1009,11 @@
 .modal-resume-text {
   margin-top: 12px;
   padding: 12px;
-  background: #faf9f8;
-  border: 1px solid #e8e5e3;
+  background: var(--bg);
+  border: 1px solid var(--code-bg);
   border-radius: 6px;
   font-size: 0.78rem;
-  color: #5a534d;
+  color: var(--text);
   white-space: pre-wrap;
   word-break: break-word;
   max-height: 320px;
@@ -1040,20 +1040,20 @@
   font-size: 0.85rem;
   font-weight: 600;
   font-family: inherit;
-  border: 1px solid #808000;
+  border: 1px solid var(--complement);
   border-radius: 6px;
   background: transparent;
-  color: #5a5a00;
+  color: var(--success);
   cursor: pointer;
   transition: background 0.15s;
 }
 
 .schedule-meeting-btn:hover {
-  background: rgba(128, 128, 0, 0.07);
+  background: var(--accent-light);
 }
 
 .schedule-meeting-btn:focus-visible {
-  outline: 2px solid #808000;
+  outline: 2px solid var(--complement);
   outline-offset: 2px;
 }
 
@@ -1065,7 +1065,7 @@
   gap: 16px;
   padding: 14px 18px;
   background: #fff;
-  border: 1px solid #d6d2cf;
+  border: 1px solid var(--border);
   border-radius: 10px;
   margin-bottom: 28px;
   flex-wrap: wrap;
@@ -1082,7 +1082,7 @@
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background: #000080;
+  background: var(--accent);
   color: #fff;
   display: flex;
   align-items: center;
@@ -1102,7 +1102,7 @@
 .recruiter-name {
   font-weight: 600;
   font-size: 0.95rem;
-  color: #3B3430;
+  color: var(--text-h);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -1110,7 +1110,7 @@
 
 .recruiter-role {
   font-size: 0.8rem;
-  color: #9e9892;
+  color: var(--text);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -1128,22 +1128,22 @@
   font-size: 0.82rem;
   font-weight: 600;
   font-family: inherit;
-  border: 1px solid #c4bfba;
+  border: 1px solid var(--border);
   border-radius: 6px;
   background: transparent;
-  color: #6e665f;
+  color: var(--text);
   cursor: pointer;
   transition: background 0.15s, border-color 0.15s;
 }
 
 .edit-profile-btn:hover {
-  background: rgba(0, 0, 128, 0.04);
-  border-color: #000080;
-  color: #000080;
+  background: var(--accent-light);
+  border-color: var(--accent);
+  color: var(--accent);
 }
 
 .edit-profile-btn:focus-visible {
-  outline: 2px solid #000080;
+  outline: 2px solid var(--accent);
   outline-offset: 1px;
 }
 
@@ -1155,20 +1155,20 @@
   font-size: 0.82rem;
   font-weight: 600;
   font-family: inherit;
-  border: 1px solid #c4bfba;
+  border: 1px solid var(--border);
   border-radius: 6px;
   background: transparent;
-  color: #3B3430;
+  color: var(--text-h);
   cursor: pointer;
   transition: background 0.15s;
 }
 
 .meetings-pill:hover {
-  background: rgba(0, 0, 128, 0.04);
+  background: var(--accent-light);
 }
 
 .meetings-badge {
-  background: #000080;
+  background: var(--accent);
   color: #fff;
   font-size: 0.72rem;
   font-weight: 700;
@@ -1179,7 +1179,7 @@
 /* ── Meetings panel ───────────────────────────── */
 .meetings-panel {
   background: #fff;
-  border: 1px solid #d6d2cf;
+  border: 1px solid var(--border);
   border-radius: 10px;
   padding: 16px;
   margin-bottom: 24px;
@@ -1190,7 +1190,7 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.4px;
-  color: #9e9892;
+  color: var(--text);
   margin: 0 0 12px;
 }
 
@@ -1209,8 +1209,8 @@
   justify-content: space-between;
   gap: 12px;
   padding: 10px 12px;
-  background: #faf9f8;
-  border: 1px solid #e8e5e3;
+  background: var(--bg);
+  border: 1px solid var(--code-bg);
   border-radius: 8px;
   flex-wrap: wrap;
 }
@@ -1226,12 +1226,12 @@
 .meeting-candidate {
   font-weight: 600;
   font-size: 0.88rem;
-  color: #3B3430;
+  color: var(--text-h);
 }
 
 .meeting-time {
   font-size: 0.82rem;
-  color: #6e665f;
+  color: var(--text);
 }
 
 .meeting-time::before {
@@ -1242,10 +1242,10 @@
 
 .meeting-duration {
   font-size: 0.78rem;
-  color: #9e9892;
+  color: var(--text);
   padding: 1px 7px;
   border-radius: 10px;
-  background: #e8e5e3;
+  background: var(--code-bg);
 }
 
 .meeting-join-btn {
@@ -1253,10 +1253,10 @@
   font-size: 0.82rem;
   font-weight: 600;
   font-family: inherit;
-  border: 1px solid #000080;
+  border: 1px solid var(--accent);
   border-radius: 6px;
   background: transparent;
-  color: #000080;
+  color: var(--accent);
   text-decoration: none;
   white-space: nowrap;
   transition: background 0.15s;
@@ -1264,13 +1264,13 @@
 }
 
 .meeting-join-btn:hover {
-  background: rgba(0, 0, 128, 0.06);
+  background: var(--accent-light);
 }
 
 /* ── Schedule modal tweaks ────────────────────── */
 .schedule-modal-subtitle {
   font-size: 0.88rem;
-  color: #6e665f;
+  color: var(--text);
   margin-bottom: 20px;
   line-height: 1.5;
 }
@@ -1289,18 +1289,18 @@
   font-weight: 500;
   font-family: inherit;
   background: #fff;
-  border: 1px solid #c4bfba;
+  border: 1px solid var(--border);
   border-radius: 8px;
-  color: #000080;
+  color: var(--accent);
   cursor: pointer;
   transition: background 0.15s;
 }
 
 .show-more-btn:hover {
-  background: rgba(0, 0, 128, 0.04);
+  background: var(--accent-light);
 }
 
 .show-more-btn:focus-visible {
-  outline: 2px solid #000080;
+  outline: 2px solid var(--accent);
   outline-offset: 2px;
 }

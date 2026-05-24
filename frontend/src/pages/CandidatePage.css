@@ -9,7 +9,7 @@
 }
 
 .page-subtitle {
-  color: #6e665f;
+  color: var(--text);
   margin-bottom: 28px;
 }
 
@@ -28,16 +28,16 @@
   padding: 8px 16px;
   border-radius: 8px;
   font-size: 0.85rem;
-  color: #9e9892;
+  color: var(--text);
   transition: color 0.2s, background 0.2s;
 }
 
 .step-active {
-  color: #3B3430;
+  color: var(--text-h);
 }
 
 .step-complete {
-  color: #2e7d32;
+  color: var(--success);
 }
 
 .step-number {
@@ -47,21 +47,21 @@
   width: 26px;
   height: 26px;
   border-radius: 50%;
-  border: 2px solid #d6d2cf;
+  border: 2px solid var(--border);
   font-weight: 600;
   font-size: 0.8rem;
   flex-shrink: 0;
 }
 
 .step-active .step-number {
-  border-color: #000080;
-  background: #000080;
+  border-color: var(--accent);
+  background: var(--accent);
   color: #fff;
 }
 
 .step-complete .step-number {
-  border-color: #2e7d32;
-  background: #2e7d32;
+  border-color: var(--success);
+  background: var(--success);
   color: #fff;
 }
 
@@ -87,7 +87,7 @@
 
 /* ── Dropzone ─────────────────────────────────── */
 .dropzone {
-  border: 2px dashed #c4bfba;
+  border: 2px dashed var(--border);
   border-radius: 12px;
   padding: 40px 24px;
   cursor: pointer;
@@ -98,18 +98,18 @@
 
 .dropzone:hover,
 .dropzone:focus-visible {
-  border-color: #000080;
-  background: rgba(0, 0, 128, 0.03);
+  border-color: var(--accent);
+  background: var(--accent-light);
 }
 
 .dropzone:focus-visible {
-  outline: 2px solid #000080;
+  outline: 2px solid var(--accent);
   outline-offset: 2px;
 }
 
 .dropzone-active {
-  border-color: #000080;
-  background: rgba(0, 0, 128, 0.06);
+  border-color: var(--accent);
+  background: var(--accent-light);
   border-style: solid;
 }
 
@@ -120,12 +120,12 @@
 .dropzone-title {
   margin: 0 0 4px;
   font-weight: 600;
-  color: #3B3430;
+  color: var(--text-h);
 }
 
 .dropzone-hint {
   margin: 0;
-  color: #9e9892;
+  color: var(--text);
   font-size: 0.85rem;
 }
 
@@ -151,7 +151,7 @@
   align-items: center;
   justify-content: space-between;
   background: #fff;
-  border: 1px solid #d6d2cf;
+  border: 1px solid var(--border);
   border-radius: 8px;
   padding: 10px 16px;
   margin-bottom: 20px;
@@ -169,7 +169,7 @@
 .file-name {
   font-weight: 500;
   font-size: 0.9rem;
-  color: #3B3430;
+  color: var(--text-h);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -177,7 +177,7 @@
 
 .file-size {
   font-size: 0.8rem;
-  color: #9e9892;
+  color: var(--text);
 }
 
 .file-remove {
@@ -207,7 +207,7 @@
   font-family: inherit;
   border: none;
   border-radius: 8px;
-  background: #000080;
+  background: var(--accent);
   color: #fff;
   cursor: pointer;
   transition: opacity 0.2s;
@@ -223,7 +223,7 @@
 }
 
 .upload-btn:focus-visible {
-  outline: 2px solid #000080;
+  outline: 2px solid var(--accent);
   outline-offset: 2px;
 }
 
@@ -234,12 +234,12 @@
 }
 
 .upload-progress p {
-  color: #3B3430;
+  color: var(--text-h);
   font-weight: 500;
 }
 
 .progress-hint {
-  color: #9e9892 !important;
+  color: var(--text) !important;
   font-weight: 400 !important;
   font-size: 0.85rem;
   margin-top: 4px;
@@ -249,8 +249,8 @@
   width: 36px;
   height: 36px;
   margin: 0 auto 12px;
-  border: 3px solid #d6d2cf;
-  border-top-color: #000080;
+  border: 3px solid var(--border);
+  border-top-color: var(--accent);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
 }
@@ -263,7 +263,7 @@
 .success-card {
   text-align: center;
   background: #fff;
-  border: 1px solid #d6d2cf;
+  border: 1px solid var(--border);
   border-radius: 12px;
   padding: 40px 32px;
 }
@@ -274,11 +274,11 @@
 
 .success-card h2 {
   margin: 0 0 8px;
-  color: #2e7d32;
+  color: var(--success);
 }
 
 .success-card > p {
-  color: #6e665f;
+  color: var(--text);
   margin-bottom: 20px;
 }
 
@@ -295,13 +295,13 @@
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  color: #9e9892;
+  color: var(--text);
 }
 
 .id-box code {
   font-size: 0.9rem;
   padding: 6px 16px;
-  background: #F2F0EF;
+  background: var(--bg);
   border-radius: 6px;
   user-select: all;
   max-width: 100%;
@@ -320,8 +320,8 @@
 
 /* ── Error card ───────────────────────────────── */
 .error-card {
-  background: #fbe9e7;
-  border: 1px solid #ffccbc;
+  background: var(--error-bg);
+  border: 1px solid var(--error-border);
   border-radius: 10px;
   padding: 20px;
   margin-top: 16px;
@@ -329,13 +329,13 @@
 }
 
 .error-card strong {
-  color: #bf360c;
+  color: var(--error);
   display: block;
   margin-bottom: 4px;
 }
 
 .error-card p {
-  color: #5d4037;
+  color: var(--text);
   font-size: 0.9rem;
   margin-bottom: 12px;
 }
@@ -345,13 +345,13 @@
   font-size: 0.9rem;
   font-weight: 600;
   font-family: inherit;
-  border: 1px solid #bf360c;
+  border: 1px solid var(--error);
   border-radius: 6px;
   background: transparent;
-  color: #bf360c;
+  color: var(--error);
   cursor: pointer;
 }
 
 .retry-btn:hover {
-  background: rgba(191, 54, 12, 0.06);
+  background: rgba(191, 54, 12, 0.08);
 }

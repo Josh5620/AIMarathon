@@ -112,8 +112,8 @@ export default function ScheduleMeetingModal({ candidate, recruiterEmail, onClos
                     onClick={reauthorize}
                     style={{
                       marginTop: 8, padding: '6px 14px', fontSize: '0.85rem',
-                      fontFamily: 'inherit', border: '1px solid #bf360c', borderRadius: 6,
-                      background: 'transparent', color: '#bf360c', cursor: 'pointer',
+                      fontFamily: 'inherit', border: '1px solid var(--error)', borderRadius: 6,
+                      background: 'transparent', color: 'var(--error)', cursor: 'pointer',
                     }}
                   >
                     Re-authorize Google Calendar
@@ -129,7 +129,7 @@ export default function ScheduleMeetingModal({ candidate, recruiterEmail, onClos
               <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
                 <label
                   htmlFor="sm-datetime"
-                  style={{ fontSize: '0.82rem', fontWeight: 600, color: '#6e665f' }}
+                  style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--text)' }}
                 >
                   Date & Time
                 </label>
@@ -141,8 +141,8 @@ export default function ScheduleMeetingModal({ candidate, recruiterEmail, onClos
                   required
                   style={{
                     padding: '8px 10px', fontSize: '0.9rem', fontFamily: 'inherit',
-                    border: '1px solid #c4bfba', borderRadius: 6,
-                    background: '#faf9f8', color: '#3B3430',
+                    border: '1px solid var(--border)', borderRadius: 6,
+                    background: 'var(--bg)', color: 'var(--text-h)',
                   }}
                 />
               </div>
@@ -150,7 +150,7 @@ export default function ScheduleMeetingModal({ candidate, recruiterEmail, onClos
               <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
                 <label
                   htmlFor="sm-duration"
-                  style={{ fontSize: '0.82rem', fontWeight: 600, color: '#6e665f' }}
+                  style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--text)' }}
                 >
                   Duration
                 </label>
@@ -160,8 +160,8 @@ export default function ScheduleMeetingModal({ candidate, recruiterEmail, onClos
                   onChange={(e) => setDuration(Number(e.target.value))}
                   style={{
                     padding: '8px 10px', fontSize: '0.9rem', fontFamily: 'inherit',
-                    border: '1px solid #c4bfba', borderRadius: 6,
-                    background: '#faf9f8', color: '#3B3430', cursor: 'pointer',
+                    border: '1px solid var(--border)', borderRadius: 6,
+                    background: 'var(--bg)', color: 'var(--text-h)', cursor: 'pointer',
                   }}
                 >
                   {DURATION_OPTIONS.map((o) => (
@@ -173,7 +173,7 @@ export default function ScheduleMeetingModal({ candidate, recruiterEmail, onClos
               <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
                 <label
                   htmlFor="sm-notes"
-                  style={{ fontSize: '0.82rem', fontWeight: 600, color: '#6e665f' }}
+                  style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--text)' }}
                 >
                   Notes (optional)
                 </label>
@@ -185,13 +185,13 @@ export default function ScheduleMeetingModal({ candidate, recruiterEmail, onClos
                   rows={3}
                   style={{
                     padding: '8px 10px', fontSize: '0.9rem', fontFamily: 'inherit',
-                    border: '1px solid #c4bfba', borderRadius: 6, background: '#faf9f8',
-                    color: '#3B3430', resize: 'vertical',
+                    border: '1px solid var(--border)', borderRadius: 6, background: 'var(--bg)',
+                    color: 'var(--text-h)', resize: 'vertical',
                   }}
                 />
               </div>
 
-              <p style={{ fontSize: '0.8rem', color: '#9e9892', margin: 0 }}>
+              <p style={{ fontSize: '0.8rem', color: 'var(--text)', margin: 0 }}>
                 A Google Meet invite will be emailed to {candidate.email || 'the candidate'} and
                 you. The candidate does not need a Google account to join.
               </p>
@@ -203,8 +203,8 @@ export default function ScheduleMeetingModal({ candidate, recruiterEmail, onClos
                   disabled={status === 'loading'}
                   style={{
                     padding: '8px 20px', fontSize: '0.9rem', fontFamily: 'inherit',
-                    border: '1px solid #c4bfba', borderRadius: 6, background: 'transparent',
-                    color: '#6e665f', cursor: 'pointer',
+                    border: '1px solid var(--border)', borderRadius: 6, background: 'transparent',
+                    color: 'var(--text)', cursor: 'pointer',
                   }}
                 >
                   Cancel
@@ -215,7 +215,7 @@ export default function ScheduleMeetingModal({ candidate, recruiterEmail, onClos
                   aria-busy={status === 'loading'}
                   style={{
                     padding: '8px 20px', fontSize: '0.9rem', fontWeight: 600, fontFamily: 'inherit',
-                    border: 'none', borderRadius: 6, background: '#000080', color: '#fff',
+                    border: 'none', borderRadius: 6, background: 'var(--accent)', color: '#fff',
                     cursor: (status === 'loading' || !candidate.email) ? 'not-allowed' : 'pointer',
                     opacity: (status === 'loading' || !candidate.email) ? 0.6 : 1,
                   }}
@@ -229,7 +229,7 @@ export default function ScheduleMeetingModal({ candidate, recruiterEmail, onClos
           <div style={{ textAlign: 'center', padding: '16px 0' }}>
             <div style={{ fontSize: '2.5rem', marginBottom: 12 }}>✓</div>
             <h2 style={{ marginBottom: 8 }}>Meeting scheduled</h2>
-            <p style={{ color: '#6e665f', fontSize: '0.9rem', marginBottom: 20 }}>
+            <p style={{ color: 'var(--text)', fontSize: '0.9rem', marginBottom: 20 }}>
               An invite has been emailed to both you and {candidate.name || candidate.email || 'the candidate'}.
             </p>
             {result?.meet_link && (
@@ -249,8 +249,8 @@ export default function ScheduleMeetingModal({ candidate, recruiterEmail, onClos
               onClick={onClose}
               style={{
                 padding: '8px 24px', fontSize: '0.9rem', fontFamily: 'inherit',
-                border: '1px solid #c4bfba', borderRadius: 6, background: 'transparent',
-                color: '#6e665f', cursor: 'pointer',
+                border: '1px solid var(--border)', borderRadius: 6, background: 'transparent',
+                color: 'var(--text)', cursor: 'pointer',
               }}
             >
               Close
