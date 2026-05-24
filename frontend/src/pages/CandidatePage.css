@@ -150,7 +150,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: #fff;
+  background: var(--card-bg);
   border: 1px solid var(--border);
   border-radius: 8px;
   padding: 10px 16px;
@@ -183,7 +183,7 @@
 .file-remove {
   background: none;
   border: none;
-  color: #c62828;
+  color: var(--error);
   font-size: 0.85rem;
   font-weight: 500;
   font-family: inherit;
@@ -194,7 +194,7 @@
 }
 
 .file-remove:hover {
-  background: rgba(198, 40, 40, 0.08);
+  background: var(--error-bg);
 }
 
 /* ── Upload button ────────────────────────────── */
@@ -262,7 +262,7 @@
 /* ── Success card ─────────────────────────────── */
 .success-card {
   text-align: center;
-  background: #fff;
+  background: var(--card-bg);
   border: 1px solid var(--border);
   border-radius: 12px;
   padding: 40px 32px;
@@ -353,5 +353,5 @@
 }
 
 .retry-btn:hover {
-  background: rgba(191, 54, 12, 0.08);
+  background: var(--error-bg);
 }

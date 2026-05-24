@@ -4,6 +4,7 @@
   --text: #001F3F;
   --text-h: #001F3F;
   --bg: #F6F7ED;
+  --card-bg: #fff;
   --border: #74C365;
   --code-bg: #eef0e4;
   --accent: #1E488F;
@@ -18,6 +19,8 @@
   --error: #bf360c;
   --error-bg: #fbe9e7;
   --error-border: #ffccbc;
+  --overlay: rgba(0, 0, 0, 0.45);
+  --shadow: rgba(0, 0, 0, 0.18);
 
   --sans: 'Noto Sans', sans-serif;
   --heading: 'Noto Sans', sans-serif;
@@ -31,6 +34,16 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+[data-theme="dark"] {
+  --text: #F6F7ED;
+  --text-h: #F6F7ED;
+  --bg: #001F3F;
+  --card-bg: #002b56;
+  --code-bg: #002244;
+  --overlay: rgba(0, 0, 0, 0.6);
+  --shadow: rgba(0, 0, 0, 0.4);
 }
 
 @media (max-width: 480px) {

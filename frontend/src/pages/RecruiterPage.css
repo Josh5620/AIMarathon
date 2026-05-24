@@ -32,7 +32,7 @@
   font-size: 0.95rem;
   border: 1px solid var(--border);
   border-radius: 8px;
-  background: #fff;
+  background: var(--card-bg);
   color: var(--text-h);
   resize: vertical;
   font-family: inherit;
@@ -107,7 +107,7 @@
 
 /* ── Loading card ─────────────────────────────── */
 .loading-card {
-  background: #fff;
+  background: var(--card-bg);
   border: 1px solid var(--border);
   border-radius: 12px;
   padding: 32px;
@@ -190,12 +190,12 @@
 }
 
 .retry-btn:hover {
-  background: rgba(191, 54, 12, 0.06);
+  background: var(--error-bg);
 }
 
 /* ── Empty state ──────────────────────────────── */
 .empty-card {
-  background: #fff;
+  background: var(--card-bg);
   border: 1px solid var(--border);
   border-radius: 10px;
   padding: 32px;
@@ -235,7 +235,7 @@
   font-family: inherit;
   border: 1px solid var(--border);
   border-radius: 6px;
-  background: #fff;
+  background: var(--card-bg);
   color: var(--text-h);
   cursor: pointer;
 }
@@ -287,7 +287,7 @@
   padding: 4px 12px;
   border-radius: 16px;
   border: 1px solid var(--border);
-  background: #fff;
+  background: var(--card-bg);
   color: var(--text-h);
   font-size: 0.85rem;
   font-family: inherit;
@@ -314,7 +314,7 @@
 .clear-filters {
   background: none;
   border: none;
-  color: #c62828;
+  color: var(--error);
   font-size: 0.8rem;
   font-family: inherit;
   font-weight: 500;
@@ -342,7 +342,7 @@
   border-radius: 10px;
   padding: 20px;
   margin-bottom: 16px;
-  background: #fff;
+  background: var(--card-bg);
   position: relative;
 }
 
@@ -477,7 +477,7 @@
   border: 1px solid var(--border);
   border-radius: 10px;
   overflow: hidden;
-  background: #fff;
+  background: var(--card-bg);
 }
 
 .filter-toggle {
@@ -550,7 +550,7 @@
   outline: 2px solid var(--accent);
   outline-offset: -1px;
   border-color: var(--accent);
-  background: #fff;
+  background: var(--card-bg);
 }
 
 .filter-input-sm {
@@ -639,7 +639,7 @@
   align-self: flex-start;
   background: none;
   border: none;
-  color: #c62828;
+  color: var(--error);
   font-size: 0.82rem;
   font-weight: 500;
   font-family: inherit;
@@ -671,10 +671,10 @@
 }
 
 .seniority-junior  { background: var(--accent-light); color: var(--accent); }
-.seniority-mid     { background: rgba(116, 195, 101, 0.15); color: var(--success); }
-.seniority-senior  { background: rgba(0, 31, 63, 0.1); color: var(--nav-bg); }
-.seniority-lead    { background: rgba(219, 230, 76, 0.2); color: var(--success); }
-.seniority-principal { background: rgba(219, 230, 76, 0.15); color: var(--nav-bg); }
+.seniority-mid     { background: var(--accent-light); color: var(--success); }
+.seniority-senior  { background: var(--accent-light); color: var(--text-h); }
+.seniority-lead    { background: var(--accent-light); color: var(--success); }
+.seniority-principal { background: var(--accent-light); color: var(--text-h); }
 
 .meta-item {
   font-size: 0.82rem;
@@ -779,7 +779,7 @@
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.45);
+  background: var(--overlay);
   z-index: 1000;
   display: flex;
   align-items: flex-start;
@@ -789,13 +789,13 @@
 }
 
 .modal-content {
-  background: #fff;
+  background: var(--card-bg);
   border-radius: 12px;
   padding: 32px;
   width: 100%;
   max-width: 620px;
   position: relative;
-  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.18);
+  box-shadow: 0 8px 40px var(--shadow);
   animation: modal-in 0.18s ease;
 }
 
@@ -824,7 +824,7 @@
 }
 
 .modal-close:hover {
-  background: rgba(0, 0, 0, 0.06);
+  background: var(--accent-light);
   color: var(--text-h);
 }
 
@@ -1064,7 +1064,7 @@
   justify-content: space-between;
   gap: 16px;
   padding: 14px 18px;
-  background: #fff;
+  background: var(--card-bg);
   border: 1px solid var(--border);
   border-radius: 10px;
   margin-bottom: 28px;
@@ -1178,7 +1178,7 @@
 
 /* ── Meetings panel ───────────────────────────── */
 .meetings-panel {
-  background: #fff;
+  background: var(--card-bg);
   border: 1px solid var(--border);
   border-radius: 10px;
   padding: 16px;
@@ -1276,7 +1276,7 @@
 }
 
 .schedule-no-email {
-  color: #c62828;
+  color: var(--error);
   font-weight: 500;
 }
 
@@ -1288,7 +1288,7 @@
   font-size: 0.9rem;
   font-weight: 500;
   font-family: inherit;
-  background: #fff;
+  background: var(--card-bg);
   border: 1px solid var(--border);
   border-radius: 8px;
   color: var(--accent);

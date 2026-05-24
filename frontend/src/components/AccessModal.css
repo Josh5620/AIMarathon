@@ -1,7 +1,7 @@
 .access-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.45);
+  background: var(--overlay);
   z-index: 1000;
   display: flex;
   align-items: center;
@@ -10,12 +10,12 @@
 }
 
 .access-card {
-  background: #fff;
+  background: var(--card-bg);
   border-radius: 12px;
   padding: 32px;
   width: 100%;
   max-width: 420px;
-  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.18);
+  box-shadow: 0 8px 40px var(--shadow);
   animation: access-in 0.18s ease;
   text-align: center;
 }
@@ -65,7 +65,7 @@
 }
 
 .access-btn-ghost {
-  background: #fff;
+  background: var(--card-bg);
   color: var(--text);
   border-color: var(--border);
 }

@@ -40,9 +40,34 @@
   outline-offset: -2px;
 }
 
+/* ── Theme toggle ────────────────────────────── */
+.theme-toggle {
+  margin-left: auto;
+  background: none;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 6px;
+  padding: 6px 10px;
+  line-height: 0;
+  cursor: pointer;
+  color: rgba(255, 255, 255, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.theme-toggle:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.6);
+}
+
+.theme-toggle:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+
 /* ── Signed-in auth area (right side of nav) ──── */
 .app-auth {
-  margin-left: auto;
   display: flex;
   align-items: center;
   gap: 12px;
