@@ -17,7 +17,7 @@ export default function AccessModal() {
           className="access-btn access-btn-primary"
           onClick={() => signInWithGoogle()}
         >
-          <img src="/ri_google-fill.svg" alt="Google" className="access-g-icon" />
+          <img src="/google.svg" alt="Google" className="access-g-icon" />
           Recruiter login with Google
         </button>
 
