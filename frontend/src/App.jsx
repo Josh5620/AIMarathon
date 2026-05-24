@@ -1,9 +1,8 @@
 import { useState, useEffect } from 'react'
-import { Routes, Route, NavLink, Navigate } from 'react-router-dom'
+import { Routes, Route, Navigate } from 'react-router-dom'
 import { checkHealth } from './api'
 import { useAuth } from './auth/AuthContext'
 import CandidatePage from './pages/CandidatePage'
-import PostingDetailGuestPage from './pages/PostingDetailGuestPage'
 import RecruiterPage from './pages/RecruiterPage'
 import PostingFormPage from './pages/PostingFormPage'
 import PostingCandidatesPage from './pages/PostingCandidatesPage'
@@ -13,9 +12,16 @@ import Landing from './components/Landing'
 import ProtectedRoute from './components/ProtectedRoute'
 import './App.css'
 
+function GuestRoute({ children }) {
+  const { session, loading } = useAuth()
+  if (loading) return null
+  if (session) return <Navigate to="/recruiter" replace />
+  return children
+}
+
 export default function App() {
   const [backendUp, setBackendUp] = useState(null)
-  const { email, signOut } = useAuth()
+  const { session, signOut } = useAuth()
 
   useEffect(() => {
     checkHealth().then(setBackendUp)
@@ -23,19 +29,6 @@ export default function App() {
 
   return (
     <div className="app">
-      <nav className="app-nav" aria-label="Main navigation">
-        <NavLink to="/candidate">Job Openings</NavLink>
-        <NavLink to="/recruiter">Recruiter Dashboard</NavLink>
-        {email && (
-          <div className="app-auth">
-            <span className="app-auth-email" title={email}>{email}</span>
-            <button type="button" className="app-auth-btn" onClick={signOut}>
-              Sign out
-            </button>
-          </div>
-        )}
-      </nav>
-
       {backendUp === false && (
         <div className="banner banner-error" role="alert">
           We're having trouble connecting to the server. Some features may be unavailable.
@@ -47,8 +40,7 @@ export default function App() {
           <Route path="/" element={<Landing />} />
 
           {/* Candidate (guest) routes */}
-          <Route path="/candidate" element={<CandidatePage />} />
-          <Route path="/candidate/postings/:postingId" element={<PostingDetailGuestPage />} />
+          <Route path="/candidate" element={<GuestRoute><CandidatePage /></GuestRoute>} />
 
           {/* Recruiter (protected) routes */}
           <Route
@@ -75,6 +67,12 @@ export default function App() {
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>
+
+      {session && (
+        <button type="button" className="floating-logout" onClick={signOut} title="Sign out">
+          Sign out
+        </button>
+      )}
     </div>
   )
 }

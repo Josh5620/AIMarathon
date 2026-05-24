@@ -77,6 +77,7 @@ class ChutesClient:
             payload["response_format"] = {"type": "json_object"}
         try:
             resp = _with_retry(lambda: self._chat_client.post("/chat/completions", json=payload))
+            print(f"  [chutes] chat succeeded via Chutes ({settings.CHUTES_CHAT_MODEL})")
             return resp.json()["choices"][0]["message"]["content"]
         except Exception as exc:
             print(f"  [chutes] chat failed ({exc}), falling back to Gemini ({settings.GEMINI_CHAT_MODEL})")
