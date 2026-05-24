@@ -138,3 +138,102 @@ class MeetingResponse(BaseModel):
     meet_link: Optional[str] = None
     notes: Optional[str] = None
     created_at: Optional[str] = None
+
+
+# ── Job Postings ───────────────────────────────────────────────────────────────
+
+class PostingCreate(BaseModel):
+    recruiter_email: str
+    company_name: str
+    position_title: str
+    description: str
+    requirements: Optional[str] = None
+
+
+class PostingUpdate(BaseModel):
+    company_name: Optional[str] = None
+    position_title: Optional[str] = None
+    description: Optional[str] = None
+    requirements: Optional[str] = None
+    status: Optional[str] = None  # 'open' | 'closed'
+
+
+class PostingOut(BaseModel):
+    id: str
+    recruiter_email: Optional[str] = None
+    company_name: str
+    position_title: str
+    description: str
+    requirements: Optional[str] = None
+    jd_keywords: Optional[list[str]] = None
+    status: str
+    created_at: Optional[datetime] = None
+    updated_at: Optional[datetime] = None
+    applicant_count: Optional[int] = None
+
+
+class PaginatedPostings(BaseModel):
+    items: list[PostingOut]
+    page: int
+    limit: int
+    total: int
+
+
+# ── Applications ───────────────────────────────────────────────────────────────
+
+class ApplicationOut(BaseModel):
+    application_id: str
+    posting_id: str
+    candidate_id: str
+    distance: Optional[float] = None
+    rank_score: Optional[float] = None
+    overlap_keywords: Optional[list[str]] = None
+    is_interested: bool = False
+    explanation: Optional[str] = None
+    created_at: Optional[datetime] = None
+    # Candidate snapshot fields (from JOIN)
+    name: Optional[str] = None
+    email: Optional[str] = None
+    skills: list[str] = []
+    certifications: list[str] = []
+    languages: list[str] = []
+    years_experience: Optional[float] = None
+    seniority: Optional[str] = None
+    location: Optional[str] = None
+    profile: Optional[dict] = None
+    file_url: Optional[str] = None
+    full_text: Optional[str] = None
+
+
+class PaginatedApplications(BaseModel):
+    items: list[ApplicationOut]
+    page: int
+    limit: int
+    total: int
+
+
+class InterestedUpdate(BaseModel):
+    is_interested: bool
+
+
+class CrossFitOut(BaseModel):
+    id: str
+    company_name: str
+    position_title: str
+    description: str
+    rank_score: float
+    position_in_posting: int
+
+
+class SendEmailRequest(BaseModel):
+    target_posting_id: str
+    candidate_email: str
+    candidate_name: Optional[str] = None
+    recruiter_name: Optional[str] = None
+    subject: Optional[str] = None
+    body: Optional[str] = None
+
+
+class ReportOut(BaseModel):
+    posting: PostingOut
+    applicants: list[ApplicationOut]

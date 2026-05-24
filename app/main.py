@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from app.models import HealthResponse
-from app.routers import candidates, recruiter, recruiters, meetings
+from app.routers import candidates, recruiter, recruiters, meetings, postings, applications
 
 app = FastAPI(title="Intelligent Recruiter API", version="0.1.0")
 
@@ -28,10 +28,12 @@ async def unhandled_exception_handler(request: Request, exc: Exception):
         headers={"Access-Control-Allow-Origin": "*"},
     )
 
-app.include_router(candidates.router, prefix="/api")
-app.include_router(recruiter.router,  prefix="/api")
-app.include_router(recruiters.router, prefix="/api")
-app.include_router(meetings.router,   prefix="/api")
+app.include_router(candidates.router,    prefix="/api")
+app.include_router(recruiter.router,     prefix="/api")
+app.include_router(recruiters.router,    prefix="/api")
+app.include_router(meetings.router,      prefix="/api")
+app.include_router(postings.router,      prefix="/api")
+app.include_router(applications.router,  prefix="/api")
 
 
 @app.get("/api/health", response_model=HealthResponse)

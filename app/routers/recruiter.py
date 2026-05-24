@@ -4,31 +4,16 @@ from fastapi import APIRouter, HTTPException
 from app.chutes import chutes
 from app.keywords import extract_keywords
 from app.db import search_candidates
+from app.explain import generate_explanation
 from app.models import SearchRequest, SearchResponse, MatchResult
 
 router = APIRouter(prefix="/recruiter", tags=["recruiter"])
 
 _EMBED_CHAR_LIMIT = 6000
 
-_EXPLAIN_SYSTEM = (
-    "You are a recruiting assistant. In 2-3 sentences, explain "
-    "why this candidate is a strong match for this role. Be specific — "
-    "cite skills or experience that align. Don't invent facts not in the resume."
-)
-
 
 def _explain(jd_text: str, resume_text: str, overlap_keywords: list[str]) -> str:
-    return chutes.chat([
-        {"role": "system", "content": _EXPLAIN_SYSTEM},
-        {
-            "role": "user",
-            "content": (
-                f"JOB DESCRIPTION:\n{jd_text}\n\n"
-                f"CANDIDATE RESUME:\n{resume_text}\n\n"
-                f"MATCHED KEYWORDS: {overlap_keywords}"
-            ),
-        },
-    ])
+    return generate_explanation(jd_text, resume_text, overlap_keywords)
 
 
 @router.post("/search", response_model=SearchResponse)
