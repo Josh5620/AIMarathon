@@ -3,8 +3,8 @@ import asyncio
 from fastapi import APIRouter, Header, HTTPException, Query
 
 from app.db import get_candidate
-from app.gcal import CalendarAuthError, create_meeting_event
-from app.meetings_db import insert_meeting, list_meetings_for_recruiter
+from app.gcal import CalendarAuthError, create_meeting_event, cancel_meeting_event
+from app.meetings_db import insert_meeting, list_meetings_for_recruiter, get_meeting, delete_meeting
 from app.models import MeetingResponse, ScheduleMeetingRequest
 from app.recruiters import get_recruiter
 
@@ -77,6 +77,30 @@ async def schedule_meeting(
     )
 
     return MeetingResponse(**row)
+
+
+@router.delete("/{meeting_id}", status_code=204)
+async def cancel_meeting(
+    meeting_id: str,
+    x_google_access_token: str = Header(..., alias="X-Google-Access-Token"),
+):
+    meeting = await asyncio.to_thread(get_meeting, meeting_id)
+    if not meeting:
+        raise HTTPException(status_code=404, detail="Meeting not found.")
+
+    if meeting.get("google_event_id"):
+        try:
+            await asyncio.to_thread(
+                cancel_meeting_event,
+                x_google_access_token,
+                meeting["google_event_id"],
+            )
+        except CalendarAuthError as exc:
+            raise HTTPException(status_code=401, detail=str(exc))
+        except Exception as exc:
+            raise HTTPException(status_code=502, detail=f"Google Calendar error: {exc}")
+
+    await asyncio.to_thread(delete_meeting, meeting_id)
 
 
 @router.get("", response_model=list[MeetingResponse])

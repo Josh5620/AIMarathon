@@ -15,6 +15,7 @@ export default function PostingDetailGuestPage() {
   const [applying, setApplying] = useState(false)
   const [applyError, setApplyError] = useState('')
   const [applied, setApplied]   = useState(false)
+  const [alreadyApplied, setAlreadyApplied] = useState(false)
   const inputRef = useRef(null)
 
   useEffect(() => {
@@ -39,8 +40,8 @@ export default function PostingDetailGuestPage() {
       await applyToPosting(postingId, file)
       setApplied(true)
     } catch (err) {
-      if (err.message.includes('already exists')) {
-        setApplied(true)
+      if (err.message.includes('already applied to this posting')) {
+        setAlreadyApplied(true)
       } else {
         setApplyError(err.message)
       }
@@ -87,7 +88,7 @@ export default function PostingDetailGuestPage() {
           </section>
         )}
 
-        {posting.status === 'open' && !applied && (
+        {posting.status === 'open' && !applied && !alreadyApplied && (
           <section>
             <h2 style={sectionHeadStyle}>Apply for this Role</h2>
             <p style={{ fontSize: '0.875rem', color: '#6e665f', marginBottom: 12 }}>
@@ -143,6 +144,18 @@ export default function PostingDetailGuestPage() {
 
         {posting.status !== 'open' && (
           <p style={{ color: '#888', fontStyle: 'italic' }}>This position is no longer accepting applications.</p>
+        )}
+
+        {alreadyApplied && (
+          <div style={{
+            background: '#e3f2fd', border: '1px solid #90caf9', borderRadius: 10,
+            padding: '20px 24px', textAlign: 'center',
+          }}>
+            <h3 style={{ margin: '0 0 8px', color: '#1565c0' }}>Already applied</h3>
+            <p style={{ margin: 0, color: '#4a4a4a', fontSize: '0.9rem' }}>
+              You have already applied to <strong>{posting.position_title}</strong> at <strong>{posting.company_name}</strong> with this CV.
+            </p>
+          </div>
         )}
 
         {applied && (

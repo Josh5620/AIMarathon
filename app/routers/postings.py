@@ -8,12 +8,10 @@ from app.parser import parse_contact_info
 from app.storage import upload_resume_file
 from app.db import (
     insert_candidate,
-    update_candidate_by_email,
-    find_candidate_by_email,
     get_candidates_for_dedup,
 )
 from app.extractor import extract_text
-from app.ingestion.dedup import check_duplicate
+from app.ingestion.dedup import check_duplicate, normalize_name, normalize_email
 from app.ingestion.audit import log_decision
 from app.postings_db import (
     create_posting,
@@ -24,7 +22,14 @@ from app.postings_db import (
     update_posting,
     delete_posting,
 )
-from app.applications_db import upsert_application, list_applications_for_posting
+from app.applications_db import (
+    upsert_application,
+    find_application_by_posting_and_candidate,
+    list_applications_for_posting,
+    list_all_applications_for_posting,
+    set_explanation,
+)
+from app.explain import generate_explanation
 from app.models import (
     PostingCreate,
     PostingOut,
@@ -35,7 +40,6 @@ from app.models import (
     UploadResponse,
     ReportOut,
 )
-from app.applications_db import list_all_applications_for_posting
 
 router = APIRouter(prefix="/postings", tags=["postings"])
 
@@ -185,6 +189,13 @@ async def apply_to_posting(
             detail="Could not extract a name from the resume. Please ensure the resume includes a full name.",
         )
 
+    profile_dict = {
+        "education": [e.model_dump(exclude_none=True) for e in profile.education],
+        "links": profile.links.model_dump(exclude_none=True),
+        "summary": profile.summary,
+        "work_authorization": profile.work_authorization,
+    }
+
     candidate_data = {
         "name": contact.get("name"),
         "email": contact.get("email"),
@@ -196,57 +207,37 @@ async def apply_to_posting(
         "years_experience": profile.years_experience,
         "seniority": profile.seniority,
         "location": profile.location,
-        "profile": {
-            "education": [e.model_dump(exclude_none=True) for e in profile.education],
-            "links": profile.links.model_dump(exclude_none=True),
-            "summary": profile.summary,
-            "work_authorization": profile.work_authorization,
-        },
+        "profile": profile_dict,
     }
 
-    existing = await asyncio.to_thread(get_candidates_for_dedup)
-    dedup = check_duplicate(candidate_data, existing)
+    # 1. Identity lookup (global — who is this person?)
+    existing_identities = await asyncio.to_thread(get_candidates_for_dedup)
+    identity_match = next(
+        (c for c in existing_identities
+         if normalize_name(c.get("name")) == normalize_name(contact.get("name"))
+         and normalize_email(c.get("email")) == normalize_email(contact.get("email"))),
+        None,
+    )
 
+    # 2. Per-posting application lookup (only if identity already known)
+    existing_app = None
+    if identity_match:
+        existing_app = await asyncio.to_thread(
+            find_application_by_posting_and_candidate, posting_id, identity_match["id"]
+        )
+
+    dedup = check_duplicate(candidate_data, existing_identities, existing_app)
     log_decision(filename, {"status": dedup["decision"], "reasons": dedup["reasons"], "clean_text": full_text})
 
     if dedup["decision"] == "rejected":
         raise HTTPException(status_code=422, detail=dedup["reasons"][0])
 
     if dedup["decision"] == "duplicate":
-        # Still link this candidate to the posting even on duplicate
-        existing_candidate = await asyncio.to_thread(find_candidate_by_email, contact.get("email", ""))
-        if existing_candidate:
-            await asyncio.to_thread(
-                _link_application,
-                posting_id, existing_candidate["id"], embedding,
-                posting["jd_embedding"], posting["jd_keywords"], profile.keywords,
-            )
-        raise HTTPException(status_code=409, detail="Resume already exists — no changes detected.")
+        # Same CV already on file for this specific posting — not a new application
+        raise HTTPException(status_code=409, detail="You have already applied to this posting with this CV.")
 
-    profile_dict = {
-        "education": [e.model_dump(exclude_none=True) for e in profile.education],
-        "links": profile.links.model_dump(exclude_none=True),
-        "summary": profile.summary,
-        "work_authorization": profile.work_authorization,
-    }
-
-    if dedup["decision"] == "update":
-        candidate_id = await asyncio.to_thread(
-            update_candidate_by_email,
-            contact["email"],
-            full_text,
-            embedding,
-            profile.keywords,
-            file_url=file_url,
-            skills=profile.skills,
-            certifications=profile.certifications,
-            languages=profile.languages,
-            years_experience=profile.years_experience,
-            seniority=profile.seniority,
-            location=profile.location,
-            profile=profile_dict,
-        )
-    else:
+    # 3. Identity row: INSERT only when this is a brand-new person (never overwrite)
+    if identity_match is None:
         candidate_id = await asyncio.to_thread(
             insert_candidate,
             full_text,
@@ -263,14 +254,28 @@ async def apply_to_posting(
             location=profile.location,
             profile=profile_dict,
         )
+    else:
+        candidate_id = identity_match["id"]
 
-    # Compute score against the posting's cached JD embedding
+    # 4. Application snapshot — INSERT or UPDATE via ON CONFLICT
     distance = _cosine_distance(posting["jd_embedding"], embedding)
+    overlap = list(set(posting["jd_keywords"] or []) & set(profile.keywords))
 
-    jd_kw_set = set(posting["jd_keywords"] or [])
-    overlap = list(jd_kw_set & set(profile.keywords))
-
-    await asyncio.to_thread(upsert_application, posting_id, candidate_id, distance, overlap)
+    await asyncio.to_thread(
+        upsert_application,
+        posting_id, candidate_id, distance, overlap,
+        full_text=full_text,
+        embedding=embedding,
+        file_url=file_url,
+        profile=profile_dict,
+        skills=profile.skills,
+        certifications=profile.certifications,
+        languages=profile.languages,
+        years_experience=profile.years_experience,
+        seniority=profile.seniority,
+        location=profile.location,
+        candidate_keywords=profile.keywords,
+    )
 
     return UploadResponse(id=candidate_id, message="applied")
 
@@ -280,19 +285,6 @@ def _cosine_distance(a, b) -> float:
     norm_a = sum(x * x for x in a) ** 0.5
     norm_b = sum(x * x for x in b) ** 0.5
     return 1.0 - dot / (norm_a * norm_b + 1e-10)
-
-
-def _link_application(
-    posting_id: str,
-    candidate_id: str,
-    candidate_embedding,
-    jd_embedding,
-    jd_keywords: list[str],
-    candidate_keywords: list[str],
-) -> None:
-    distance = _cosine_distance(jd_embedding, candidate_embedding)
-    overlap = list(set(jd_keywords) & set(candidate_keywords))
-    upsert_application(posting_id, candidate_id, distance, overlap)
 
 
 # ── Recruiter: paginated applicant list for a posting ─────────────────────────
@@ -328,6 +320,29 @@ async def get_report(posting_id: str):
         raise HTTPException(status_code=404, detail="Posting not found.")
 
     applicants = await asyncio.to_thread(list_all_applications_for_posting, posting_id)
+
+    jd_text = f"{posting['description']}\n{posting.get('requirements') or ''}".strip()
+    top5_missing = [
+        a for a in applicants[:5]
+        if not a.get("explanation") and a.get("full_text")
+    ]
+
+    async def _fill(app_row):
+        try:
+            text = await asyncio.to_thread(
+                generate_explanation,
+                jd_text,
+                app_row["full_text"],
+                app_row.get("overlap_keywords") or [],
+            )
+            await asyncio.to_thread(set_explanation, app_row["application_id"], text)
+            app_row["explanation"] = text
+        except Exception:
+            app_row["explanation"] = "Explanation unavailable."
+
+    if top5_missing:
+        await asyncio.gather(*(_fill(a) for a in top5_missing))
+
     return ReportOut(
         posting=PostingOut(**posting),
         applicants=[ApplicationOut(**a) for a in applicants],

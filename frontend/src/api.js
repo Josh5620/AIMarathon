@@ -123,6 +123,17 @@ export async function scheduleMeeting(providerToken, payload) {
   return res.json()
 }
 
+export async function cancelMeeting(meetingId, providerToken) {
+  let res
+  try {
+    res = await fetch(`${API_BASE}/api/meetings/${meetingId}`, {
+      method: 'DELETE',
+      headers: { 'X-Google-Access-Token': providerToken },
+    })
+  } catch { throw connectionError() }
+  if (!res.ok) throw new Error(`Failed to cancel meeting (${res.status})`)
+}
+
 export async function getMeetings(recruiterEmail) {
   let res
   try {
@@ -243,6 +254,14 @@ export async function getApplication(id) {
   if (res.status === 404) return null
   if (!res.ok) throw new Error(`Failed to load application (${res.status})`)
   return res.json()
+}
+
+export async function deleteApplication(id) {
+  let res
+  try {
+    res = await fetch(`${API_BASE}/api/applications/${id}`, { method: 'DELETE' })
+  } catch { throw connectionError() }
+  if (!res.ok) throw new Error(`Failed to remove applicant (${res.status})`)
 }
 
 export async function toggleInterested(id, isInterested) {

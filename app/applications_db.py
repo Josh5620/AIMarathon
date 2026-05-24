@@ -14,20 +14,50 @@ def upsert_application(
     candidate_id: str,
     distance: float,
     overlap_keywords: list[str],
+    *,
+    full_text: str | None = None,
+    embedding=None,
+    file_url: str | None = None,
+    profile: dict | None = None,
+    skills: list[str] | None = None,
+    certifications: list[str] | None = None,
+    languages: list[str] | None = None,
+    years_experience: float | None = None,
+    seniority: str | None = None,
+    location: str | None = None,
+    candidate_keywords: list[str] | None = None,
 ) -> str:
-    """Insert or update an application row. Returns the application UUID."""
+    """Insert or update an application row including per-application CV snapshot. Returns the UUID."""
     rank_score = 1.0 - distance
     sql = """
-        INSERT INTO applications
-            (posting_id, candidate_id, distance, rank_score, overlap_keywords)
-        VALUES
-            (%(posting_id)s::uuid, %(candidate_id)s::uuid,
-             %(distance)s, %(rank_score)s, %(overlap_keywords)s)
+        INSERT INTO applications (
+            posting_id, candidate_id, distance, rank_score, overlap_keywords,
+            full_text, embedding, file_url, profile,
+            skills, certifications, languages, years_experience,
+            seniority, location, candidate_keywords
+        ) VALUES (
+            %(posting_id)s::uuid, %(candidate_id)s::uuid,
+            %(distance)s, %(rank_score)s, %(overlap_keywords)s,
+            %(full_text)s, %(embedding)s, %(file_url)s, %(profile)s,
+            %(skills)s, %(certifications)s, %(languages)s, %(years_experience)s,
+            %(seniority)s, %(location)s, %(candidate_keywords)s
+        )
         ON CONFLICT (posting_id, candidate_id)
         DO UPDATE SET
-            distance         = EXCLUDED.distance,
-            rank_score       = EXCLUDED.rank_score,
-            overlap_keywords = EXCLUDED.overlap_keywords
+            distance           = EXCLUDED.distance,
+            rank_score         = EXCLUDED.rank_score,
+            overlap_keywords   = EXCLUDED.overlap_keywords,
+            full_text          = EXCLUDED.full_text,
+            embedding          = EXCLUDED.embedding,
+            file_url           = EXCLUDED.file_url,
+            profile            = EXCLUDED.profile,
+            skills             = EXCLUDED.skills,
+            certifications     = EXCLUDED.certifications,
+            languages          = EXCLUDED.languages,
+            years_experience   = EXCLUDED.years_experience,
+            seniority          = EXCLUDED.seniority,
+            location           = EXCLUDED.location,
+            candidate_keywords = EXCLUDED.candidate_keywords
         RETURNING id::text;
     """
     with _connect() as conn:
@@ -38,10 +68,45 @@ def upsert_application(
                 "distance": distance,
                 "rank_score": rank_score,
                 "overlap_keywords": overlap_keywords,
+                "full_text": full_text,
+                "embedding": embedding,
+                "file_url": file_url,
+                "profile": psycopg.types.json.Jsonb(profile) if profile else None,
+                "skills": skills,
+                "certifications": certifications,
+                "languages": languages,
+                "years_experience": years_experience,
+                "seniority": seniority,
+                "location": location,
+                "candidate_keywords": candidate_keywords,
             })
             row = cur.fetchone()
         conn.commit()
     return row[0]
+
+
+def find_application_by_posting_and_candidate(posting_id: str, candidate_id: str) -> dict | None:
+    """Return the existing application row for this (posting, candidate) pair, or None."""
+    sql = """
+        SELECT
+            a.id::text AS application_id,
+            a.full_text,
+            a.rank_score,
+            a.distance,
+            a.is_interested,
+            a.explanation
+        FROM applications a
+        WHERE a.posting_id   = %(posting_id)s::uuid
+          AND a.candidate_id = %(candidate_id)s::uuid;
+    """
+    with _connect() as conn:
+        with conn.cursor() as cur:
+            cur.execute(sql, {"posting_id": posting_id, "candidate_id": candidate_id})
+            row = cur.fetchone()
+            if row is None:
+                return None
+            cols = [desc[0] for desc in cur.description]
+    return dict(zip(cols, row))
 
 
 def list_applications_for_posting(
@@ -49,7 +114,8 @@ def list_applications_for_posting(
     limit: int = 10,
     offset: int = 0,
 ) -> tuple[list[dict], int]:
-    """Returns (rows, total) of ranked applicants for a posting, joined with candidate snapshot."""
+    """Returns (rows, total) of ranked applicants for a posting.
+    CV-derived fields come from the application snapshot; name/email from candidates."""
     count_sql = "SELECT COUNT(*) FROM applications WHERE posting_id = %(pid)s::uuid;"
     rows_sql = """
         SELECT
@@ -61,17 +127,17 @@ def list_applications_for_posting(
             a.overlap_keywords,
             a.is_interested,
             a.created_at,
+            a.explanation,
             c.name,
             c.email,
-            c.skills,
-            c.certifications,
-            c.languages,
-            c.years_experience::float,
-            c.seniority,
-            c.location,
-            c.profile,
-            c.file_url,
-            a.explanation
+            COALESCE(a.skills,           c.skills)           AS skills,
+            COALESCE(a.certifications,   c.certifications)   AS certifications,
+            COALESCE(a.languages,        c.languages)        AS languages,
+            COALESCE(a.years_experience, c.years_experience)::float AS years_experience,
+            COALESCE(a.seniority,        c.seniority)        AS seniority,
+            COALESCE(a.location,         c.location)         AS location,
+            COALESCE(a.profile,          c.profile)          AS profile,
+            COALESCE(a.file_url,         c.file_url)         AS file_url
         FROM applications a
         JOIN candidates c ON c.id = a.candidate_id
         WHERE a.posting_id = %(pid)s::uuid
@@ -102,15 +168,15 @@ def get_application(application_id: str) -> dict | None:
             a.created_at,
             c.name,
             c.email,
-            c.full_text,
-            c.skills,
-            c.certifications,
-            c.languages,
-            c.years_experience::float,
-            c.seniority,
-            c.location,
-            c.profile,
-            c.file_url
+            COALESCE(a.full_text,        c.full_text)        AS full_text,
+            COALESCE(a.skills,           c.skills)           AS skills,
+            COALESCE(a.certifications,   c.certifications)   AS certifications,
+            COALESCE(a.languages,        c.languages)        AS languages,
+            COALESCE(a.years_experience, c.years_experience)::float AS years_experience,
+            COALESCE(a.seniority,        c.seniority)        AS seniority,
+            COALESCE(a.location,         c.location)         AS location,
+            COALESCE(a.profile,          c.profile)          AS profile,
+            COALESCE(a.file_url,         c.file_url)         AS file_url
         FROM applications a
         JOIN candidates c ON c.id = a.candidate_id
         WHERE a.id = %(id)s::uuid;
@@ -123,6 +189,17 @@ def get_application(application_id: str) -> dict | None:
                 return None
             cols = [desc[0] for desc in cur.description]
     return dict(zip(cols, row))
+
+
+def delete_application(application_id: str) -> bool:
+    """Delete a single application row. Returns True if a row was deleted."""
+    sql = "DELETE FROM applications WHERE id = %(id)s::uuid RETURNING id;"
+    with _connect() as conn:
+        with conn.cursor() as cur:
+            cur.execute(sql, {"id": application_id})
+            deleted = cur.fetchone() is not None
+        conn.commit()
+    return deleted
 
 
 def set_interested(application_id: str, value: bool) -> bool:
@@ -203,8 +280,8 @@ def list_all_applications_for_posting(posting_id: str) -> list[dict]:
     """Returns all applications for a posting (no pagination — used for printable report)."""
     sql = """
         SELECT
-            a.id::text          AS application_id,
-            a.posting_id::text  AS posting_id,
+            a.id::text           AS application_id,
+            a.posting_id::text   AS posting_id,
             a.candidate_id::text AS candidate_id,
             a.rank_score,
             a.distance,
@@ -213,11 +290,15 @@ def list_all_applications_for_posting(posting_id: str) -> list[dict]:
             a.explanation,
             c.name,
             c.email,
-            c.skills,
-            c.years_experience::float,
-            c.seniority,
-            c.location,
-            c.profile
+            COALESCE(a.skills,           c.skills)           AS skills,
+            COALESCE(a.certifications,   c.certifications)   AS certifications,
+            COALESCE(a.languages,        c.languages)        AS languages,
+            COALESCE(a.years_experience, c.years_experience)::float AS years_experience,
+            COALESCE(a.seniority,        c.seniority)        AS seniority,
+            COALESCE(a.location,         c.location)         AS location,
+            COALESCE(a.profile,          c.profile)          AS profile,
+            COALESCE(a.file_url,         c.file_url)         AS file_url,
+            COALESCE(a.full_text,        c.full_text)        AS full_text
         FROM applications a
         JOIN candidates c ON c.id = a.candidate_id
         WHERE a.posting_id = %(pid)s::uuid

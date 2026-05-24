@@ -46,6 +46,34 @@ def insert_meeting(
     return dict(zip(cols, row))
 
 
+def get_meeting(meeting_id: str) -> dict | None:
+    sql = """
+        SELECT
+            id::text, recruiter_email, candidate_id::text, candidate_email, candidate_name,
+            scheduled_at::text, duration_minutes, google_event_id, meet_link, notes, created_at::text
+        FROM meetings
+        WHERE id = %(id)s::uuid;
+    """
+    with _connect() as conn:
+        with conn.cursor() as cur:
+            cur.execute(sql, {"id": meeting_id})
+            row = cur.fetchone()
+            if row is None:
+                return None
+            cols = [desc[0] for desc in cur.description]
+    return dict(zip(cols, row))
+
+
+def delete_meeting(meeting_id: str) -> bool:
+    sql = "DELETE FROM meetings WHERE id = %(id)s::uuid RETURNING id;"
+    with _connect() as conn:
+        with conn.cursor() as cur:
+            cur.execute(sql, {"id": meeting_id})
+            deleted = cur.fetchone() is not None
+        conn.commit()
+    return deleted
+
+
 def list_meetings_for_recruiter(recruiter_email: str) -> list[dict]:
     sql = """
         SELECT

@@ -38,23 +38,27 @@ def _normalize_for_compare(value):
 def check_duplicate(
     candidate: dict,
     existing_candidates: list[dict],
+    existing_application: dict | None = None,
 ) -> dict:
     """
     Decide how to handle a newly-ingested candidate relative to existing records.
 
-    Decision order (first match wins):
-      1. Email missing                          → "rejected"
-      2. No existing record with same name+email → "unique"
-      3. Match found, all other fields identical → "duplicate"
-      4. Match found, some other field differs   → "update"
+    Decisions (first match wins):
+      1. Email missing                                          → "rejected"
+      2. No existing candidate with same name+email            → "new_identity"
+      3. Identity matches, no application for this posting     → "new_application"
+      4. Identity matches, has application, different full_text → "update_application"
+      5. Identity matches, has application, same full_text     → "duplicate"
 
-    Returns {"decision": "unique"|"duplicate"|"update"|"rejected", "reasons": list[str]}.
+    The "duplicate" (409) case is now posting-scoped: applying the same CV to a
+    different posting is always "new_application" (success).
+
+    Returns {"decision": str, "reasons": list[str]}.
     Pure — no DB calls, no IDs returned.
     """
     name = candidate.get("name")
     email = candidate.get("email")
 
-    # Step 1: Email missing → rejected immediately
     if not normalize_email(email):
         if not normalize_name(name):
             return {
@@ -66,30 +70,28 @@ def check_duplicate(
             "reasons": ["missing email — cannot identify candidate"],
         }
 
-    # Step 2: Look for a record whose normalized name AND email both match
     norm_name = normalize_name(name)
     norm_email = normalize_email(email)
 
-    match = None
+    identity_match = None
     for existing in existing_candidates:
         if (normalize_name(existing.get("name")) == norm_name
                 and normalize_email(existing.get("email")) == norm_email):
-            match = existing
+            identity_match = existing
             break
 
-    if match is None:
-        # Includes the critical case: same name but different email → distinct person
-        return {"decision": "unique", "reasons": ["new candidate"]}
+    if identity_match is None:
+        return {"decision": "new_identity", "reasons": ["new candidate"]}
 
-    # Step 3: Compare only full_text — LLM-extracted fields (skills, keywords, summary)
-    # are non-deterministic across calls, so comparing them always finds spurious diffs
-    # for identical resumes. full_text is the stable ground truth.
+    if existing_application is None:
+        return {"decision": "new_application", "reasons": ["existing candidate, new posting application"]}
+
     new_text = (candidate.get("full_text") or "").strip()
-    existing_text = (match.get("full_text") or "").strip()
+    existing_text = (existing_application.get("full_text") or "").strip()
     if new_text != existing_text:
         return {
-            "decision": "update",
-            "reasons": ["candidate already exists with new information — update the existing record"],
+            "decision": "update_application",
+            "reasons": ["updated CV for this posting"],
         }
 
-    return {"decision": "duplicate", "reasons": ["resume already exists"]}
+    return {"decision": "duplicate", "reasons": ["already applied to this posting with this CV"]}

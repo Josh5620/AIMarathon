@@ -89,3 +89,27 @@ def create_meeting_event(
         "meet_link": meet_link,
         "html_link": event.get("htmlLink"),
     }
+
+
+def cancel_meeting_event(access_token: str, google_event_id: str) -> None:
+    """
+    Delete a Google Calendar event and notify all attendees.
+    Raises CalendarAuthError on 401, RuntimeError on other failures.
+    """
+    url = f"{_CALENDAR_API}/{google_event_id}"
+    with httpx.Client(timeout=15) as client:
+        resp = client.delete(
+            url,
+            params={"sendUpdates": "all"},
+            headers={"Authorization": f"Bearer {access_token}"},
+        )
+    if resp.status_code == 401:
+        raise CalendarAuthError(
+            "Google access token is invalid or expired. Please sign out and sign in again."
+        )
+    if resp.status_code == 404:
+        return  # already deleted from Google's side — treat as success
+    if not resp.is_success:
+        raise RuntimeError(
+            f"Google Calendar API returned {resp.status_code}: {resp.text[:400]}"
+        )

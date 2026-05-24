@@ -8,7 +8,7 @@ import RecruiterHeader from '../components/RecruiterHeader'
 
 export default function RecruiterPage() {
   const navigate = useNavigate()
-  const { email } = useAuth()
+  const { email, providerToken } = useAuth()
 
   const fetcher = useCallback(
     (page, limit) => listMyPostings(email, page, limit),
@@ -29,7 +29,7 @@ export default function RecruiterPage() {
 
   return (
     <>
-      <RecruiterHeader email={email} />
+      <RecruiterHeader email={email} providerToken={providerToken} />
       <div style={{ maxWidth: 900, margin: '0 auto', padding: '2rem 1rem' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
           <div>

@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
-import { getRecruiter, getMeetings } from '../api'
+import { getRecruiter, getMeetings, cancelMeeting } from '../api'
 import RecruiterProfileModal from './RecruiterProfileModal'
 
 function initials(name, email) {
@@ -23,11 +23,12 @@ function formatMeetingTime(isoStr) {
   }
 }
 
-export default function RecruiterHeader({ email }) {
+export default function RecruiterHeader({ email, providerToken }) {
   const [profile, setProfile] = useState(null)
   const [meetings, setMeetings] = useState([])
   const [meetingsOpen, setMeetingsOpen] = useState(false)
   const [profileModalOpen, setProfileModalOpen] = useState(false)
+  const [cancellingId, setCancellingId] = useState(null)
 
   const reload = useCallback(async () => {
     if (!email) return
@@ -40,6 +41,20 @@ export default function RecruiterHeader({ email }) {
   }, [email])
 
   useEffect(() => { reload() }, [reload])
+
+  async function handleCancel(meetingId, candidateName) {
+    if (!confirm(`Cancel the meeting with ${candidateName || 'this candidate'}? The event will be removed from Google Calendar and attendees will be notified.`)) return
+    if (!providerToken) { alert('Google session expired — please sign out and sign in again.'); return }
+    setCancellingId(meetingId)
+    try {
+      await cancelMeeting(meetingId, providerToken)
+      await reload()
+    } catch (err) {
+      alert(err.message)
+    } finally {
+      setCancellingId(null)
+    }
+  }
 
   if (!email) return null
 
@@ -103,16 +118,29 @@ export default function RecruiterHeader({ email }) {
                     <span className="meeting-duration">{m.duration_minutes} min</span>
                   )}
                 </div>
-                {m.meet_link && (
-                  <a
-                    href={m.meet_link}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="meeting-join-btn"
+                <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                  {m.meet_link && (
+                    <a
+                      href={m.meet_link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="meeting-join-btn"
+                    >
+                      Join Meet
+                    </a>
+                  )}
+                  <button
+                    onClick={() => handleCancel(m.id, m.candidate_name || m.candidate_email)}
+                    disabled={cancellingId === m.id}
+                    style={{
+                      background: 'none', border: '1px solid #e0dbd5', borderRadius: 4,
+                      padding: '2px 8px', fontSize: '0.75rem', cursor: 'pointer',
+                      color: cancellingId === m.id ? '#aaa' : '#c0392b',
+                    }}
                   >
-                    Join Meet
-                  </a>
-                )}
+                    {cancellingId === m.id ? 'Cancelling…' : 'Cancel'}
+                  </button>
+                </div>
               </li>
             ))}
           </ul>

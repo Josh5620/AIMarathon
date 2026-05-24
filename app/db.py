@@ -151,7 +151,7 @@ def search_candidates(
 def get_candidates_for_dedup() -> list[dict]:
     """Return all candidates with the fields needed for deduplication comparison."""
     sql = """
-        SELECT name, email, full_text, keywords, skills, certifications,
+        SELECT id::text, name, email, full_text, keywords, skills, certifications,
                languages, years_experience::float, seniority, location, profile
         FROM candidates;
     """

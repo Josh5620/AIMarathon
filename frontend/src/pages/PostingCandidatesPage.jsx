@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { getPosting, listApplications, toggleInterested, updatePosting } from '../api'
+import { getPosting, listApplications, toggleInterested, updatePosting, deleteApplication } from '../api'
 import usePagination from '../hooks/usePagination'
 import Pagination from '../components/Pagination'
 
@@ -25,6 +25,17 @@ export default function PostingCandidatesPage() {
     [postingId]
   )
   const { data, loading, error, page, totalPages, setPage, reload } = usePagination(fetcher, 10)
+
+  async function handleDelete(e, applicationId, name) {
+    e.stopPropagation()
+    if (!confirm(`Remove ${name || 'this applicant'} from this posting? They will remain in any other postings they applied to.`)) return
+    try {
+      await deleteApplication(applicationId)
+      reload()
+    } catch (err) {
+      alert(err.message)
+    }
+  }
 
   async function handleInterested(e, applicationId, current) {
     e.stopPropagation()
@@ -216,6 +227,21 @@ export default function PostingCandidatesPage() {
                 }}
               >
                 ★
+              </button>
+
+              {/* Delete from this posting */}
+              <button
+                onClick={e => handleDelete(e, app.application_id, app.name)}
+                title="Remove from this posting"
+                style={{
+                  background: 'none', border: 'none', cursor: 'pointer',
+                  fontSize: '1.1rem', flexShrink: 0, padding: '0 4px',
+                  color: '#c4bfba',
+                }}
+                onMouseEnter={e => e.currentTarget.style.color = '#c0392b'}
+                onMouseLeave={e => e.currentTarget.style.color = '#c4bfba'}
+              >
+                ✕
               </button>
             </div>
           )

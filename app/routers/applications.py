@@ -7,6 +7,7 @@ from app.applications_db import (
     get_application,
     set_interested,
     set_explanation,
+    delete_application,
     cross_fit_postings_for_candidate,
 )
 from app.postings_db import get_posting
@@ -49,6 +50,15 @@ async def get_application_detail(application_id: str):
                 row["explanation"] = "Explanation unavailable."
 
     return ApplicationOut(**row)
+
+
+# ── Delete application (posting-scoped, candidate row untouched) ──────────────
+
+@router.delete("/{application_id}", status_code=204)
+async def remove_application(application_id: str):
+    deleted = await asyncio.to_thread(delete_application, application_id)
+    if not deleted:
+        raise HTTPException(status_code=404, detail="Application not found.")
 
 
 # ── Toggle interested ─────────────────────────────────────────────────────────
