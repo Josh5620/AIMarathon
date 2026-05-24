@@ -9,6 +9,7 @@ import PostingCandidatesPage from './pages/PostingCandidatesPage'
 import PostingReportPage from './pages/PostingReportPage'
 import CandidateProfilePage from './pages/CandidateProfilePage'
 import Landing from './components/Landing'
+import PrivacyPolicyPage from './pages/PrivacyPolicyPage'
 import RecruiterLayout from './components/RecruiterLayout'
 import ProtectedRoute from './components/ProtectedRoute'
 import ThemeToggle from './components/ThemeToggle'
@@ -37,6 +38,7 @@ export default function App() {
 
       <Routes>
         <Route path="/" element={<Landing />} />
+        <Route path="/privacy" element={<PrivacyPolicyPage />} />
 
         {/* Candidate (guest) routes */}
         <Route path="/candidate" element={<GuestRoute><CandidatePage /></GuestRoute>} />

@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react'
-import { Navigate, useNavigate } from 'react-router-dom'
+import { Navigate, useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '../auth/AuthContext'
 
 export default function Landing() {
@@ -94,9 +94,8 @@ export default function Landing() {
           </button>
         </div>
 
-        {/* Footer links — ToDo: pages not yet implemented */}
         <div className="animate-fade-up mt-lg flex items-center gap-md text-meta text-on-surface-variant">
-          <span className="opacity-50 cursor-default">Privacy Policy</span>
+          <Link to="/privacy" className="hover:text-primary transition-colors">Privacy Policy</Link>
           <span className="opacity-30">·</span>
           <span className="opacity-50 cursor-default">Terms of Service</span>
           <span className="opacity-30">·</span>
