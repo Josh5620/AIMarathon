@@ -45,14 +45,21 @@ CREATE INDEX candidates_languages_idx      ON candidates USING gin (languages);
 CREATE INDEX candidates_yoe_idx            ON candidates (years_experience);
 CREATE INDEX candidates_seniority_idx      ON candidates (seniority);
 
--- ── Recruiter allowlist ──────────────────────────────────────────────────────
+-- ── Recruiter allowlist + profile ────────────────────────────────────────────
 -- Pre-approved Gmail accounts allowed into the recruiter side (Google sign-in).
 -- Independent of the candidates recreate cycle above — do NOT drop this when
 -- switching embedding providers, or you'll wipe the allowlist. Managed via SQL.
 CREATE TABLE IF NOT EXISTS recruiters (
-  email      TEXT        PRIMARY KEY,   -- store lowercase
-  active     BOOLEAN     NOT NULL DEFAULT TRUE,
-  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+  email        TEXT        PRIMARY KEY,   -- store lowercase
+  active       BOOLEAN     NOT NULL DEFAULT TRUE,
+  created_at   TIMESTAMPTZ NOT NULL DEFAULT now(),
+  -- Profile fields — populated by the recruiter after first sign-in
+  name         TEXT,
+  organization TEXT,
+  job_title    TEXT,
+  bio          TEXT,
+  phone        TEXT,
+  avatar_url   TEXT
 );
 
 ALTER TABLE recruiters ENABLE ROW LEVEL SECURITY;
@@ -64,7 +71,35 @@ CREATE POLICY recruiters_select_own ON recruiters
   FOR SELECT TO authenticated
   USING (auth.email() = email);
 
+-- Allow a signed-in recruiter to update their own profile fields.
+DROP POLICY IF EXISTS recruiters_update_own ON recruiters;
+CREATE POLICY recruiters_update_own ON recruiters
+  FOR UPDATE TO authenticated
+  USING (auth.email() = email)
+  WITH CHECK (auth.email() = email);
+
 -- RLS controls which rows are visible, but the role still needs table-level
 -- SELECT. Tables created via raw SQL don't get Supabase's default grants, so
 -- grant it explicitly (only logged-in users; anon gets nothing).
 GRANT SELECT ON recruiters TO authenticated;
+GRANT UPDATE (name, organization, job_title, bio, phone, avatar_url)
+  ON recruiters TO authenticated;
+
+-- ── Meetings ─────────────────────────────────────────────────────────────────
+-- One row per scheduled Google Calendar event between a recruiter and a candidate.
+CREATE TABLE IF NOT EXISTS meetings (
+  id               UUID         PRIMARY KEY DEFAULT gen_random_uuid(),
+  recruiter_email  TEXT         NOT NULL REFERENCES recruiters(email),
+  candidate_id     UUID         NOT NULL REFERENCES candidates(id) ON DELETE CASCADE,
+  candidate_email  TEXT         NOT NULL,
+  candidate_name   TEXT,
+  scheduled_at     TIMESTAMPTZ  NOT NULL,
+  duration_minutes INTEGER      NOT NULL DEFAULT 30,
+  google_event_id  TEXT,
+  meet_link        TEXT,
+  notes            TEXT,
+  created_at       TIMESTAMPTZ  NOT NULL DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS meetings_recruiter_idx ON meetings (recruiter_email, scheduled_at DESC);
+CREATE INDEX IF NOT EXISTS meetings_candidate_idx ON meetings (candidate_id);

@@ -74,6 +74,7 @@ class SearchRequest(BaseModel):
 class MatchResult(BaseModel):
     id: str
     name: Optional[str] = None
+    email: Optional[str] = None
     distance: float
     overlap_keywords: list[str]
     explanation: str
@@ -91,3 +92,49 @@ class SearchResponse(BaseModel):
 class HealthResponse(BaseModel):
     status: str
     timestamp: str
+
+
+# ── Recruiter profile ──────────────────────────────────────────────────────────
+
+class RecruiterProfile(BaseModel):
+    email: str
+    active: bool = True
+    name: Optional[str] = None
+    organization: Optional[str] = None
+    job_title: Optional[str] = None
+    bio: Optional[str] = None
+    phone: Optional[str] = None
+    avatar_url: Optional[str] = None
+
+
+class RecruiterProfileUpdate(BaseModel):
+    name: Optional[str] = None
+    organization: Optional[str] = None
+    job_title: Optional[str] = None
+    bio: Optional[str] = None
+    phone: Optional[str] = None
+    avatar_url: Optional[str] = None
+
+
+# ── Meetings ───────────────────────────────────────────────────────────────────
+
+class ScheduleMeetingRequest(BaseModel):
+    candidate_id: str
+    recruiter_email: str
+    start_iso: str          # ISO 8601 with offset, e.g. "2026-05-25T10:00:00+03:00"
+    duration_minutes: int = 30
+    notes: Optional[str] = None
+
+
+class MeetingResponse(BaseModel):
+    id: str
+    recruiter_email: str
+    candidate_id: str
+    candidate_email: str
+    candidate_name: Optional[str] = None
+    scheduled_at: str
+    duration_minutes: int
+    google_event_id: Optional[str] = None
+    meet_link: Optional[str] = None
+    notes: Optional[str] = None
+    created_at: Optional[str] = None

@@ -118,6 +118,7 @@ def search_candidates(
         SELECT
             id::text,
             name,
+            email,
             full_text,
             keywords,
             skills,

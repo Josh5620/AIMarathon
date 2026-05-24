@@ -73,3 +73,65 @@ export async function getCandidate(id) {
   if (!res.ok) throw new Error(`Not found (${res.status})`)
   return res.json()
 }
+
+export async function getRecruiter(email) {
+  let res
+  try {
+    res = await fetch(`${API_BASE}/api/recruiters/${encodeURIComponent(email)}`)
+  } catch {
+    throw connectionError()
+  }
+  if (res.status === 404) return null
+  if (!res.ok) throw new Error(`Failed to load recruiter profile (${res.status})`)
+  return res.json()
+}
+
+export async function updateRecruiter(email, patch) {
+  let res
+  try {
+    res = await fetch(`${API_BASE}/api/recruiters/${encodeURIComponent(email)}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(patch),
+    })
+  } catch {
+    throw connectionError()
+  }
+  if (!res.ok) throw new Error(`Failed to update profile (${res.status})`)
+  return res.json()
+}
+
+export async function scheduleMeeting(providerToken, payload) {
+  let res
+  try {
+    res = await fetch(`${API_BASE}/api/meetings/schedule`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Google-Access-Token': providerToken,
+      },
+      body: JSON.stringify(payload),
+    })
+  } catch {
+    throw connectionError()
+  }
+  if (res.status === 401) throw new Error('REAUTH')
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}))
+    throw new Error(err.detail || `Failed to schedule meeting (${res.status})`)
+  }
+  return res.json()
+}
+
+export async function getMeetings(recruiterEmail) {
+  let res
+  try {
+    res = await fetch(
+      `${API_BASE}/api/meetings?recruiter_email=${encodeURIComponent(recruiterEmail)}`
+    )
+  } catch {
+    throw connectionError()
+  }
+  if (!res.ok) throw new Error(`Failed to load meetings (${res.status})`)
+  return res.json()
+}

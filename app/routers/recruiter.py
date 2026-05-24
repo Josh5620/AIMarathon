@@ -70,6 +70,7 @@ async def search(body: SearchRequest):
         MatchResult(
             id=m["id"],
             name=m.get("name"),
+            email=m.get("email"),
             distance=m["distance"],
             overlap_keywords=m["overlap_keywords"],
             explanation=explanations[i],

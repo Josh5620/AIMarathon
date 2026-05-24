@@ -1,5 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import { searchCandidates, getCandidate } from '../api'
+import { useAuth } from '../auth/AuthContext'
+import RecruiterHeader from '../components/RecruiterHeader'
+import ScheduleMeetingModal from '../components/ScheduleMeetingModal'
 import './RecruiterPage.css'
 
 const SORT_OPTIONS = [
@@ -36,6 +39,8 @@ function sortResults(results, sortBy) {
 }
 
 export default function RecruiterPage() {
+  const { email: recruiterEmail } = useAuth()
+
   const [jobDescription, setJobDescription] = useState('')
   const [status, setStatus] = useState('idle')
   const [results, setResults] = useState([])
@@ -43,6 +48,10 @@ export default function RecruiterPage() {
   const [selectedKeywords, setSelectedKeywords] = useState([])
   const [sortBy, setSortBy] = useState('score-desc')
   const [showCount, setShowCount] = useState(5)
+
+  // Schedule meeting modal state
+  const [scheduleFor, setScheduleFor] = useState(null)
+  const [headerKey, setHeaderKey] = useState(0)
 
   // Filter panel state
   const [filtersOpen, setFiltersOpen] = useState(false)
@@ -182,6 +191,8 @@ export default function RecruiterPage() {
 
   return (
     <div className="recruiter-page">
+      <RecruiterHeader key={headerKey} email={recruiterEmail} />
+
       <h1>Find Candidates</h1>
       <p className="page-subtitle">
         Paste a job description to find the best matching candidates from the database.
@@ -558,6 +569,14 @@ export default function RecruiterPage() {
               >
                 View Full Profile →
               </button>
+              {r.email && (
+                <button
+                  className="schedule-meeting-btn"
+                  onClick={() => setScheduleFor(r)}
+                >
+                  Schedule Meeting
+                </button>
+              )}
             </div>
           </div>
         )
@@ -571,6 +590,19 @@ export default function RecruiterPage() {
         >
           Show more ({sortedResults.length - showCount} remaining)
         </button>
+      )}
+
+      {/* ── Schedule meeting modal ──────────────── */}
+      {scheduleFor && recruiterEmail && (
+        <ScheduleMeetingModal
+          candidate={scheduleFor}
+          recruiterEmail={recruiterEmail}
+          onClose={() => setScheduleFor(null)}
+          onScheduled={() => {
+            setScheduleFor(null)
+            setHeaderKey((k) => k + 1)
+          }}
+        />
       )}
 
       {/* ── Candidate detail modal ───────────────── */}

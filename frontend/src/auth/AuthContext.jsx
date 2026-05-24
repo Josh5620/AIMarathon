@@ -46,17 +46,35 @@ export function AuthProvider({ children }) {
     () =>
       supabase.auth.signInWithOAuth({
         provider: 'google',
-        options: { redirectTo: `${window.location.origin}/recruiter` },
+        options: {
+          redirectTo: `${window.location.origin}/recruiter`,
+          scopes: 'email profile https://www.googleapis.com/auth/calendar.events',
+          queryParams: { access_type: 'offline', prompt: 'consent' },
+        },
       }),
     []
   )
+
+  const reauthorize = useCallback(() => signInWithGoogle(), [signInWithGoogle])
 
   const signOut = useCallback(async () => {
     await supabase.auth.signOut()
     setApproved(null)
   }, [])
 
-  const value = { session, user: session?.user ?? null, email, loading, approved, signInWithGoogle, signOut }
+  const providerToken = session?.provider_token ?? null
+
+  const value = {
+    session,
+    user: session?.user ?? null,
+    email,
+    loading,
+    approved,
+    providerToken,
+    signInWithGoogle,
+    reauthorize,
+    signOut,
+  }
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }
 
