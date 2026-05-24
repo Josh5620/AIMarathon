@@ -18,7 +18,7 @@ export default function useTheme() {
   })
 
   // Sync on mount in case the inline script and React disagree
-  useEffect(() => { applyTheme(dark) }, [dark]) // eslint-disable-line react-hooks/set-state-in-effect
+  useEffect(() => { applyTheme(dark) }, [dark])
 
   function toggle() {
     const next = !dark

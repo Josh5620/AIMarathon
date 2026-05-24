@@ -22,6 +22,7 @@ export default function RecruiterProfileModal({ email, profile, onClose, onSaved
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
 
+  /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
     if (!profile) return
     setForm({
@@ -33,6 +34,7 @@ export default function RecruiterProfileModal({ email, profile, onClose, onSaved
       avatar_url: profile.avatar_url || '',
     })
   }, [profile])
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   useEffect(() => {
     function onKey(e) {

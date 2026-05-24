@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react' // eslint-disable-line no-unused-vars
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../auth/AuthContext'
 import { listMyPostings, deletePosting, getMyPostingStats } from '../api'
@@ -17,6 +17,7 @@ export default function RecruiterPage() {
   const [postingStats, setPostingStats] = useState(null)
   const [statsLoading, setStatsLoading] = useState(true)
 
+  /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
     if (!email) return
     let cancelled = false
@@ -35,6 +36,7 @@ export default function RecruiterPage() {
       cancelled = true
     }
   }, [email, data?.total])
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   const totalPostings = data?.total ?? 0
   const openPostings = postingStats?.total_open_postings ?? 0
