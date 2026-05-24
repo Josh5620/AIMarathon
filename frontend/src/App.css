@@ -8,9 +8,9 @@
 /* ── Nav bar ──────────────────────────────────── */
 .app-nav {
   display: flex;
-  background: #000080;
+  background: var(--nav-bg);
   padding: 0;
-  border-bottom: 2px solid #00006a;
+  border-bottom: 2px solid var(--nav-border);
 }
 
 .app-nav a {
@@ -31,7 +31,7 @@
 
 .app-nav a.active {
   color: #fff;
-  border-bottom-color: #808000;
+  border-bottom-color: var(--complement);
   background: rgba(255, 255, 255, 0.08);
 }
 
@@ -111,9 +111,9 @@
 }
 
 .banner-error {
-  background: #fbe9e7;
-  color: #bf360c;
-  border-bottom: 1px solid #ffccbc;
+  background: var(--error-bg);
+  color: var(--error);
+  border-bottom: 1px solid var(--error-border);
 }
 
 @media (max-width: 480px) {

@@ -65,7 +65,7 @@ export default function RecruiterProfileModal({ email, profile, onClose, onSaved
       <div className="modal-content">
         <button className="modal-close" onClick={onClose} aria-label="Close">×</button>
         <h2 id="profile-modal-title" style={{ marginBottom: 4 }}>Edit Profile</h2>
-        <p style={{ fontSize: '0.85rem', color: '#6e665f', marginBottom: 20 }}>{email}</p>
+        <p style={{ fontSize: '0.85rem', color: 'var(--text)', marginBottom: 20 }}>{email}</p>
 
         {error && <p className="modal-error" style={{ marginBottom: 16 }}>{error}</p>}
 
@@ -74,7 +74,7 @@ export default function RecruiterProfileModal({ email, profile, onClose, onSaved
             <div key={key} style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
               <label
                 htmlFor={`pf-${key}`}
-                style={{ fontSize: '0.82rem', fontWeight: 600, color: '#6e665f' }}
+                style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--text)' }}
               >
                 {label}
               </label>
@@ -87,8 +87,8 @@ export default function RecruiterProfileModal({ email, profile, onClose, onSaved
                   rows={3}
                   style={{
                     padding: '8px 10px', fontSize: '0.9rem', fontFamily: 'inherit',
-                    border: '1px solid #c4bfba', borderRadius: 6, background: '#faf9f8',
-                    color: '#3B3430', resize: 'vertical',
+                    border: '1px solid var(--border)', borderRadius: 6, background: 'var(--bg)',
+                    color: 'var(--text-h)', resize: 'vertical',
                   }}
                 />
               ) : (
@@ -100,8 +100,8 @@ export default function RecruiterProfileModal({ email, profile, onClose, onSaved
                   placeholder={placeholder}
                   style={{
                     padding: '8px 10px', fontSize: '0.9rem', fontFamily: 'inherit',
-                    border: '1px solid #c4bfba', borderRadius: 6, background: '#faf9f8',
-                    color: '#3B3430',
+                    border: '1px solid var(--border)', borderRadius: 6, background: 'var(--bg)',
+                    color: 'var(--text-h)',
                   }}
                 />
               )}
@@ -114,8 +114,8 @@ export default function RecruiterProfileModal({ email, profile, onClose, onSaved
               onClick={onClose}
               style={{
                 padding: '8px 20px', fontSize: '0.9rem', fontFamily: 'inherit',
-                border: '1px solid #c4bfba', borderRadius: 6, background: 'transparent',
-                color: '#6e665f', cursor: 'pointer',
+                border: '1px solid var(--border)', borderRadius: 6, background: 'transparent',
+                color: 'var(--text)', cursor: 'pointer',
               }}
             >
               Cancel
@@ -125,7 +125,7 @@ export default function RecruiterProfileModal({ email, profile, onClose, onSaved
               disabled={saving}
               style={{
                 padding: '8px 20px', fontSize: '0.9rem', fontWeight: 600, fontFamily: 'inherit',
-                border: 'none', borderRadius: 6, background: '#000080',
+                border: 'none', borderRadius: 6, background: 'var(--accent)',
                 color: '#fff', cursor: saving ? 'not-allowed' : 'pointer', opacity: saving ? 0.7 : 1,
               }}
             >

@@ -61,7 +61,7 @@
   color: #fff;
 }
 .access-btn-primary:hover {
-  background: #00006a;
+  background: var(--accent-dark);
 }
 
 .access-btn-ghost {

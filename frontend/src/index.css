@@ -1,15 +1,23 @@
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700&display=swap');
 
 :root {
-  --text: #3B3430;
-  --text-h: #3B3430;
-  --bg: #F2F0EF;
-  --border: #d6d2cf;
-  --code-bg: #e8e5e3;
-  --accent: #000080;
-  --accent-light: rgba(0, 0, 128, 0.1);
-  --accent-border: rgba(0, 0, 128, 0.4);
-  --complement: #808000;
+  --text: #001F3F;
+  --text-h: #001F3F;
+  --bg: #F6F7ED;
+  --border: #74C365;
+  --code-bg: #eef0e4;
+  --accent: #1E488F;
+  --accent-dark: #163a73;
+  --accent-light: rgba(30, 72, 143, 0.1);
+  --accent-border: rgba(30, 72, 143, 0.4);
+  --complement: #DBE64C;
+  --nav-bg: #001F3F;
+  --nav-border: #00162d;
+  --success: #00804C;
+  --success-light: #74C365;
+  --error: #bf360c;
+  --error-bg: #fbe9e7;
+  --error-border: #ffccbc;
 
   --sans: 'Noto Sans', sans-serif;
   --heading: 'Noto Sans', sans-serif;
