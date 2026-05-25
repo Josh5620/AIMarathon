@@ -32,7 +32,7 @@ export default function ProtectedRoute({ children }) {
         <button
           type="button"
           onClick={signOut}
-          className="flex items-center gap-[6px] bg-primary hover:bg-accent-hover text-on-primary font-semibold text-[0.78rem] px-[14px] py-[6px] rounded-none transition-all active:scale-95"
+          className="flex items-center gap-sm bg-primary hover:bg-accent-hover text-on-primary font-bold text-label-sm px-lg py-sm rounded-xl transition-all active:scale-95"
         >
           <span className="material-symbols-outlined text-[18px]">logout</span>
           Sign out

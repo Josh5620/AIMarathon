@@ -72,7 +72,7 @@ export default function RecruiterProfileModal({ email, profile, onClose, onSaved
       aria-modal="true"
       aria-labelledby="profile-modal-title"
     >
-      <div className="w-full max-w-xl max-h-[90vh] overflow-y-auto rounded-none bg-surface-container-lowest border border-outline-variant shadow-modal">
+      <div className="w-full max-w-xl max-h-[90vh] overflow-y-auto rounded-xl bg-surface-container-lowest border border-outline-variant shadow-modal">
         <div className="sticky top-0 z-10 flex items-center justify-between px-lg py-md border-b border-outline-variant bg-surface-container-lowest">
           <div>
             <h2 id="profile-modal-title" className="text-headline-md font-bold text-on-surface">Profile</h2>
@@ -80,7 +80,7 @@ export default function RecruiterProfileModal({ email, profile, onClose, onSaved
           </div>
           <button
             type="button"
-            className="w-9 h-9 rounded-none hover:bg-surface-container text-on-surface-variant"
+            className="w-9 h-9 rounded-full hover:bg-surface-container text-on-surface-variant"
             onClick={onClose}
             aria-label="Close"
           >
@@ -90,7 +90,7 @@ export default function RecruiterProfileModal({ email, profile, onClose, onSaved
 
         <form onSubmit={handleSave} className="p-lg space-y-md">
           {error && (
-            <div className="rounded-none border border-red-200 bg-red-50 text-error text-label-sm px-md py-sm">
+            <div className="rounded-lg border border-red-200 bg-red-50 text-error text-label-sm px-md py-sm">
               {error}
             </div>
           )}
@@ -107,7 +107,7 @@ export default function RecruiterProfileModal({ email, profile, onClose, onSaved
                   onChange={(e) => setForm((f) => ({ ...f, [key]: e.target.value }))}
                   placeholder={placeholder}
                   rows={4}
-                  className="w-full rounded-none border border-outline-variant bg-surface px-md py-sm text-body-md text-on-surface placeholder:text-on-surface-variant/70 outline-none focus:border-primary"
+                  className="w-full rounded-lg border border-outline-variant bg-surface px-md py-sm text-body-md text-on-surface placeholder:text-on-surface-variant/70 outline-none focus:border-primary"
                 />
               ) : (
                 <input
@@ -116,7 +116,7 @@ export default function RecruiterProfileModal({ email, profile, onClose, onSaved
                   value={form[key]}
                   onChange={(e) => setForm((f) => ({ ...f, [key]: e.target.value }))}
                   placeholder={placeholder}
-                  className="w-full rounded-none border border-outline-variant bg-surface px-md py-sm text-body-md text-on-surface placeholder:text-on-surface-variant/70 outline-none focus:border-primary"
+                  className="w-full rounded-lg border border-outline-variant bg-surface px-md py-sm text-body-md text-on-surface placeholder:text-on-surface-variant/70 outline-none focus:border-primary"
                 />
               )}
             </div>
@@ -126,14 +126,14 @@ export default function RecruiterProfileModal({ email, profile, onClose, onSaved
             <button
               type="button"
               onClick={onClose}
-              className="px-lg py-sm rounded-none border border-outline-variant text-label-sm text-on-surface-variant hover:bg-surface-container transition-colors"
+              className="px-lg py-sm rounded-lg border border-outline-variant text-label-sm text-on-surface-variant hover:bg-surface-container transition-colors"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={saving}
-              className="px-lg py-sm rounded-none bg-primary text-on-primary text-label-sm font-bold hover:bg-accent-hover disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
+              className="px-lg py-sm rounded-lg bg-primary text-on-primary text-label-sm font-bold hover:bg-accent-hover disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
             >
               {saving ? 'Saving...' : 'Save'}
             </button>
