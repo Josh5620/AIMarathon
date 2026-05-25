@@ -70,7 +70,7 @@ export default function RecruiterLayout() {
   return (
     <div className="flex min-h-screen bg-surface font-sans">
       {/* Sidebar */}
-      <aside className="fixed left-0 top-0 h-full w-64 bg-surface-container border-r border-outline-variant flex flex-col z-50 shadow-sidebar">
+      <aside className="print:hidden fixed left-0 top-0 h-full w-64 bg-surface-container border-r border-outline-variant flex flex-col z-50 shadow-sidebar">
 
         {/* Logo + Theme toggle */}
         <div className="flex items-center justify-between px-md py-lg">
@@ -85,7 +85,7 @@ export default function RecruiterLayout() {
         </div>
 
         {/* Nav */}
-        <nav className="flex-1 px-sm space-y-xs">
+        <nav className="flex-1 overflow-y-auto min-h-0 px-sm space-y-xs">
           <NavLink
             to="/recruiter"
             end
@@ -188,7 +188,7 @@ export default function RecruiterLayout() {
       </aside>
 
       {/* Main content */}
-      <main className="ml-64 flex-1 min-h-screen">
+      <main className="ml-64 print:ml-0 flex-1 min-h-screen">
         <Outlet />
       </main>
 

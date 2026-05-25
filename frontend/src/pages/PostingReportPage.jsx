@@ -97,7 +97,7 @@ export default function PostingReportPage() {
               <div>
                 <span className="font-bold text-base">#{idx + 1} {app.name || 'Unknown'}</span>
                 {app.is_interested && (
-                  <span className="ml-2 text-yellow-500 text-[0.9rem]">★ Interested</span>
+                  <span className="ml-2 text-amber-700 dark:text-yellow-400 text-[0.9rem]">★ Interested</span>
                 )}
                 {app.email && <div className="text-[0.8rem] text-on-surface-variant mt-0.5">{app.email}</div>}
                 <div className="flex flex-wrap gap-2 mt-1.5 text-[0.78rem] text-on-surface-variant">
@@ -123,7 +123,7 @@ export default function PostingReportPage() {
             {app.overlap_keywords?.length > 0 && (
               <div className="flex flex-wrap gap-1 mt-2.5">
                 {app.overlap_keywords.map(kw => (
-                  <span key={kw} className="px-2 py-0.5 rounded-full text-[0.68rem] bg-green-50 dark:bg-green-900/30 text-picture-book-green dark:text-green-400">
+                  <span key={kw} className="px-2 py-0.5 rounded-full text-[0.68rem] border border-picture-book-green/40 bg-green-50 dark:bg-green-900/30 text-picture-book-green dark:text-green-400">
                     {kw}
                   </span>
                 ))}
@@ -144,6 +144,7 @@ export default function PostingReportPage() {
           .no-print { display: none !important; }
           body { background: #fff !important; }
           article { max-width: 100% !important; margin: 0 !important; }
+          main { margin-left: 0 !important; }
         }
       `}</style>
     </>

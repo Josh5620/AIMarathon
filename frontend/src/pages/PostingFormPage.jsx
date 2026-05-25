@@ -102,27 +102,6 @@ export default function PostingFormPage() {
             </Field>
           </div>
 
-          {/* ToDo: Location and Job Type fields — not in backend schema, values not submitted */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-md">
-            <Field label="Location" hint="Visual only — not yet saved to backend">
-              <input
-                name="location"
-                placeholder="e.g. London / Remote"
-                className="form-input opacity-60"
-                disabled
-              />
-            </Field>
-
-            <Field label="Job Type" hint="Visual only — not yet saved to backend">
-              <select className="form-input opacity-60" disabled>
-                <option>Full-time</option>
-                <option>Part-time</option>
-                <option>Contract</option>
-                <option>Remote</option>
-              </select>
-            </Field>
-          </div>
-
           <Field label="Job Description" required hint="Paste the full job description — the more detail, the better the AI matching.">
             <textarea
               name="description"

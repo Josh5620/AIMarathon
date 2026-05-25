@@ -13,7 +13,6 @@ export default function PostingCandidatesPage() {
   const [postingError, setPostingError] = useState('')
   const [closingPosting, setClosingPosting] = useState(false)
   const [helpOpen, setHelpOpen] = useState(false)
-
   useEffect(() => {
     getPosting(postingId)
       .then(p => { if (!p) setPostingError('Posting not found.'); else setPosting(p) })
@@ -100,16 +99,13 @@ export default function PostingCandidatesPage() {
           <span className="text-on-surface font-semibold truncate max-w-xs">{posting.position_title}</span>
         </nav>
 
-        {/* ToDo: Notifications and Help buttons — no backend */}
-        <div className="flex items-center gap-sm">
-          <button
-            onClick={() => setHelpOpen(true)}
-            className="p-xs rounded-lg text-on-surface-variant hover:bg-surface-container transition-colors"
-            title="Help"
-          >
-            <span className="material-symbols-outlined text-[20px]">help</span>
-          </button>
-        </div>
+        <button
+          onClick={() => setHelpOpen(true)}
+          className="p-xs rounded-lg text-on-surface-variant hover:bg-surface-container transition-colors"
+          title="Help"
+        >
+          <span className="material-symbols-outlined text-[20px]">help</span>
+        </button>
       </header>
 
       <div className="p-page-margin">
