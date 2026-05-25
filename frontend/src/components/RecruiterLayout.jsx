@@ -101,19 +101,6 @@ export default function RecruiterLayout() {
             Dashboard
           </NavLink>
 
-          <NavLink
-            to="/recruiter"
-            className={({ isActive }) =>
-              `flex items-center gap-3 px-md py-sm rounded-lg text-label-sm transition-colors duration-200 ${
-                isActive && window.location.pathname !== '/recruiter'
-                  ? 'bg-secondary-container text-primary font-bold'
-                  : 'text-on-surface-variant hover:bg-surface-container-high'
-              }`
-            }
-          >
-            <span className="material-symbols-outlined text-[20px]">work</span>
-            My Postings
-          </NavLink>
 
           {/* Meetings nav item with inline collapsible panel */}
           <div>
@@ -192,7 +179,7 @@ export default function RecruiterLayout() {
 
           <button
             onClick={signOut}
-            className="mt-sm w-full flex items-center gap-sm px-md py-sm rounded-full bg-midnight-mirage text-on-primary text-label-sm font-medium hover:bg-nuit-blanche transition-colors duration-200"
+            className="mt-sm w-full flex items-center gap-sm px-md py-sm rounded-full bg-midnight-mirage text-on-primary dark:bg-praxeti-white dark:text-midnight-mirage text-label-sm font-medium hover:bg-nuit-blanche dark:hover:bg-white/80 transition-colors duration-200"
           >
             <span className="material-symbols-outlined text-[18px]">logout</span>
             Sign out
