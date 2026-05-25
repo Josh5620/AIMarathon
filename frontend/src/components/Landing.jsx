@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react'
 import { Navigate, useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '../auth/AuthContext'
+import ThemeToggle from './ThemeToggle'
 
 export default function Landing() {
   const { session, loading, signInWithGoogle } = useAuth()
@@ -45,7 +46,12 @@ export default function Landing() {
   if (session) return <Navigate to="/recruiter" replace />
 
   return (
-    <div className="relative min-h-screen flex flex-col items-center justify-center bg-praxeti-white overflow-hidden">
+    <div className="relative min-h-screen flex flex-col items-center justify-center bg-praxeti-white dark:bg-surface overflow-hidden">
+      {/* Theme toggle */}
+      <div className="absolute top-6 right-6 z-20">
+        <ThemeToggle inline />
+      </div>
+
       {/* Animated gradient overlay */}
       <div
         ref={gradientRef}
@@ -61,7 +67,7 @@ export default function Landing() {
         {/* Logo */}
         <div className="animate-fade-up mb-lg">
           <img src="/logo.png" alt="HireLite" className="w-20 h-20 object-contain mx-auto mb-md" />
-          <h1 className="text-page-title font-bold text-midnight-mirage tracking-tight">
+          <h1 className="text-page-title font-bold text-midnight-mirage dark:text-on-surface tracking-tight">
             HireLite
           </h1>
           <p className="text-body-md text-on-surface-variant mt-xs">
@@ -70,7 +76,7 @@ export default function Landing() {
         </div>
 
         {/* Glass card */}
-        <div className="animate-fade-up w-full bg-white/80 backdrop-blur-sm border border-outline-variant rounded-xl shadow-modal p-card-padding flex flex-col gap-md">
+        <div className="animate-fade-up w-full bg-white/80 dark:bg-surface-container/80 backdrop-blur-sm border border-outline-variant rounded-xl shadow-modal p-card-padding flex flex-col gap-md">
           <p className="text-label-sm text-on-surface-variant">How would you like to continue?</p>
 
           {/* Primary: Google login */}

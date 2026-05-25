@@ -2,6 +2,9 @@ import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { getReport } from '../api'
 
+const sectionHeadCls = 'text-label-sm font-bold uppercase tracking-wide text-on-surface-variant mb-2.5 border-b border-outline-variant pb-1'
+const backBtnCls = 'bg-transparent border-none cursor-pointer text-primary text-[0.9rem] p-0 underline'
+
 export default function PostingReportPage() {
   const { postingId } = useParams()
   const navigate      = useNavigate()
@@ -17,58 +20,51 @@ export default function PostingReportPage() {
       .finally(() => setLoading(false))
   }, [postingId])
 
-  if (loading) return <div style={{ padding: '2rem', color: '#6e665f' }}>Generating report…</div>
-  if (error)   return <div style={{ padding: '2rem', color: '#c0392b' }}>{error}</div>
+  if (loading) return <div className="p-8 text-on-surface-variant">Generating report…</div>
+  if (error)   return <div className="p-8 text-error">{error}</div>
 
   const { posting, applicants } = report
 
   return (
     <>
       {/* Non-printable toolbar */}
-      <div className="no-print" style={{
-        display: 'flex', gap: 12, padding: '12px 24px',
-        borderBottom: '1px solid #e0dbd5', background: '#faf9f8',
-        alignItems: 'center',
-      }}>
-        <button onClick={() => navigate(`/recruiter/postings/${postingId}`)} style={backBtnStyle}>
+      <div className="no-print flex gap-3 px-6 py-3 border-b border-outline-variant bg-surface-container-lowest items-center">
+        <button onClick={() => navigate(`/recruiter/postings/${postingId}`)} className={backBtnCls}>
           ← Back to applicants
         </button>
-        <span style={{ flex: 1 }} />
+        <span className="flex-1" />
         <button
           onClick={() => window.print()}
-          style={{
-            padding: '8px 20px', fontWeight: 700, border: 'none',
-            borderRadius: 8, background: '#000080', color: '#fff', cursor: 'pointer',
-          }}
+          className="px-5 py-2 font-bold border-none rounded-lg bg-primary text-on-primary cursor-pointer"
         >
           Print / Save as PDF
         </button>
       </div>
 
-      <article style={{ maxWidth: 820, margin: '24px auto', padding: '0 1rem 3rem' }}>
+      <article className="max-w-[820px] mx-auto px-4 pb-12 mt-6">
         {/* Header */}
-        <div style={{ borderBottom: '2px solid #1a1a1a', paddingBottom: 16, marginBottom: 24 }}>
-          <h1 style={{ fontSize: '1.6rem', fontWeight: 700, margin: '0 0 4px' }}>
+        <div className="border-b-2 border-on-surface pb-4 mb-6">
+          <h1 className="text-[1.6rem] font-bold mb-1">
             Candidate Report
           </h1>
-          <h2 style={{ fontSize: '1.1rem', fontWeight: 600, margin: '0 0 4px', color: '#3B3430' }}>
+          <h2 className="text-[1.1rem] font-semibold mb-1 text-on-surface">
             {posting.position_title}
           </h2>
-          <p style={{ margin: 0, color: '#6e665f', fontSize: '0.875rem' }}>
+          <p className="m-0 text-on-surface-variant text-[0.875rem]">
             {posting.company_name} · Status: {posting.status} · Generated {new Date().toLocaleDateString()}
           </p>
         </div>
 
         {/* Posting summary */}
-        <div style={{ marginBottom: 28 }}>
-          <h3 style={sectionHead}>Job Description</h3>
-          <p style={{ whiteSpace: 'pre-wrap', lineHeight: 1.6, color: '#2a2a2a', fontSize: '0.875rem' }}>
+        <div className="mb-7">
+          <h3 className={sectionHeadCls}>Job Description</h3>
+          <p className="whitespace-pre-wrap leading-relaxed text-on-surface text-[0.875rem]">
             {posting.description}
           </p>
           {posting.requirements && (
             <>
-              <h3 style={{ ...sectionHead, marginTop: 16 }}>Requirements</h3>
-              <p style={{ whiteSpace: 'pre-wrap', lineHeight: 1.6, color: '#2a2a2a', fontSize: '0.875rem' }}>
+              <h3 className={`${sectionHeadCls} mt-4`}>Requirements</h3>
+              <p className="whitespace-pre-wrap leading-relaxed text-on-surface text-[0.875rem]">
                 {posting.requirements}
               </p>
             </>
@@ -76,10 +72,7 @@ export default function PostingReportPage() {
         </div>
 
         {/* Stats */}
-        <div style={{
-          display: 'flex', gap: 20, marginBottom: 28,
-          padding: '14px 18px', background: '#f5f5f5', borderRadius: 8,
-        }}>
+        <div className="flex gap-5 mb-7 px-4 py-3.5 bg-surface-container rounded-lg">
           <Stat label="Total applicants" value={applicants.length} />
           <Stat label="Interested" value={applicants.filter(a => a.is_interested).length} />
           <Stat label="Avg. match" value={
@@ -90,46 +83,47 @@ export default function PostingReportPage() {
         </div>
 
         {/* Candidate rows */}
-        <h3 style={sectionHead}>Ranked Applicants</h3>
+        <h3 className={sectionHeadCls}>Ranked Applicants</h3>
 
         {applicants.length === 0 && (
-          <p style={{ color: '#6e665f', fontStyle: 'italic' }}>No applicants yet.</p>
+          <p className="text-on-surface-variant italic">No applicants yet.</p>
         )}
 
         {applicants.map((app, idx) => (
-          <div key={app.application_id} style={{
-            border: '1px solid #e0dbd5', borderRadius: 10, padding: '16px 18px',
-            marginBottom: 14, pageBreakInside: 'avoid',
-            background: app.is_interested ? '#f9fff9' : '#fff',
-          }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12 }}>
+          <div key={app.application_id} className={`border border-outline-variant rounded-[10px] px-4 py-4 mb-3.5 break-inside-avoid ${
+            app.is_interested ? 'bg-green-50 dark:bg-green-900/20' : 'bg-surface-container-lowest'
+          }`}>
+            <div className="flex justify-between items-start gap-3">
               <div>
-                <span style={{ fontWeight: 700, fontSize: '1rem' }}>#{idx + 1} {app.name || 'Unknown'}</span>
+                <span className="font-bold text-base">#{idx + 1} {app.name || 'Unknown'}</span>
                 {app.is_interested && (
-                  <span style={{ marginLeft: 8, color: '#f59e0b', fontSize: '0.9rem' }}>★ Interested</span>
+                  <span className="ml-2 text-yellow-500 text-[0.9rem]">★ Interested</span>
                 )}
-                {app.email && <div style={{ fontSize: '0.8rem', color: '#6e665f', marginTop: 2 }}>{app.email}</div>}
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 6, fontSize: '0.78rem', color: '#555' }}>
+                {app.email && <div className="text-[0.8rem] text-on-surface-variant mt-0.5">{app.email}</div>}
+                <div className="flex flex-wrap gap-2 mt-1.5 text-[0.78rem] text-on-surface-variant">
                   {app.seniority && <span>{app.seniority}</span>}
                   {app.years_experience != null && <span>{app.years_experience}y exp</span>}
                   {app.location && <span>{app.location}</span>}
                 </div>
               </div>
-              <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                <div style={{
-                  fontSize: '1.3rem', fontWeight: 800,
-                  color: app.rank_score >= 0.75 ? '#2e7d32' : app.rank_score >= 0.5 ? '#e65100' : '#c0392b',
-                }}>
+              <div className="text-right shrink-0">
+                <div className={`text-[1.3rem] font-extrabold ${
+                  app.rank_score >= 0.75
+                    ? 'text-picture-book-green dark:text-green-400'
+                    : app.rank_score >= 0.5
+                      ? 'text-amber-600 dark:text-amber-400'
+                      : 'text-error'
+                }`}>
                   {app.rank_score != null ? `${Math.round(app.rank_score * 100)}%` : '—'}
                 </div>
-                <div style={{ fontSize: '0.7rem', color: '#9e9892' }}>match</div>
+                <div className="text-[0.7rem] text-on-surface-variant">match</div>
               </div>
             </div>
 
             {app.overlap_keywords?.length > 0 && (
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, marginTop: 10 }}>
+              <div className="flex flex-wrap gap-1 mt-2.5">
                 {app.overlap_keywords.map(kw => (
-                  <span key={kw} style={{ padding: '2px 8px', borderRadius: 20, fontSize: '0.68rem', background: '#e8f5e9', color: '#2e7d32' }}>
+                  <span key={kw} className="px-2 py-0.5 rounded-full text-[0.68rem] bg-green-50 dark:bg-green-900/30 text-picture-book-green dark:text-green-400">
                     {kw}
                   </span>
                 ))}
@@ -137,7 +131,7 @@ export default function PostingReportPage() {
             )}
 
             {app.explanation && (
-              <p style={{ marginTop: 10, fontSize: '0.85rem', lineHeight: 1.6, color: '#2a2a2a', borderTop: '1px solid #e0dbd5', paddingTop: 10 }}>
+              <p className="mt-2.5 text-label-sm leading-relaxed text-on-surface border-t border-outline-variant pt-2.5">
                 {app.explanation}
               </p>
             )}
@@ -158,20 +152,9 @@ export default function PostingReportPage() {
 
 function Stat({ label, value }) {
   return (
-    <div style={{ flex: 1, textAlign: 'center' }}>
-      <div style={{ fontSize: '1.4rem', fontWeight: 800, color: '#1a1a1a' }}>{value}</div>
-      <div style={{ fontSize: '0.75rem', color: '#6e665f' }}>{label}</div>
+    <div className="flex-1 text-center">
+      <div className="text-[1.4rem] font-extrabold text-on-surface">{value}</div>
+      <div className="text-[0.75rem] text-on-surface-variant">{label}</div>
     </div>
   )
-}
-
-const sectionHead = {
-  fontSize: '0.85rem', fontWeight: 700, textTransform: 'uppercase',
-  letterSpacing: '0.05em', color: '#6e665f',
-  margin: '0 0 10px', borderBottom: '1px solid #e0dbd5', paddingBottom: 4,
-}
-
-const backBtnStyle = {
-  background: 'none', border: 'none', cursor: 'pointer',
-  color: '#000080', fontSize: '0.9rem', padding: 0, textDecoration: 'underline',
 }

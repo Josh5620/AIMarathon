@@ -3,6 +3,7 @@ import { Outlet, NavLink, useNavigate } from 'react-router-dom'
 import { useAuth } from '../auth/AuthContext'
 import { getRecruiter, getMeetings, cancelMeeting } from '../api'
 import RecruiterProfileModal from './RecruiterProfileModal'
+import ThemeToggle from './ThemeToggle'
 
 function initials(name, email) {
   if (name) {
@@ -71,13 +72,16 @@ export default function RecruiterLayout() {
       {/* Sidebar */}
       <aside className="fixed left-0 top-0 h-full w-64 bg-surface-container border-r border-outline-variant flex flex-col z-50 shadow-sidebar">
 
-        {/* Logo */}
-        <div
-          className="flex items-center gap-3 px-md py-lg cursor-pointer"
-          onClick={() => navigate('/recruiter')}
-        >
-          <img src="/logo.png" alt="HireLite logo" className="w-8 h-8 object-contain rounded" />
-          <span className="text-section-head font-bold text-primary tracking-tight">HireLite</span>
+        {/* Logo + Theme toggle */}
+        <div className="flex items-center justify-between px-md py-lg">
+          <div
+            className="flex items-center gap-3 cursor-pointer"
+            onClick={() => navigate('/recruiter')}
+          >
+            <img src="/logo.png" alt="HireLite logo" className="w-8 h-8 object-contain rounded" />
+            <span className="text-section-head font-bold text-primary tracking-tight">HireLite</span>
+          </div>
+          <ThemeToggle inline />
         </div>
 
         {/* Nav */}

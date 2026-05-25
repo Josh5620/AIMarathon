@@ -76,9 +76,9 @@ export default function PostingCandidatesPage() {
   const scoreLabel = (s) => s == null ? '—' : `${Math.round(s * 100)}%`
   const scoreBg = (s) => {
     if (s == null) return 'bg-surface-container text-on-surface-variant'
-    if (s >= 0.75) return 'bg-green-50 text-picture-book-green'
-    if (s >= 0.5)  return 'bg-amber-50 text-amber-700'
-    return 'bg-red-50 text-error'
+    if (s >= 0.75) return 'bg-green-50 dark:bg-green-900/30 text-picture-book-green dark:text-green-400'
+    if (s >= 0.5)  return 'bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400'
+    return 'bg-red-50 dark:bg-red-900/30 text-error'
   }
 
   if (postingLoading) return (
@@ -91,7 +91,7 @@ export default function PostingCandidatesPage() {
   return (
     <div className="min-h-screen bg-surface">
       {/* Sticky header bar with breadcrumb */}
-      <header className="sticky top-0 z-40 bg-surface border-b border-outline-variant px-page-margin h-16 flex items-center justify-between gap-md">
+      <header className="sticky top-0 z-40 bg-surface/80 backdrop-blur-md border-b border-outline-variant px-page-margin h-16 flex items-center justify-between gap-md">
         <nav className="flex items-center gap-xs text-meta text-on-surface-variant">
           <button onClick={() => navigate('/recruiter')} className="hover:text-primary transition-colors">
             Dashboard
@@ -120,8 +120,8 @@ export default function PostingCandidatesPage() {
               <h1 className="text-headline-lg font-bold text-primary">{posting.position_title}</h1>
               <span className={`px-sm py-xs rounded-full text-meta font-semibold ${
                 posting.status === 'open'
-                  ? 'bg-green-50 text-picture-book-green'
-                  : 'bg-pink-50 text-pink-700'
+                  ? 'bg-green-50 dark:bg-green-900/30 text-picture-book-green dark:text-green-400'
+                  : 'bg-pink-50 dark:bg-pink-900/30 text-pink-700 dark:text-pink-400'
               }`}>
                 {posting.status === 'open' ? 'Open' : 'Closed'}
               </span>
@@ -141,7 +141,7 @@ export default function PostingCandidatesPage() {
                   {closingPosting ? 'Closing…' : 'Close Posting'}
                 </button>
               : <button onClick={handleReopenPosting} disabled={closingPosting}
-                  className="flex items-center gap-xs px-lg py-sm border border-mantis rounded-xl text-label-sm text-picture-book-green hover:bg-green-50 transition-colors disabled:opacity-50">
+                  className="flex items-center gap-xs px-lg py-sm border border-mantis rounded-xl text-label-sm text-picture-book-green hover:bg-green-50 dark:hover:bg-green-900/30 transition-colors disabled:opacity-50">
                   <span className="material-symbols-outlined text-[16px]">lock_open</span>
                   {closingPosting ? 'Reopening…' : 'Reopen Posting'}
                 </button>
@@ -204,7 +204,7 @@ export default function PostingCandidatesPage() {
                     <div className="flex items-center gap-sm flex-wrap mb-xs">
                       <span className="text-headline-md font-bold text-on-surface">{app.name || 'Unknown'}</span>
                       {app.seniority && (
-                        <span className="px-sm py-xs rounded-full text-meta font-semibold bg-blue-50 text-blue-700">
+                        <span className="px-sm py-xs rounded-full text-meta font-semibold bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400">
                           {app.seniority}
                         </span>
                       )}
@@ -216,7 +216,7 @@ export default function PostingCandidatesPage() {
                     {app.overlap_keywords?.length > 0 && (
                       <div className="flex flex-wrap gap-xs">
                         {app.overlap_keywords.slice(0, 6).map(kw => (
-                          <span key={kw} className="px-sm py-xs rounded-full text-meta font-medium bg-green-50 text-picture-book-green">
+                          <span key={kw} className="px-sm py-xs rounded-full text-meta font-medium bg-green-50 dark:bg-green-900/30 text-picture-book-green dark:text-green-400">
                             {kw}
                           </span>
                         ))}

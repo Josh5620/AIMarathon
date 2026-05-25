@@ -2,6 +2,9 @@ import { useState, useEffect, useRef } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { getPosting, applyToPosting } from '../api'
 
+const backBtnCls = 'bg-transparent border-none cursor-pointer text-primary text-[0.9rem] p-0 underline'
+const sectionHeadCls = 'text-section-head font-bold text-on-surface mb-2 border-b border-outline-variant pb-1'
+
 export default function PostingDetailGuestPage() {
   const { postingId } = useParams()
   const navigate = useNavigate()
@@ -50,48 +53,47 @@ export default function PostingDetailGuestPage() {
     }
   }
 
-  if (loading) return <div style={{ padding: '2rem', color: '#6e665f' }}>Loading…</div>
+  if (loading) return <div className="p-8 text-on-surface-variant">Loading…</div>
   if (error)   return (
-    <div style={{ padding: '2rem' }}>
-      <p style={{ color: '#c0392b', marginBottom: 12 }}>{error}</p>
-      <button onClick={() => navigate('/candidate')} style={backBtnStyle}>← Back to postings</button>
+    <div className="p-8">
+      <p className="text-error mb-3">{error}</p>
+      <button onClick={() => navigate('/candidate')} className={backBtnCls}>← Back to postings</button>
     </div>
   )
 
   return (
-    <div style={{ maxWidth: 760, margin: '0 auto', padding: '2rem 1rem' }}>
-      <button onClick={() => navigate('/candidate')} style={backBtnStyle}>← All positions</button>
+    <div className="max-w-[760px] mx-auto py-8 px-4">
+      <button onClick={() => navigate('/candidate')} className={backBtnCls}>← All positions</button>
 
-      <div style={{ marginTop: 20 }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12, marginBottom: 4 }}>
-          <h1 style={{ fontSize: '1.6rem', fontWeight: 700, margin: 0 }}>{posting.position_title}</h1>
-          <span style={{
-            padding: '4px 12px', borderRadius: 20, fontSize: '0.8rem', fontWeight: 600,
-            background: posting.status === 'open' ? '#e8f5e9' : '#fce4ec',
-            color: posting.status === 'open' ? '#2e7d32' : '#880e4f',
-            whiteSpace: 'nowrap',
-          }}>
+      <div className="mt-5">
+        <div className="flex justify-between items-start gap-3 mb-1">
+          <h1 className="text-[1.6rem] font-bold m-0">{posting.position_title}</h1>
+          <span className={`px-3 py-1 rounded-full text-[0.8rem] font-semibold whitespace-nowrap ${
+            posting.status === 'open'
+              ? 'bg-green-50 dark:bg-green-900/30 text-picture-book-green dark:text-green-400'
+              : 'bg-pink-50 dark:bg-pink-900/30 text-pink-800 dark:text-pink-300'
+          }`}>
             {posting.status === 'open' ? 'Open' : 'Closed'}
           </span>
         </div>
-        <p style={{ color: '#6e665f', marginBottom: 24, fontSize: '1rem' }}>{posting.company_name}</p>
+        <p className="text-on-surface-variant mb-6 text-base">{posting.company_name}</p>
 
-        <section style={{ marginBottom: 28 }}>
-          <h2 style={sectionHeadStyle}>Job Description</h2>
-          <p style={{ whiteSpace: 'pre-wrap', lineHeight: 1.7, color: '#2a2a2a' }}>{posting.description}</p>
+        <section className="mb-7">
+          <h2 className={sectionHeadCls}>Job Description</h2>
+          <p className="whitespace-pre-wrap leading-[1.7] text-on-surface">{posting.description}</p>
         </section>
 
         {posting.requirements && (
-          <section style={{ marginBottom: 28 }}>
-            <h2 style={sectionHeadStyle}>Requirements</h2>
-            <p style={{ whiteSpace: 'pre-wrap', lineHeight: 1.7, color: '#2a2a2a' }}>{posting.requirements}</p>
+          <section className="mb-7">
+            <h2 className={sectionHeadCls}>Requirements</h2>
+            <p className="whitespace-pre-wrap leading-[1.7] text-on-surface">{posting.requirements}</p>
           </section>
         )}
 
         {posting.status === 'open' && !applied && !alreadyApplied && (
           <section>
-            <h2 style={sectionHeadStyle}>Apply for this Role</h2>
-            <p style={{ fontSize: '0.875rem', color: '#6e665f', marginBottom: 12 }}>
+            <h2 className={sectionHeadCls}>Apply for this Role</h2>
+            <p className="text-[0.875rem] text-on-surface-variant mb-3">
               Upload your CV (PDF or DOCX). No account required.
             </p>
 
@@ -100,42 +102,37 @@ export default function PostingDetailGuestPage() {
               onDrop={handleDrop}
               onDragOver={e => { e.preventDefault(); setDragging(true) }}
               onDragLeave={() => setDragging(false)}
-              style={{
-                border: `2px dashed ${dragging ? '#000080' : '#c4bfba'}`,
-                borderRadius: 10,
-                padding: '32px 20px',
-                textAlign: 'center',
-                cursor: 'pointer',
-                background: dragging ? '#f0f0ff' : '#faf9f8',
-                marginBottom: 12,
-              }}
+              className={`border-2 border-dashed rounded-[10px] py-8 px-5 text-center cursor-pointer mb-3 ${
+                dragging
+                  ? 'border-primary bg-primary/5'
+                  : 'border-outline-variant bg-surface-container-lowest'
+              }`}
             >
               <input
                 ref={inputRef}
                 type="file"
                 accept=".pdf,.docx,.doc,.png,.jpg,.jpeg"
-                style={{ display: 'none' }}
+                className="hidden"
                 onChange={e => { const f = e.target.files?.[0]; if (f) { setFile(f); setApplyError('') } }}
               />
               {file
-                ? <p style={{ margin: 0, fontWeight: 600, color: '#000080' }}>{file.name}</p>
-                : <p style={{ margin: 0, color: '#6e665f', fontSize: '0.9rem' }}>
-                    Drop your CV here or <span style={{ color: '#000080', textDecoration: 'underline' }}>browse files</span>
+                ? <p className="m-0 font-semibold text-primary">{file.name}</p>
+                : <p className="m-0 text-on-surface-variant text-[0.9rem]">
+                    Drop your CV here or <span className="text-primary underline">browse files</span>
                   </p>
               }
             </div>
 
-            {applyError && <p style={{ color: '#c0392b', fontSize: '0.875rem', marginBottom: 8 }}>{applyError}</p>}
+            {applyError && <p className="text-error text-[0.875rem] mb-2">{applyError}</p>}
 
             <button
               onClick={handleApply}
               disabled={!file || applying}
-              style={{
-                padding: '10px 28px', fontSize: '0.95rem', fontWeight: 700,
-                border: 'none', borderRadius: 8,
-                background: !file || applying ? '#aaa' : '#000080',
-                color: '#fff', cursor: !file || applying ? 'not-allowed' : 'pointer',
-              }}
+              className={`px-7 py-2.5 text-[0.95rem] font-bold border-none rounded-lg text-on-primary cursor-pointer ${
+                !file || applying
+                  ? 'bg-on-surface-variant/40 cursor-not-allowed'
+                  : 'bg-primary'
+              }`}
             >
               {applying ? 'Submitting…' : 'Submit Application'}
             </button>
@@ -143,29 +140,23 @@ export default function PostingDetailGuestPage() {
         )}
 
         {posting.status !== 'open' && (
-          <p style={{ color: '#888', fontStyle: 'italic' }}>This position is no longer accepting applications.</p>
+          <p className="text-on-surface-variant italic">This position is no longer accepting applications.</p>
         )}
 
         {alreadyApplied && (
-          <div style={{
-            background: '#e3f2fd', border: '1px solid #90caf9', borderRadius: 10,
-            padding: '20px 24px', textAlign: 'center',
-          }}>
-            <h3 style={{ margin: '0 0 8px', color: '#1565c0' }}>Already applied</h3>
-            <p style={{ margin: 0, color: '#4a4a4a', fontSize: '0.9rem' }}>
+          <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-300 dark:border-blue-700 rounded-[10px] px-6 py-5 text-center">
+            <h3 className="m-0 mb-2 text-blue-700 dark:text-blue-300">Already applied</h3>
+            <p className="m-0 text-on-surface-variant text-[0.9rem]">
               You have already applied to <strong>{posting.position_title}</strong> at <strong>{posting.company_name}</strong> with this CV.
             </p>
           </div>
         )}
 
         {applied && (
-          <div style={{
-            background: '#e8f5e9', border: '1px solid #a5d6a7', borderRadius: 10,
-            padding: '20px 24px', textAlign: 'center',
-          }}>
-            <div style={{ fontSize: '2rem', marginBottom: 8 }}>✓</div>
-            <h3 style={{ margin: '0 0 8px', color: '#2e7d32' }}>Application received!</h3>
-            <p style={{ margin: 0, color: '#4a4a4a', fontSize: '0.9rem' }}>
+          <div className="bg-green-50 dark:bg-green-900/20 border border-green-300 dark:border-green-700 rounded-[10px] px-6 py-5 text-center">
+            <div className="text-[2rem] mb-2">✓</div>
+            <h3 className="m-0 mb-2 text-picture-book-green dark:text-green-400">Application received!</h3>
+            <p className="m-0 text-on-surface-variant text-[0.9rem]">
               Your CV has been submitted for <strong>{posting.position_title}</strong> at <strong>{posting.company_name}</strong>.
             </p>
           </div>
@@ -173,14 +164,4 @@ export default function PostingDetailGuestPage() {
       </div>
     </div>
   )
-}
-
-const backBtnStyle = {
-  background: 'none', border: 'none', cursor: 'pointer',
-  color: '#000080', fontSize: '0.9rem', padding: 0, textDecoration: 'underline',
-}
-
-const sectionHeadStyle = {
-  fontSize: '1rem', fontWeight: 700, color: '#3B3430',
-  marginBottom: 8, borderBottom: '1px solid #e0dbd5', paddingBottom: 4,
 }

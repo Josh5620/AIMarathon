@@ -69,108 +69,110 @@ export default function PostingFormPage() {
       </header>
 
       {error && (
-        <div className="flex items-center gap-sm bg-red-50 border border-red-200 rounded-xl px-md py-sm mb-gutter text-error text-label-sm">
+        <div className="flex items-center gap-sm bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-xl px-md py-sm mb-gutter text-error text-label-sm">
           <span className="material-symbols-outlined text-[18px]">error</span>
           {error}
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="flex flex-col gap-gutter">
-        {/* Two-column row: Company + Title */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-md">
-          <Field label="Company Name" required>
-            <input
-              name="company_name"
-              value={form.company_name}
+      <form onSubmit={handleSubmit}>
+        <div className="bg-surface-container border border-outline-variant rounded-2xl p-lg md:p-xl flex flex-col gap-gutter shadow-sm">
+          {/* Two-column row: Company + Title */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-md">
+            <Field label="Company Name" required>
+              <input
+                name="company_name"
+                value={form.company_name}
+                onChange={handleChange}
+                placeholder="e.g. Acme Corp"
+                required
+                className="form-input"
+              />
+            </Field>
+
+            <Field label="Job Title / Position" required>
+              <input
+                name="position_title"
+                value={form.position_title}
+                onChange={handleChange}
+                placeholder="e.g. Senior Backend Engineer"
+                required
+                className="form-input"
+              />
+            </Field>
+          </div>
+
+          {/* ToDo: Location and Job Type fields — not in backend schema, values not submitted */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-md">
+            <Field label="Location" hint="Visual only — not yet saved to backend">
+              <input
+                name="location"
+                placeholder="e.g. London / Remote"
+                className="form-input opacity-60"
+                disabled
+              />
+            </Field>
+
+            <Field label="Job Type" hint="Visual only — not yet saved to backend">
+              <select className="form-input opacity-60" disabled>
+                <option>Full-time</option>
+                <option>Part-time</option>
+                <option>Contract</option>
+                <option>Remote</option>
+              </select>
+            </Field>
+          </div>
+
+          <Field label="Job Description" required hint="Paste the full job description — the more detail, the better the AI matching.">
+            <textarea
+              name="description"
+              value={form.description}
               onChange={handleChange}
-              placeholder="e.g. Acme Corp"
+              placeholder="Describe the role, responsibilities, team, and what success looks like…"
+              rows={8}
               required
-              className="form-input"
+              className="form-input resize-y"
             />
           </Field>
 
-          <Field label="Job Title / Position" required>
-            <input
-              name="position_title"
-              value={form.position_title}
+          <Field label="Requirements" hint="Optional. Skills, qualifications, experience — separate from the main description.">
+            <textarea
+              name="requirements"
+              value={form.requirements}
               onChange={handleChange}
-              placeholder="e.g. Senior Backend Engineer"
-              required
-              className="form-input"
-            />
-          </Field>
-        </div>
-
-        {/* ToDo: Location and Job Type fields — not in backend schema, values not submitted */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-md">
-          <Field label="Location" hint="Visual only — not yet saved to backend">
-            <input
-              name="location"
-              placeholder="e.g. London / Remote"
-              className="form-input opacity-60"
-              disabled
+              placeholder="e.g. 5+ years Python, experience with distributed systems…"
+              rows={5}
+              className="form-input resize-y"
             />
           </Field>
 
-          <Field label="Job Type" hint="Visual only — not yet saved to backend">
-            <select className="form-input opacity-60" disabled>
-              <option>Full-time</option>
-              <option>Part-time</option>
-              <option>Contract</option>
-              <option>Remote</option>
-            </select>
-          </Field>
-        </div>
-
-        <Field label="Job Description" required hint="Paste the full job description — the more detail, the better the AI matching.">
-          <textarea
-            name="description"
-            value={form.description}
-            onChange={handleChange}
-            placeholder="Describe the role, responsibilities, team, and what success looks like…"
-            rows={8}
-            required
-            className="form-input resize-y"
-          />
-        </Field>
-
-        <Field label="Requirements" hint="Optional. Skills, qualifications, experience — separate from the main description.">
-          <textarea
-            name="requirements"
-            value={form.requirements}
-            onChange={handleChange}
-            placeholder="e.g. 5+ years Python, experience with distributed systems…"
-            rows={5}
-            className="form-input resize-y"
-          />
-        </Field>
-
-        <div className="flex gap-md justify-end pt-sm">
-          <button
-            type="button"
-            onClick={() => navigate('/recruiter')}
-            disabled={submitting}
-            className="px-lg py-sm border border-outline-variant rounded-xl text-label-sm text-on-surface-variant hover:bg-surface-container transition-colors disabled:opacity-50"
-          >
-            Cancel
-          </button>
-          <button
-            type="submit"
-            disabled={submitting}
-            className="flex items-center gap-sm bg-primary hover:bg-accent-hover disabled:opacity-60 disabled:cursor-not-allowed text-on-primary font-bold text-label-sm px-xl py-sm rounded-xl transition-all duration-200 active:scale-95 shadow-sm"
-          >
-            {submitting ? (
-              <>
-                <span className="material-symbols-outlined animate-spin text-[18px]">sync</span>
-                Posting…
-              </>
-            ) : (
-              <>
-                <span className="material-symbols-outlined text-[18px]">publish</span>
-                Publish Posting
-              </>
-            )}
-          </button>
+          <div className="flex gap-md justify-end pt-sm">
+            <button
+              type="button"
+              onClick={() => navigate('/recruiter')}
+              disabled={submitting}
+              className="px-lg py-sm border border-outline-variant rounded-xl text-label-sm text-on-surface-variant hover:bg-surface-container transition-colors disabled:opacity-50"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={submitting}
+              className="flex items-center gap-sm bg-primary hover:bg-accent-hover disabled:opacity-60 disabled:cursor-not-allowed text-on-primary font-bold text-label-sm px-xl py-sm rounded-xl transition-all duration-200 active:scale-95 shadow-sm"
+            >
+              {submitting ? (
+                <>
+                  <span className="material-symbols-outlined animate-spin text-[18px]">sync</span>
+                  Posting…
+                </>
+              ) : (
+                <>
+                  <span className="material-symbols-outlined text-[18px]">publish</span>
+                  Publish Posting
+                </>
+              )}
+            </button>
+          </div>
         </div>
       </form>
 

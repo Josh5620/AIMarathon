@@ -1,8 +1,10 @@
 import { useState, useCallback, useRef, useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import { useNavigate } from 'react-router-dom'
 import { listOpenPostings, getPosting, applyToPosting } from '../api'
 import usePagination from '../hooks/usePagination'
 import Pagination from '../components/Pagination'
+import ThemeToggle from '../components/ThemeToggle'
 
 export default function CandidatePage() {
   const navigate = useNavigate()
@@ -100,7 +102,7 @@ export default function CandidatePage() {
   return (
     <div className="min-h-screen bg-surface">
       {/* Header */}
-      <header className="sticky top-0 z-40 bg-surface border-b border-outline-variant px-page-margin h-16 flex items-center gap-md">
+      <header className="sticky top-0 z-40 bg-surface/80 backdrop-blur-md border-b border-outline-variant px-page-margin h-16 flex items-center gap-md">
         <button
           onClick={() => navigate('/')}
           className="flex items-center gap-xs text-label-sm text-on-surface-variant hover:text-primary transition-colors"
@@ -109,6 +111,7 @@ export default function CandidatePage() {
           Back
         </button>
         <div className="flex items-center gap-sm ml-auto">
+          <ThemeToggle inline />
           <img src="/logo.png" alt="HireLite" className="w-7 h-7 object-contain" />
           <span className="text-section-head font-bold text-primary">HireLite</span>
         </div>
@@ -152,8 +155,8 @@ export default function CandidatePage() {
                 </div>
                 <span className={`flex-shrink-0 px-sm py-xs rounded-full text-meta font-semibold ${
                   posting.status === 'open'
-                    ? 'bg-green-50 text-picture-book-green'
-                    : 'bg-pink-50 text-pink-700'
+                    ? 'bg-green-50 dark:bg-green-900/30 text-picture-book-green dark:text-green-400'
+                    : 'bg-pink-50 dark:bg-pink-900/30 text-pink-700 dark:text-pink-400'
                 }`}>
                   {posting.status === 'open' ? 'Open' : 'Closed'}
                 </span>
@@ -171,56 +174,83 @@ export default function CandidatePage() {
       </div>
 
       {/* Modal */}
-      {modalVisible && (
+      {modalVisible && createPortal(
         <div
-          onClick={closeModal}
-          className={`fixed inset-0 z-50 flex items-center justify-center p-md transition-opacity duration-300 ${
+          onClick={(e) => { if (e.target === e.currentTarget) closeModal() }}
+          className={`fixed inset-0 z-50 flex items-center justify-center bg-black/45 p-sm sm:p-md transition-opacity duration-300 ${
             modalAnimating ? 'opacity-100' : 'opacity-0'
           }`}
-          style={{ background: 'rgba(0,0,0,0.45)' }}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="posting-modal-title"
         >
           <div
             onClick={e => e.stopPropagation()}
-            className={`bg-surface-container-lowest rounded-xl w-full max-w-2xl max-h-[85vh] overflow-y-auto shadow-modal relative transition-all duration-300 ${
+            className={`w-full max-w-2xl max-h-[90vh] flex flex-col rounded-xl bg-surface-container-lowest border border-outline-variant shadow-modal transition-all duration-300 ${
               modalAnimating ? 'opacity-100 scale-100' : 'opacity-0 scale-95'
             }`}
           >
-            {/* Close button */}
-            <button
-              onClick={closeModal}
-              className="absolute top-md right-md z-10 w-8 h-8 flex items-center justify-center rounded-full hover:bg-surface-container text-on-surface-variant transition-colors"
-              aria-label="Close"
-            >
-              <span className="material-symbols-outlined text-[20px]">close</span>
-            </button>
+            {/* Fixed header */}
+            <div className="flex-shrink-0 border-b border-outline-variant rounded-t-xl px-lg py-md">
+              <div className="flex items-start justify-between gap-md">
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-sm">
+                    <h2 id="posting-modal-title" className="text-headline-md font-bold text-on-surface truncate">
+                      {modalPosting?.position_title ?? 'Loading...'}
+                    </h2>
+                    {modalPosting && (
+                      <span className={`flex-shrink-0 px-sm py-xs rounded-full text-meta font-semibold ${
+                        modalPosting.status === 'open'
+                          ? 'bg-green-50 dark:bg-green-900/30 text-picture-book-green dark:text-green-400'
+                          : 'bg-pink-50 dark:bg-pink-900/30 text-pink-700 dark:text-pink-400'
+                      }`}>
+                        {modalPosting.status === 'open' ? 'Open' : 'Closed'}
+                      </span>
+                    )}
+                  </div>
+                  {modalPosting && (
+                    <div className="flex items-center gap-md mt-xs text-meta text-on-surface-variant">
+                      <span>{modalPosting.company_name}</span>
+                      {modalPosting.applicant_count != null && (
+                        <>
+                          <span className="opacity-30">·</span>
+                          <span>{modalPosting.applicant_count} applicant{modalPosting.applicant_count !== 1 ? 's' : ''}</span>
+                        </>
+                      )}
+                      {modalPosting.created_at && (
+                        <>
+                          <span className="opacity-30">·</span>
+                          <span>Posted {new Date(modalPosting.created_at).toLocaleDateString()}</span>
+                        </>
+                      )}
+                    </div>
+                  )}
+                </div>
+                <button
+                  onClick={closeModal}
+                  className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full hover:bg-surface-container text-on-surface-variant transition-colors"
+                  aria-label="Close"
+                >
+                  <span className="material-symbols-outlined text-[20px]">close</span>
+                </button>
+              </div>
+            </div>
 
-            <div className="p-card-padding">
+            {/* Scrollable body */}
+            <div className="flex-1 overflow-y-auto min-h-0 px-lg py-lg">
               {modalLoading && (
                 <div className="flex items-center justify-center py-xl gap-sm text-on-surface-variant">
                   <span className="material-symbols-outlined animate-spin">progress_activity</span>
-                  Loading…
+                  Loading...
                 </div>
               )}
 
               {modalError && <p className="text-error text-body-md">{modalError}</p>}
 
               {modalPosting && (
-                <div>
-                  {/* Header */}
-                  <div className="flex justify-between items-start gap-md mb-xs pr-xl">
-                    <h2 className="text-headline-lg font-bold text-on-surface">{modalPosting.position_title}</h2>
-                    <span className={`flex-shrink-0 px-sm py-xs rounded-full text-meta font-semibold ${
-                      modalPosting.status === 'open'
-                        ? 'bg-green-50 text-picture-book-green'
-                        : 'bg-pink-50 text-pink-700'
-                    }`}>
-                      {modalPosting.status === 'open' ? 'Open' : 'Closed'}
-                    </span>
-                  </div>
-                  <p className="text-body-md text-on-surface-variant mb-gutter">{modalPosting.company_name}</p>
-
+                <div className="flex flex-col gap-lg">
                   {/* Job Description */}
-                  <section className="mb-gutter">
+                  <section>
                     <h3 className="text-section-head font-bold text-primary uppercase tracking-wider border-b border-outline-variant pb-xs mb-md">
                       Job Description
                     </h3>
@@ -229,7 +259,7 @@ export default function CandidatePage() {
 
                   {/* Requirements */}
                   {modalPosting.requirements && (
-                    <section className="mb-gutter">
+                    <section>
                       <h3 className="text-section-head font-bold text-primary uppercase tracking-wider border-b border-outline-variant pb-xs mb-md">
                         Requirements
                       </h3>
@@ -239,7 +269,7 @@ export default function CandidatePage() {
 
                   {/* Apply section */}
                   {modalPosting.status === 'open' && !applied && (
-                    <section>
+                    <section className="pt-lg">
                       <h3 className="text-section-head font-bold text-primary uppercase tracking-wider border-b border-outline-variant pb-xs mb-md">
                         Apply for this Role
                       </h3>
@@ -247,17 +277,16 @@ export default function CandidatePage() {
                         Upload your CV (PDF or DOCX). No account required.
                       </p>
 
-                      {/* Dropzone */}
                       <div
                         onClick={() => fileInputRef.current?.click()}
                         onDrop={handleDrop}
                         onDragOver={e => { e.preventDefault(); setDragging(true) }}
                         onDragLeave={() => setDragging(false)}
-                        className={`border-2 border-dashed rounded-xl p-xl text-center cursor-pointer transition-all duration-200 mb-md ${
+                        className={`border-2 border-dashed rounded-xl p-xl text-center cursor-pointer transition-all duration-200 ${
                           dragging
-                            ? 'border-primary bg-blue-50'
+                            ? 'border-primary bg-blue-50 dark:bg-blue-900/30'
                             : file
-                              ? 'border-mantis bg-green-50'
+                              ? 'border-mantis bg-green-50 dark:bg-green-900/30'
                               : 'border-outline-variant hover:border-primary hover:bg-surface-container-low'
                         }`}
                       >
@@ -289,34 +318,21 @@ export default function CandidatePage() {
                       </div>
 
                       {applyError && (
-                        <p className="text-error text-label-sm mb-md">{applyError}</p>
+                        <p className="text-error text-label-sm mt-sm">{applyError}</p>
                       )}
-
-                      <button
-                        onClick={handleApply}
-                        disabled={!file || applying}
-                        className="flex items-center justify-center gap-sm bg-primary hover:bg-accent-hover disabled:opacity-50 disabled:cursor-not-allowed text-on-primary font-bold text-section-head py-3 px-xl rounded-lg transition-all duration-200 active:scale-95"
-                      >
-                        {applying ? (
-                          <>
-                            <span className="material-symbols-outlined animate-spin text-[18px]">progress_activity</span>
-                            Sending…
-                          </>
-                        ) : 'Submit Application'}
-                      </button>
                     </section>
                   )}
 
                   {/* Closed state */}
                   {modalPosting.status !== 'open' && (
-                    <p className="text-on-surface-variant italic text-body-md">
+                    <p className="text-on-surface-variant italic text-body-md border-t border-outline-variant pt-lg">
                       This position is no longer accepting applications.
                     </p>
                   )}
 
                   {/* Success state */}
                   {applied && (
-                    <div className="bg-green-50 border border-mantis rounded-xl p-card-padding text-center">
+                    <div className="bg-green-50 dark:bg-green-900/30 border border-mantis rounded-xl p-lg text-center">
                       <span className="material-symbols-outlined text-[40px] text-picture-book-green mb-sm block">check_circle</span>
                       <h3 className="text-headline-md font-bold text-picture-book-green mb-sm">Application received!</h3>
                       <p className="text-body-md text-on-surface">
@@ -329,8 +345,33 @@ export default function CandidatePage() {
                 </div>
               )}
             </div>
+
+            {/* Fixed footer */}
+            {modalPosting && modalPosting.status === 'open' && !applied && (
+              <div className="flex-shrink-0 border-t border-outline-variant rounded-b-xl px-lg py-md flex items-center justify-end gap-md">
+                <button
+                  onClick={closeModal}
+                  className="px-lg py-sm border border-outline-variant rounded-xl text-label-sm text-on-surface-variant hover:bg-surface-container transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleApply}
+                  disabled={!file || applying}
+                  className="flex items-center justify-center gap-sm bg-primary hover:bg-accent-hover disabled:opacity-50 disabled:cursor-not-allowed text-on-primary font-bold text-label-sm py-sm px-xl rounded-xl transition-all duration-200 active:scale-95"
+                >
+                  {applying ? (
+                    <>
+                      <span className="material-symbols-outlined animate-spin text-[18px]">progress_activity</span>
+                      Sending...
+                    </>
+                  ) : 'Submit Application'}
+                </button>
+              </div>
+            )}
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   )

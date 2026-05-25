@@ -55,8 +55,8 @@ export default function RecruiterPage() {
   const statusBadge = (status) => (
     <span className={`px-sm py-xs rounded-full text-meta font-semibold flex-shrink-0 ${
       status === 'open'
-        ? 'bg-green-50 text-picture-book-green'
-        : 'bg-pink-50 text-pink-700'
+        ? 'bg-green-50 dark:bg-green-900/30 text-picture-book-green dark:text-green-400'
+        : 'bg-pink-50 dark:bg-pink-900/30 text-pink-700 dark:text-pink-400'
     }`}>
       {status === 'open' ? 'Open' : 'Closed'}
     </span>
@@ -169,7 +169,7 @@ export default function RecruiterPage() {
                   </button>
                   <button
                     onClick={e => handleDelete(e, posting.id)}
-                    className="flex items-center gap-xs px-md py-xs border border-red-200 rounded-lg text-label-sm text-error hover:bg-red-50 transition-colors"
+                    className="flex items-center gap-xs px-md py-xs border border-red-200 dark:border-red-800 rounded-lg text-label-sm text-error hover:bg-red-50 dark:hover:bg-red-900/30 transition-colors"
                     title="Delete posting"
                   >
                     <span className="material-symbols-outlined text-[16px]">delete</span>
@@ -185,9 +185,9 @@ export default function RecruiterPage() {
 
       {/* ToDo: "Grow your team intelligently" CTA — decorative only, no action wired */}
       {!loading && totalPostings > 0 && (
-        <section className="mt-gutter bg-primary text-on-primary rounded-xl p-card-padding flex flex-col md:flex-row items-center gap-gutter">
+        <section className="mt-gutter bg-nuit-blanche text-on-primary rounded-xl p-card-padding flex flex-col md:flex-row items-center gap-gutter">
           <div className="flex-1">
-            <h3 className="text-headline-md font-bold mb-xs">Grow your team intelligently</h3>
+            <h3 className="text-headline-md font-bold mb-xs text-white">Grow your team intelligently</h3>
             <p className="text-body-md opacity-80">
               AI-powered matching finds the best candidates for every role automatically.
             </p>

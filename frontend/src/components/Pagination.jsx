@@ -6,20 +6,22 @@ export default function Pagination({ page, totalPages, onChange }) {
   const end   = Math.min(totalPages, page + 2)
   for (let i = start; i <= end; i++) pages.push(i)
 
+  const btnBase = 'px-3 py-1 text-label-sm border border-outline-variant rounded-md bg-surface-container-lowest text-on-surface cursor-pointer font-[inherit]'
+
   return (
-    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4, marginTop: 24 }}>
+    <div className="flex items-center justify-center gap-1 mt-6">
       <button
         onClick={() => onChange(page - 1)}
         disabled={page <= 1}
-        style={{ ...btnBase, opacity: page <= 1 ? 0.4 : 1, cursor: page <= 1 ? 'default' : 'pointer' }}
+        className={`${btnBase} ${page <= 1 ? 'opacity-40 cursor-default' : ''}`}
       >
         ‹ Prev
       </button>
 
       {start > 1 && (
         <>
-          <button onClick={() => onChange(1)} style={btnBase}>1</button>
-          {start > 2 && <span style={{ padding: '0 4px', color: '#9e9892' }}>…</span>}
+          <button onClick={() => onChange(1)} className={btnBase}>1</button>
+          {start > 2 && <span className="px-1 text-on-surface-variant">…</span>}
         </>
       )}
 
@@ -27,13 +29,11 @@ export default function Pagination({ page, totalPages, onChange }) {
         <button
           key={p}
           onClick={() => onChange(p)}
-          style={{
-            ...btnBase,
-            background: p === page ? '#000080' : '#fff',
-            color: p === page ? '#fff' : '#3B3430',
-            borderColor: p === page ? '#000080' : '#c4bfba',
-            fontWeight: p === page ? 700 : 400,
-          }}
+          className={`${btnBase} ${
+            p === page
+              ? 'bg-primary text-on-primary border-primary font-bold'
+              : ''
+          }`}
         >
           {p}
         </button>
@@ -41,29 +41,18 @@ export default function Pagination({ page, totalPages, onChange }) {
 
       {end < totalPages && (
         <>
-          {end < totalPages - 1 && <span style={{ padding: '0 4px', color: '#9e9892' }}>…</span>}
-          <button onClick={() => onChange(totalPages)} style={btnBase}>{totalPages}</button>
+          {end < totalPages - 1 && <span className="px-1 text-on-surface-variant">…</span>}
+          <button onClick={() => onChange(totalPages)} className={btnBase}>{totalPages}</button>
         </>
       )}
 
       <button
         onClick={() => onChange(page + 1)}
         disabled={page >= totalPages}
-        style={{ ...btnBase, opacity: page >= totalPages ? 0.4 : 1, cursor: page >= totalPages ? 'default' : 'pointer' }}
+        className={`${btnBase} ${page >= totalPages ? 'opacity-40 cursor-default' : ''}`}
       >
         Next ›
       </button>
     </div>
   )
-}
-
-const btnBase = {
-  padding: '5px 11px',
-  fontSize: '0.85rem',
-  border: '1px solid #c4bfba',
-  borderRadius: 6,
-  background: '#fff',
-  color: '#3B3430',
-  cursor: 'pointer',
-  fontFamily: 'inherit',
 }

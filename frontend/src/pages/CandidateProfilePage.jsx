@@ -91,7 +91,7 @@ export default function CandidateProfilePage() {
   const profile = app.profile || {}
   const links = profile.links || {}
   const pct = app.rank_score != null ? Math.round(app.rank_score * 100) : null
-  const scoreColor = pct == null ? 'text-on-surface-variant' : pct >= 75 ? 'text-picture-book-green' : pct >= 50 ? 'text-amber-600' : 'text-error'
+  const scoreColor = pct == null ? 'text-on-surface-variant' : pct >= 75 ? 'text-picture-book-green' : pct >= 50 ? 'text-amber-600 dark:text-amber-400' : 'text-error'
 
   return (
     <div className="p-page-margin">
@@ -118,7 +118,7 @@ export default function CandidateProfilePage() {
                 {app.email && <p className="text-body-md text-on-surface-variant mb-md">{app.email}</p>}
                 <div className="flex flex-wrap gap-sm mb-md">
                   {app.seniority && (
-                    <span className="px-sm py-xs rounded-full text-meta font-semibold bg-blue-50 text-blue-700">{app.seniority}</span>
+                    <span className="px-sm py-xs rounded-full text-meta font-semibold bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400">{app.seniority}</span>
                   )}
                   {app.years_experience != null && (
                     <span className="px-sm py-xs rounded-full text-meta font-semibold bg-surface-container text-on-surface-variant">
@@ -238,28 +238,28 @@ export default function CandidateProfilePage() {
           {/* Skills */}
           {app.skills?.length > 0 && (
             <ProfileSection title="Skill Expertise" icon="psychology_alt">
-              <TagCloud tags={app.skills} colorClass="bg-blue-50 text-blue-700" />
+              <TagCloud tags={app.skills} colorClass="bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400" />
             </ProfileSection>
           )}
 
           {/* Certifications */}
           {app.certifications?.length > 0 && (
             <ProfileSection title="Certifications" icon="verified">
-              <TagCloud tags={app.certifications} colorClass="bg-pink-50 text-pink-700" />
+              <TagCloud tags={app.certifications} colorClass="bg-pink-50 dark:bg-pink-900/30 text-pink-700 dark:text-pink-400" />
             </ProfileSection>
           )}
 
           {/* Languages */}
           {app.languages?.length > 0 && (
             <ProfileSection title="Languages" icon="translate">
-              <TagCloud tags={app.languages} colorClass="bg-purple-50 text-purple-700" />
+              <TagCloud tags={app.languages} colorClass="bg-purple-50 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400" />
             </ProfileSection>
           )}
 
           {/* Matched keywords */}
           {app.overlap_keywords?.length > 0 && (
             <ProfileSection title="Matched Keywords" icon="key">
-              <TagCloud tags={app.overlap_keywords} colorClass="bg-green-50 text-picture-book-green" />
+              <TagCloud tags={app.overlap_keywords} colorClass="bg-green-50 dark:bg-green-900/30 text-picture-book-green dark:text-green-400" />
             </ProfileSection>
           )}
 
@@ -344,7 +344,7 @@ export default function CandidateProfilePage() {
                   key={fit.id}
                   className={`flex items-center gap-md p-md border rounded-xl cursor-pointer transition-colors ${
                     selectedPosting?.id === fit.id
-                      ? 'border-primary bg-blue-50'
+                      ? 'border-primary bg-blue-50 dark:bg-blue-900/30'
                       : 'border-outline-variant hover:bg-surface-container'
                   }`}
                 >
