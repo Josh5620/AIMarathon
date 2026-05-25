@@ -1,8 +1,65 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useMemo } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { getPosting, listApplications, toggleInterested, updatePosting, deleteApplication } from '../api'
 import usePagination from '../hooks/usePagination'
 import Pagination from '../components/Pagination'
+
+function DualRangeSlider({ value, onChange }) {
+  const [lo, hi] = value
+
+  const handleLo = (e) => {
+    const v = Math.min(Number(e.target.value), hi - 1)
+    onChange([v, hi])
+  }
+
+  const handleHi = (e) => {
+    const v = Math.max(Number(e.target.value), lo + 1)
+    onChange([lo, v])
+  }
+
+  const loZ = lo >= hi - 2 ? 4 : 2
+
+  const thumbCls = `
+    absolute w-full h-full bg-transparent appearance-none outline-none pointer-events-none
+    [&::-webkit-slider-thumb]:pointer-events-auto
+    [&::-webkit-slider-thumb]:appearance-none
+    [&::-webkit-slider-thumb]:w-[16px] [&::-webkit-slider-thumb]:h-[16px]
+    [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-primary
+    [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-surface
+    [&::-webkit-slider-thumb]:shadow [&::-webkit-slider-thumb]:cursor-grab
+    [&::-webkit-slider-thumb]:active:cursor-grabbing
+    [&::-webkit-slider-runnable-track]:bg-transparent
+    [&::-moz-range-thumb]:w-[16px] [&::-moz-range-thumb]:h-[16px]
+    [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-primary
+    [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-surface
+    [&::-moz-range-thumb]:cursor-grab
+    [&::-moz-range-track]:bg-transparent
+  `
+
+  return (
+    <div className="relative flex items-center h-5">
+      {/* Track */}
+      <div className="absolute inset-x-0 h-[3px] rounded-full bg-outline-variant pointer-events-none">
+        <div
+          className="absolute h-full rounded-full bg-primary"
+          style={{ left: `${lo}%`, width: `${hi - lo}%` }}
+        />
+      </div>
+      <input
+        type="range" min={0} max={100} step={1} value={lo}
+        onChange={handleLo}
+        className={thumbCls}
+        style={{ zIndex: loZ }}
+      />
+      <input
+        type="range" min={0} max={100} step={1} value={hi}
+        onChange={handleHi}
+        className={thumbCls}
+        style={{ zIndex: 3 }}
+      />
+    </div>
+  )
+}
 
 export default function PostingCandidatesPage() {
   const { postingId } = useParams()
@@ -13,6 +70,12 @@ export default function PostingCandidatesPage() {
   const [postingError, setPostingError] = useState('')
   const [closingPosting, setClosingPosting] = useState(false)
   const [helpOpen, setHelpOpen] = useState(false)
+
+  // Filter state
+  const [filtersOpen, setFiltersOpen] = useState(false)
+  const [sortDir, setSortDir] = useState('desc')
+  const [scoreRange, setScoreRange] = useState([0, 100])
+
   useEffect(() => {
     getPosting(postingId)
       .then(p => { if (!p) setPostingError('Posting not found.'); else setPosting(p) })
@@ -25,6 +88,38 @@ export default function PostingCandidatesPage() {
     [postingId]
   )
   const { data, loading, error, page, totalPages, setPage, reload } = usePagination(fetcher, 10)
+
+  const displayedItems = useMemo(() => {
+    if (!data?.items) return []
+    let items = [...data.items]
+
+    const [lo, hi] = scoreRange
+    if (lo !== 0 || hi !== 100) {
+      items = items.filter(app => {
+        if (app.rank_score == null) return lo === 0
+        const pct = Math.round(app.rank_score * 100)
+        return pct >= lo && pct <= hi
+      })
+    }
+
+    if (sortDir === 'asc') {
+      items.sort((a, b) => (a.rank_score ?? -1) - (b.rank_score ?? -1))
+    }
+
+    return items
+  }, [data?.items, sortDir, scoreRange])
+
+  const activeFilterCount = useMemo(() => {
+    let n = 0
+    if (sortDir !== 'desc') n++
+    if (scoreRange[0] !== 0 || scoreRange[1] !== 100) n++
+    return n
+  }, [sortDir, scoreRange])
+
+  function resetFilters() {
+    setSortDir('desc')
+    setScoreRange([0, 100])
+  }
 
   async function handleDelete(e, applicationId, name) {
     e.stopPropagation()
@@ -86,6 +181,10 @@ export default function PostingCandidatesPage() {
     </div>
   )
   if (postingError) return <div className="p-page-margin text-error">{postingError}</div>
+
+  const isScoreFiltered = scoreRange[0] !== 0 || scoreRange[1] !== 100
+  const shownCount = displayedItems.length
+  const totalCount = data?.items?.length ?? 0
 
   return (
     <div className="min-h-screen bg-surface">
@@ -152,17 +251,100 @@ export default function PostingCandidatesPage() {
           </div>
         </section>
 
-        {/* Section header + ToDo filter controls */}
+        {/* Section header + filter controls */}
         <div className="flex items-center justify-between mb-md">
-          <h2 className="text-section-head font-bold text-primary uppercase tracking-wider">
-            Ranked Applicants
-          </h2>
-          {/* ToDo: Filter/sort controls — not wired to API */}
-          <button disabled className="flex items-center gap-xs px-md py-xs border border-outline-variant rounded-lg text-label-sm text-on-surface-variant opacity-40 cursor-not-allowed">
+          <div className="flex items-center gap-sm">
+            <h2 className="text-section-head font-bold text-primary uppercase tracking-wider">
+              Ranked Applicants
+            </h2>
+            {!loading && isScoreFiltered && (
+              <span className="text-meta text-on-surface-variant">
+                {shownCount} of {totalCount} shown
+              </span>
+            )}
+          </div>
+          <button
+            onClick={() => setFiltersOpen(o => !o)}
+            className={`flex items-center gap-xs px-md py-xs border rounded-lg text-label-sm transition-colors ${
+              filtersOpen || activeFilterCount > 0
+                ? 'border-primary bg-primary/10 text-primary'
+                : 'border-outline-variant text-on-surface-variant hover:border-outline hover:text-on-surface'
+            }`}
+          >
             <span className="material-symbols-outlined text-[16px]">filter_list</span>
             Filter
+            {activeFilterCount > 0 && (
+              <span className="w-4 h-4 rounded-full bg-primary text-on-primary text-[10px] font-bold flex items-center justify-center">
+                {activeFilterCount}
+              </span>
+            )}
           </button>
         </div>
+
+        {/* Filter panel */}
+        {filtersOpen && (
+          <div className="bg-surface-container-lowest border border-outline-variant rounded-xl p-card-padding mb-md shadow-sm">
+            <div className="flex flex-col sm:flex-row gap-lg">
+
+              {/* Sort direction */}
+              <div className="flex-shrink-0">
+                <p className="text-[0.7rem] font-semibold uppercase tracking-[0.08em] text-on-surface-variant mb-sm">Sort Order</p>
+                <div className="flex border border-outline-variant rounded-lg overflow-hidden text-label-sm">
+                  <button
+                    onClick={() => setSortDir('desc')}
+                    className={`flex items-center gap-xs px-md py-sm transition-colors ${
+                      sortDir === 'desc'
+                        ? 'bg-primary text-on-primary font-semibold'
+                        : 'text-on-surface-variant hover:bg-surface-container'
+                    }`}
+                  >
+                    <span className="material-symbols-outlined text-[14px]">arrow_downward</span>
+                    Highest first
+                  </button>
+                  <div className="w-px bg-outline-variant" />
+                  <button
+                    onClick={() => setSortDir('asc')}
+                    className={`flex items-center gap-xs px-md py-sm transition-colors ${
+                      sortDir === 'asc'
+                        ? 'bg-primary text-on-primary font-semibold'
+                        : 'text-on-surface-variant hover:bg-surface-container'
+                    }`}
+                  >
+                    <span className="material-symbols-outlined text-[14px]">arrow_upward</span>
+                    Lowest first
+                  </button>
+                </div>
+              </div>
+
+              {/* Score range */}
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center justify-between mb-sm">
+                  <p className="text-[0.7rem] font-semibold uppercase tracking-[0.08em] text-on-surface-variant">Match Score Range</p>
+                  <span className="text-label-sm font-semibold text-primary tabular-nums">
+                    {scoreRange[0]}% — {scoreRange[1]}%
+                  </span>
+                </div>
+                <DualRangeSlider value={scoreRange} onChange={setScoreRange} />
+                <div className="flex justify-between mt-xs text-[0.68rem] text-on-surface-variant tabular-nums">
+                  <span>0%</span>
+                  <span>100%</span>
+                </div>
+              </div>
+            </div>
+
+            {activeFilterCount > 0 && (
+              <div className="mt-md pt-md border-t border-outline-variant flex justify-end">
+                <button
+                  onClick={resetFilters}
+                  className="text-label-sm text-on-surface-variant hover:text-error transition-colors flex items-center gap-xs"
+                >
+                  <span className="material-symbols-outlined text-[14px]">close</span>
+                  Reset filters
+                </button>
+              </div>
+            )}
+          </div>
+        )}
 
         {loading && (
           <div className="flex items-center gap-sm text-on-surface-variant text-body-md py-xl">
@@ -178,9 +360,15 @@ export default function PostingCandidatesPage() {
           </div>
         )}
 
+        {!loading && data?.items?.length > 0 && displayedItems.length === 0 && (
+          <div className="border-2 border-dashed border-outline-variant rounded-xl p-xl text-center text-on-surface-variant text-body-md">
+            No applicants match the current score range. Try widening the filter.
+          </div>
+        )}
+
         <div className="flex flex-col gap-md">
-          {data?.items?.map((app, idx) => {
-            const globalRank = (page - 1) * 10 + idx + 1
+          {displayedItems.map((app, idx) => {
+            const globalRank = (page - 1) * 10 + data.items.indexOf(app) + 1
             return (
               <div
                 key={app.application_id}
@@ -233,7 +421,6 @@ export default function PostingCandidatesPage() {
 
                   {/* Action buttons */}
                   <div className="flex items-center gap-sm flex-shrink-0">
-                    {/* Star / interested toggle */}
                     <button
                       onClick={e => handleInterested(e, app.application_id, app.is_interested)}
                       title={app.is_interested ? 'Remove from interested' : 'Mark as interested'}
@@ -248,7 +435,6 @@ export default function PostingCandidatesPage() {
                       </span>
                     </button>
 
-                    {/* View profile */}
                     <button
                       onClick={e => { e.stopPropagation(); navigate(`/recruiter/postings/${postingId}/candidates/${app.application_id}`) }}
                       className="bg-primary hover:bg-accent-hover text-on-primary font-bold text-label-sm px-lg py-xs rounded-xl transition-all active:scale-95 shadow-sm"
@@ -256,7 +442,6 @@ export default function PostingCandidatesPage() {
                       View Profile
                     </button>
 
-                    {/* Delete */}
                     <button
                       onClick={e => handleDelete(e, app.application_id, app.name)}
                       title="Remove from this posting"
@@ -298,6 +483,7 @@ export default function PostingCandidatesPage() {
             </div>
             <div className="px-lg py-md text-body-md text-on-surface space-y-sm">
               <p>Use rank and match score to review best-fit candidates first. Higher match percentages indicate stronger alignment to the posting.</p>
+              <p>Use the Filter button to sort by ascending or descending score, or narrow results to a specific match percentage range.</p>
               <p>Use the star to shortlist candidates. Starred applicants remain easy to identify while reviewing.</p>
               <p>Use View Profile for complete candidate details, cross-fit options, and interview scheduling.</p>
               <p>Use Report to open a printable summary of all applicants for this posting.</p>
