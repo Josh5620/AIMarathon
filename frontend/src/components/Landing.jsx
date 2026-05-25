@@ -67,7 +67,7 @@ export default function Landing() {
         {/* Logo */}
         <div className="animate-fade-up mb-lg">
           <img src="/logo.png" alt="HireLite" className="w-20 h-20 object-contain mx-auto mb-md" />
-          <h1 className="text-page-title font-bold text-midnight-mirage dark:text-on-surface tracking-tight">
+          <h1 className="font-heading text-[1.6rem] font-extrabold tracking-[-0.02em] text-midnight-mirage dark:text-on-surface">
             HireLite
           </h1>
           <p className="text-body-md text-on-surface-variant mt-xs">
@@ -76,14 +76,14 @@ export default function Landing() {
         </div>
 
         {/* Glass card */}
-        <div className="animate-fade-up w-full bg-white/80 dark:bg-surface-container/80 backdrop-blur-sm border border-outline-variant rounded-xl shadow-modal p-card-padding flex flex-col gap-md">
+        <div className="animate-fade-up w-full bg-white/80 dark:bg-surface-container/80 backdrop-blur-sm border border-outline-variant rounded-none shadow-modal p-card-padding flex flex-col gap-md">
           <p className="text-label-sm text-on-surface-variant">How would you like to continue?</p>
 
           {/* Primary: Google login */}
           <button
             type="button"
             onClick={() => signInWithGoogle()}
-            className="w-full flex items-center justify-center gap-3 bg-nuit-blanche hover:bg-accent-hover text-on-primary font-semibold text-section-head py-4 px-lg rounded-lg shadow-sm transition-all duration-200 active:scale-95"
+            className="w-full flex items-center justify-center gap-3 bg-nuit-blanche hover:bg-accent-hover text-on-primary font-semibold text-section-head py-4 px-lg rounded-none shadow-sm transition-all duration-200 active:scale-95"
           >
             <img src="/google.svg" alt="Google" className="w-5 h-5" onError={e => e.target.style.display='none'} />
             Login with Google (Recruiter)
@@ -93,7 +93,7 @@ export default function Landing() {
           <button
             type="button"
             onClick={() => navigate('/candidate')}
-            className="w-full flex items-center justify-center gap-3 bg-transparent border-2 border-mantis hover:bg-mantis/10 text-midnight-mirage font-semibold text-section-head py-4 px-lg rounded-lg transition-all duration-200 active:scale-95"
+            className="w-full flex items-center justify-center gap-3 bg-transparent border-2 border-mantis hover:bg-mantis/10 text-midnight-mirage font-semibold text-section-head py-4 px-lg rounded-none transition-all duration-200 active:scale-95"
           >
             <span className="material-symbols-outlined text-[20px]">person</span>
             Continue as Guest (Candidate)

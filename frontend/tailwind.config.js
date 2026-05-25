@@ -3,6 +3,12 @@ export default {
   content: ['./index.html', './src/**/*.{js,jsx,ts,tsx}'],
   darkMode: 'class',
   theme: {
+    fontFamily: {
+      sans:    ['Public Sans', 'system-ui', 'sans-serif'],
+      heading: ['Hanken Grotesk', 'system-ui', 'sans-serif'],
+      serif:   ['Instrument Serif', 'Georgia', 'serif'],
+      mono:    ['ui-monospace', 'Consolas', 'monospace'],
+    },
     extend: {
       colors: {
         // Brand constants — never change between themes
@@ -14,8 +20,8 @@ export default {
         'praxeti-white':      '#F6F7ED',
         complement:           '#DBE64C',
         'on-primary':         '#ffffff',
-        error:                '#bf360c',
-        'error-container':    '#ffdad6',
+        error:                'var(--hl-error)',
+        'error-container':    'var(--hl-error-container)',
         'on-error':           '#ffffff',
         success:              '#00804C',
         'success-light':      '#74C365',
@@ -28,6 +34,10 @@ export default {
         'on-secondary':             '#ffffff',
         'secondary-container':      'var(--hl-secondary-container)',
         'on-secondary-container':   'var(--hl-on-secondary-container)',
+        tertiary:                   'var(--hl-tertiary)',
+        'on-tertiary':              '#ffffff',
+        'tertiary-container':       'var(--hl-tertiary-container)',
+        'on-tertiary-container':    'var(--hl-on-tertiary-container)',
         surface:                    'var(--hl-surface)',
         'surface-dim':              'var(--hl-surface-dim)',
         'surface-bright':           'var(--hl-surface-bright)',
@@ -43,11 +53,6 @@ export default {
         background:                 'var(--hl-surface)',
         'on-background':            'var(--hl-on-surface)',
         'surface-dark':             '#002B56',
-      },
-      fontFamily: {
-        sans:    ['Noto Sans', 'sans-serif'],
-        heading: ['Noto Sans', 'sans-serif'],
-        mono:    ['ui-monospace', 'Consolas', 'monospace'],
       },
       fontSize: {
         'page-title':         ['1.6rem',  { lineHeight: '2.4rem',    fontWeight: '700' }],

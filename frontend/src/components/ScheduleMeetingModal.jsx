@@ -75,46 +75,48 @@ export default function ScheduleMeetingModal({ candidate, recruiterEmail, onClos
 
   return (
     <div
-      className="modal-overlay"
+      className="fixed inset-0 z-50 flex items-center justify-center p-md"
+      style={{ background: 'rgba(0,0,0,0.45)' }}
       onClick={(e) => { if (e.target === e.currentTarget && status !== 'loading') onClose() }}
       role="dialog"
       aria-modal="true"
       aria-labelledby="schedule-modal-title"
     >
-      <div className="modal-content">
+      <div className="bg-surface-container-lowest rounded-none p-card-padding max-w-lg w-full shadow-modal relative">
         <button
-          className="modal-close"
+          className="absolute top-md right-md text-on-surface-variant hover:text-on-surface transition-colors"
           onClick={onClose}
           disabled={status === 'loading'}
           aria-label="Close"
         >
-          ×
+          <span className="material-symbols-outlined text-[20px]">close</span>
         </button>
 
         {status !== 'done' ? (
           <>
-            <h2 id="schedule-modal-title" style={{ marginBottom: 4 }}>Schedule Interview</h2>
-            <p className="schedule-modal-subtitle">
-              Meeting with <strong>{candidateLabel}</strong>
+            <h2
+              id="schedule-modal-title"
+              className="font-heading text-[1.25rem] font-bold text-on-surface mb-xs"
+            >
+              Schedule Interview
+            </h2>
+            <p className="text-[0.85rem] text-on-surface-variant mb-lg">
+              Meeting with <strong className="text-on-surface">{candidateLabel}</strong>
               {!candidate.email && (
-                <span className="schedule-no-email">
+                <span className="text-error text-[0.78rem]">
                   {' '}— no email on file, invite cannot be sent
                 </span>
               )}
             </p>
 
             {error && (
-              <div className="modal-error" style={{ marginBottom: 16 }}>
-                <p style={{ margin: 0 }}>{error}</p>
+              <div className="bg-error-container border border-error/20 rounded-none p-md mb-md">
+                <p className="text-[0.85rem] text-error">{error}</p>
                 {status === 'reauth' && (
                   <button
                     type="button"
                     onClick={reauthorize}
-                    style={{
-                      marginTop: 8, padding: '6px 14px', fontSize: '0.85rem',
-                      fontFamily: 'inherit', border: '1px solid var(--error)', borderRadius: 6,
-                      background: 'transparent', color: 'var(--error)', cursor: 'pointer',
-                    }}
+                    className="mt-sm px-[14px] py-[6px] text-[0.78rem] font-medium border border-error rounded-none text-error hover:bg-error/10 transition-colors"
                   >
                     Re-authorize Google Calendar
                   </button>
@@ -122,15 +124,9 @@ export default function ScheduleMeetingModal({ candidate, recruiterEmail, onClos
               </div>
             )}
 
-            <form
-              onSubmit={handleSubmit}
-              style={{ display: 'flex', flexDirection: 'column', gap: 16 }}
-            >
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-                <label
-                  htmlFor="sm-datetime"
-                  style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--text)' }}
-                >
+            <form onSubmit={handleSubmit} className="flex flex-col gap-md">
+              <div className="flex flex-col gap-xs">
+                <label htmlFor="sm-datetime" className="text-[0.82rem] font-semibold text-on-surface">
                   Date & Time
                 </label>
                 <input
@@ -139,30 +135,19 @@ export default function ScheduleMeetingModal({ candidate, recruiterEmail, onClos
                   value={datetime}
                   onChange={(e) => setDatetime(e.target.value)}
                   required
-                  style={{
-                    padding: '8px 10px', fontSize: '0.9rem', fontFamily: 'inherit',
-                    border: '1px solid var(--border)', borderRadius: 6,
-                    background: 'var(--bg)', color: 'var(--text-h)',
-                  }}
+                  className="form-input"
                 />
               </div>
 
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-                <label
-                  htmlFor="sm-duration"
-                  style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--text)' }}
-                >
+              <div className="flex flex-col gap-xs">
+                <label htmlFor="sm-duration" className="text-[0.82rem] font-semibold text-on-surface">
                   Duration
                 </label>
                 <select
                   id="sm-duration"
                   value={duration}
                   onChange={(e) => setDuration(Number(e.target.value))}
-                  style={{
-                    padding: '8px 10px', fontSize: '0.9rem', fontFamily: 'inherit',
-                    border: '1px solid var(--border)', borderRadius: 6,
-                    background: 'var(--bg)', color: 'var(--text-h)', cursor: 'pointer',
-                  }}
+                  className="form-input cursor-pointer"
                 >
                   {DURATION_OPTIONS.map((o) => (
                     <option key={o.value} value={o.value}>{o.label}</option>
@@ -170,11 +155,8 @@ export default function ScheduleMeetingModal({ candidate, recruiterEmail, onClos
                 </select>
               </div>
 
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-                <label
-                  htmlFor="sm-notes"
-                  style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--text)' }}
-                >
+              <div className="flex flex-col gap-xs">
+                <label htmlFor="sm-notes" className="text-[0.82rem] font-semibold text-on-surface">
                   Notes (optional)
                 </label>
                 <textarea
@@ -183,53 +165,46 @@ export default function ScheduleMeetingModal({ candidate, recruiterEmail, onClos
                   onChange={(e) => setNotes(e.target.value)}
                   placeholder="Topics to cover, preparation notes…"
                   rows={3}
-                  style={{
-                    padding: '8px 10px', fontSize: '0.9rem', fontFamily: 'inherit',
-                    border: '1px solid var(--border)', borderRadius: 6, background: 'var(--bg)',
-                    color: 'var(--text-h)', resize: 'vertical',
-                  }}
+                  className="form-input resize-vertical"
                 />
               </div>
 
-              <p style={{ fontSize: '0.8rem', color: 'var(--text)', margin: 0 }}>
+              <p className="text-meta text-on-surface-variant">
                 A Google Meet invite will be emailed to {candidate.email || 'the candidate'} and
                 you. The candidate does not need a Google account to join.
               </p>
 
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10 }}>
-                <button
-                  type="button"
-                  onClick={onClose}
-                  disabled={status === 'loading'}
-                  style={{
-                    padding: '8px 20px', fontSize: '0.9rem', fontFamily: 'inherit',
-                    border: '1px solid var(--border)', borderRadius: 6, background: 'transparent',
-                    color: 'var(--text)', cursor: 'pointer',
-                  }}
-                >
-                  Cancel
-                </button>
+              <div className="flex justify-end gap-sm pt-sm">
                 <button
                   type="submit"
                   disabled={status === 'loading' || !candidate.email}
                   aria-busy={status === 'loading'}
-                  style={{
-                    padding: '8px 20px', fontSize: '0.9rem', fontWeight: 600, fontFamily: 'inherit',
-                    border: 'none', borderRadius: 6, background: 'var(--accent)', color: '#fff',
-                    cursor: (status === 'loading' || !candidate.email) ? 'not-allowed' : 'pointer',
-                    opacity: (status === 'loading' || !candidate.email) ? 0.6 : 1,
-                  }}
+                  className="flex items-center gap-[6px] bg-primary hover:bg-accent-hover disabled:opacity-50 disabled:cursor-not-allowed text-on-primary font-semibold text-[0.78rem] px-[14px] py-[6px] rounded-none transition-all active:scale-95"
                 >
-                  {status === 'loading' ? 'Scheduling…' : 'Schedule Meeting'}
+                  {status === 'loading' ? (
+                    <><span className="material-symbols-outlined animate-spin text-[16px]">progress_activity</span> Scheduling…</>
+                  ) : (
+                    <><span className="material-symbols-outlined text-[16px]">calendar_add_on</span> Schedule Meeting</>
+                  )}
+                </button>
+                <button
+                  type="button"
+                  onClick={onClose}
+                  disabled={status === 'loading'}
+                  className="px-[14px] py-[6px] border border-outline-variant rounded-none text-[0.78rem] font-medium text-on-surface-variant hover:border-outline hover:text-on-surface transition-colors"
+                >
+                  Cancel
                 </button>
               </div>
             </form>
           </>
         ) : (
-          <div style={{ textAlign: 'center', padding: '16px 0' }}>
-            <div style={{ fontSize: '2.5rem', marginBottom: 12 }}>✓</div>
-            <h2 style={{ marginBottom: 8 }}>Meeting scheduled</h2>
-            <p style={{ color: 'var(--text)', fontSize: '0.9rem', marginBottom: 20 }}>
+          <div className="text-center py-md">
+            <span className="material-symbols-outlined text-[48px] text-picture-book-green mb-md block">
+              event_available
+            </span>
+            <h2 className="font-heading text-[1.25rem] font-bold text-on-surface mb-xs">Meeting scheduled</h2>
+            <p className="text-[0.85rem] text-on-surface-variant mb-lg">
               An invite has been emailed to both you and {candidate.name || candidate.email || 'the candidate'}.
             </p>
             {result?.meet_link && (
@@ -237,24 +212,21 @@ export default function ScheduleMeetingModal({ candidate, recruiterEmail, onClos
                 href={result.meet_link}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="modal-link-btn"
-                style={{ display: 'inline-block', marginBottom: 16 }}
+                className="inline-flex items-center gap-sm bg-primary hover:bg-accent-hover text-on-primary font-semibold text-[0.9rem] px-lg py-sm rounded-none transition-all active:scale-95 mb-md"
               >
+                <span className="material-symbols-outlined text-[16px]">video_call</span>
                 Open Google Meet link
               </a>
             )}
-            <br />
-            <button
-              type="button"
-              onClick={onClose}
-              style={{
-                padding: '8px 24px', fontSize: '0.9rem', fontFamily: 'inherit',
-                border: '1px solid var(--border)', borderRadius: 6, background: 'transparent',
-                color: 'var(--text)', cursor: 'pointer',
-              }}
-            >
-              Close
-            </button>
+            <div>
+              <button
+                type="button"
+                onClick={onClose}
+                className="px-[14px] py-[6px] border border-outline-variant rounded-none text-[0.78rem] font-medium text-on-surface-variant hover:border-outline hover:text-on-surface transition-colors"
+              >
+                Close
+              </button>
+            </div>
           </div>
         )}
       </div>

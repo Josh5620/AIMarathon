@@ -6,7 +6,7 @@ export default function Pagination({ page, totalPages, onChange }) {
   const end   = Math.min(totalPages, page + 2)
   for (let i = start; i <= end; i++) pages.push(i)
 
-  const btnBase = 'px-3 py-1 text-label-sm border border-outline-variant rounded-md bg-surface-container-lowest text-on-surface cursor-pointer font-[inherit]'
+  const btnBase = 'px-3 py-1 text-label-sm border border-outline-variant rounded-none bg-surface-container-lowest text-on-surface cursor-pointer font-[inherit]'
 
   return (
     <div className="flex items-center justify-center gap-1 mt-6">

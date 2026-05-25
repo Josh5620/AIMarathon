@@ -14,7 +14,7 @@ export default function PrivacyPolicyPage() {
           Back
         </button>
 
-        <h1 className="text-page-title font-bold text-primary mb-sm">Privacy Policy</h1>
+        <h1 className="font-serif text-[2.2rem] leading-[1.2] font-normal tracking-[-0.02em] text-on-surface mb-sm">Privacy Policy</h1>
         <p className="text-meta text-on-surface-variant mb-xl">Last updated: May 2025</p>
 
         <div className="flex flex-col gap-lg text-body-md text-on-surface leading-relaxed">

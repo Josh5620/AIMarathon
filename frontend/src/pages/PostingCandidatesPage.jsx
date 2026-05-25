@@ -81,11 +81,11 @@ export default function PostingCandidatesPage() {
   }
 
   if (postingLoading) return (
-    <div className="flex items-center justify-center p-page-margin text-on-surface-variant">
-      <span className="material-symbols-outlined animate-spin mr-sm">progress_activity</span> Loading…
+    <div className="flex items-center gap-sm px-[48px] py-[40px] text-on-surface-variant">
+      <span className="material-symbols-outlined animate-spin text-[20px]">progress_activity</span> Loading…
     </div>
   )
-  if (postingError) return <div className="p-page-margin text-error">{postingError}</div>
+  if (postingError) return <div className="px-[48px] py-[40px] text-error">{postingError}</div>
 
   return (
     <div className="min-h-screen bg-surface">
@@ -108,23 +108,23 @@ export default function PostingCandidatesPage() {
         </button>
       </header>
 
-      <div className="p-page-margin">
-        {/* Posting header card */}
-        <section className="bg-surface-container-lowest border border-outline-variant rounded-xl p-card-padding shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-lg mb-gutter">
-          <div className="flex-1 min-w-0">
+      <div className="max-w-[960px] px-[48px] py-[40px]">
+        {/* Posting header — flat, no card */}
+        <header className="flex flex-col md:flex-row justify-between items-start md:items-center mb-[40px] gap-md">
+          <div>
             <div className="flex items-center gap-sm flex-wrap mb-xs">
-              <h1 className="text-headline-lg font-bold text-primary">{posting.position_title}</h1>
-              <span className={`px-sm py-xs rounded-full text-meta font-semibold ${
+              <h1 className="font-serif text-[2.2rem] leading-[1.2] font-normal tracking-[-0.02em] text-on-surface">{posting.position_title}</h1>
+              <span className={`inline-flex px-[12px] py-[3px] text-[0.7rem] font-semibold uppercase tracking-[0.06em] ${
                 posting.status === 'open'
-                  ? 'bg-green-50 dark:bg-green-900/30 text-picture-book-green dark:text-green-400'
-                  : 'bg-pink-50 dark:bg-pink-900/30 text-pink-700 dark:text-pink-400'
+                  ? 'bg-tertiary-container text-on-tertiary-container'
+                  : 'bg-error-container text-error'
               }`}>
                 {posting.status === 'open' ? 'Open' : 'Closed'}
               </span>
             </div>
-            <p className="text-body-md text-on-surface-variant">{posting.company_name}</p>
+            <p className="text-[0.85rem] text-on-surface-variant">{posting.company_name}</p>
             {data && (
-              <p className="text-meta text-on-surface-variant mt-xs">
+              <p className="text-[0.78rem] text-on-surface-variant mt-xs">
                 {data.total} applicant{data.total !== 1 ? 's' : ''}
               </p>
             )}
@@ -132,36 +132,30 @@ export default function PostingCandidatesPage() {
           <div className="flex gap-sm flex-wrap flex-shrink-0">
             {posting.status === 'open'
               ? <button onClick={handleClosePosting} disabled={closingPosting}
-                  className="flex items-center gap-xs px-lg py-sm border border-outline-variant rounded-xl text-label-sm text-on-surface-variant hover:bg-surface-container transition-colors disabled:opacity-50">
+                  className="flex items-center gap-[6px] px-[14px] py-[6px] border border-outline-variant rounded-none text-[0.78rem] font-medium text-on-surface-variant hover:border-outline hover:text-on-surface transition-colors disabled:opacity-50">
                   <span className="material-symbols-outlined text-[16px]">lock</span>
                   {closingPosting ? 'Closing…' : 'Close Posting'}
                 </button>
               : <button onClick={handleReopenPosting} disabled={closingPosting}
-                  className="flex items-center gap-xs px-lg py-sm border border-mantis rounded-xl text-label-sm text-picture-book-green hover:bg-green-50 dark:hover:bg-green-900/30 transition-colors disabled:opacity-50">
+                  className="flex items-center gap-[6px] px-[14px] py-[6px] border border-mantis rounded-none text-[0.78rem] font-medium text-picture-book-green hover:bg-green-50 dark:hover:bg-green-900/30 transition-colors disabled:opacity-50">
                   <span className="material-symbols-outlined text-[16px]">lock_open</span>
                   {closingPosting ? 'Reopening…' : 'Reopen Posting'}
                 </button>
             }
             <button
               onClick={() => navigate(`/recruiter/postings/${postingId}/report`)}
-              className="flex items-center gap-xs bg-primary hover:bg-accent-hover text-on-primary font-bold text-label-sm px-lg py-sm rounded-xl transition-all active:scale-95 shadow-sm"
+              className="flex items-center gap-[6px] px-[14px] py-[6px] bg-primary hover:bg-accent-hover text-on-primary font-semibold text-[0.78rem] rounded-none transition-all active:scale-95"
             >
               <span className="material-symbols-outlined text-[16px]">bar_chart</span>
               Report
             </button>
           </div>
-        </section>
+        </header>
 
-        {/* Section header + ToDo filter controls */}
-        <div className="flex items-center justify-between mb-md">
-          <h2 className="text-section-head font-bold text-primary uppercase tracking-wider">
-            Ranked Applicants
-          </h2>
-          {/* ToDo: Filter/sort controls — not wired to API */}
-          <button disabled className="flex items-center gap-xs px-md py-xs border border-outline-variant rounded-lg text-label-sm text-on-surface-variant opacity-40 cursor-not-allowed">
-            <span className="material-symbols-outlined text-[16px]">filter_list</span>
-            Filter
-          </button>
+        {/* Section header — matches dashboard style */}
+        <div className="flex justify-between items-baseline mb-[20px] pb-[12px] border-b-2 border-on-surface">
+          <h2 className="font-heading text-[1.3rem] font-bold text-on-surface">Ranked Applicants</h2>
+          {data && <span className="text-[0.78rem] text-on-surface-variant">{data.total} applicant{data.total !== 1 ? 's' : ''}</span>}
         </div>
 
         {loading && (
@@ -173,98 +167,89 @@ export default function PostingCandidatesPage() {
         {error && <p className="text-error text-body-md">{error}</p>}
 
         {!loading && data?.items?.length === 0 && (
-          <div className="border-2 border-dashed border-outline-variant rounded-xl p-xl text-center text-on-surface-variant text-body-md">
+          <div className="border-2 border-dashed border-outline-variant rounded-none p-xl text-center text-on-surface-variant text-body-md">
             No applications yet. Share the job opening link with candidates.
           </div>
         )}
 
-        <div className="flex flex-col gap-md">
+        <div className="flex flex-col">
           {data?.items?.map((app, idx) => {
             const globalRank = (page - 1) * 10 + idx + 1
             return (
               <div
                 key={app.application_id}
                 onClick={() => navigate(`/recruiter/postings/${postingId}/candidates/${app.application_id}`)}
-                className={`bg-surface-container-lowest border rounded-xl p-card-padding cursor-pointer hover:shadow-card hover:-translate-y-0.5 transition-all duration-200 ${
+                className={`grid grid-cols-[auto_1fr_auto_auto] items-center gap-lg py-[24px] px-md border-b cursor-pointer group transition-[background] duration-100 hover:bg-surface-container-low ${
                   app.is_interested ? 'border-mantis' : 'border-outline-variant'
                 }`}
               >
-                <div className="flex items-center gap-md">
-                  {/* Rank */}
-                  <div className="w-9 h-9 rounded-full bg-surface-container flex items-center justify-center text-label-sm font-bold text-on-surface-variant flex-shrink-0">
-                    #{globalRank}
-                  </div>
+                {/* Rank */}
+                <span className="text-[0.78rem] font-bold text-on-surface-variant w-8 text-center flex-shrink-0">#{globalRank}</span>
 
-                  {/* Main info */}
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-sm flex-wrap mb-xs">
-                      <span className="text-headline-md font-bold text-on-surface">{app.name || 'Unknown'}</span>
-                      {app.seniority && (
-                        <span className="px-sm py-xs rounded-full text-meta font-semibold bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400">
-                          {app.seniority}
-                        </span>
-                      )}
-                      {app.years_experience != null && (
-                        <span className="text-meta text-on-surface-variant">{app.years_experience}y exp</span>
-                      )}
-                    </div>
-                    {app.email && <p className="text-label-sm text-on-surface-variant mb-sm">{app.email}</p>}
-                    {app.overlap_keywords?.length > 0 && (
-                      <div className="flex flex-wrap gap-xs">
-                        {app.overlap_keywords.slice(0, 6).map(kw => (
-                          <span key={kw} className="px-sm py-xs rounded-full text-meta font-medium bg-green-50 dark:bg-green-900/30 text-picture-book-green dark:text-green-400">
-                            {kw}
-                          </span>
-                        ))}
-                        {app.overlap_keywords.length > 6 && (
-                          <span className="text-meta text-on-surface-variant self-center">
-                            +{app.overlap_keywords.length - 6} more
-                          </span>
-                        )}
-                      </div>
+                {/* Main info */}
+                <div className="min-w-0">
+                  <div className="flex items-center gap-sm flex-wrap mb-[4px]">
+                    <span className="font-heading text-[1.25rem] font-bold text-on-surface group-hover:text-primary transition-colors tracking-[-0.01em]">{app.name || 'Unknown'}</span>
+                    {app.seniority && (
+                      <span className="inline-flex px-[12px] py-[3px] text-[0.7rem] font-semibold uppercase tracking-[0.06em] bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400">
+                        {app.seniority}
+                      </span>
+                    )}
+                    {app.years_experience != null && (
+                      <span className="text-[0.78rem] text-on-surface-variant">{app.years_experience}y exp</span>
                     )}
                   </div>
+                  {app.email && <p className="text-[0.85rem] text-on-surface-variant mb-[6px]">{app.email}</p>}
+                  {app.overlap_keywords?.length > 0 && (
+                    <div className="flex flex-wrap gap-xs">
+                      {app.overlap_keywords.slice(0, 6).map(kw => (
+                        <span key={kw} className="px-sm py-xs text-meta font-medium bg-green-50 dark:bg-green-900/30 text-picture-book-green dark:text-green-400">
+                          {kw}
+                        </span>
+                      ))}
+                      {app.overlap_keywords.length > 6 && (
+                        <span className="text-meta text-on-surface-variant self-center">
+                          +{app.overlap_keywords.length - 6} more
+                        </span>
+                      )}
+                    </div>
+                  )}
+                </div>
 
-                  {/* Score badge */}
-                  <div className={`flex-shrink-0 px-md py-sm rounded-xl text-center min-w-[4rem] ${scoreBg(app.rank_score)}`}>
-                    <div className="text-headline-md font-bold">{scoreLabel(app.rank_score)}</div>
-                    <div className="text-meta opacity-70">match</div>
-                  </div>
+                {/* Score */}
+                <div className="flex-shrink-0 text-right">
+                  <div className={`font-heading text-[1.5rem] font-extrabold leading-none ${
+                    app.rank_score == null ? 'text-on-surface-variant'
+                    : app.rank_score >= 0.75 ? 'text-picture-book-green'
+                    : app.rank_score >= 0.5 ? 'text-amber-600 dark:text-amber-400'
+                    : 'text-error'
+                  }`}>{scoreLabel(app.rank_score)}</div>
+                  <div className="text-[0.7rem] text-on-surface-variant">match</div>
+                </div>
 
-                  {/* Action buttons */}
-                  <div className="flex items-center gap-sm flex-shrink-0">
-                    {/* Star / interested toggle */}
-                    <button
-                      onClick={e => handleInterested(e, app.application_id, app.is_interested)}
-                      title={app.is_interested ? 'Remove from interested' : 'Mark as interested'}
-                      className={`p-xs rounded-lg transition-colors ${
-                        app.is_interested
-                          ? 'text-yellow-500 hover:text-yellow-600'
-                          : 'text-outline-variant hover:text-yellow-500'
-                      }`}
-                    >
-                      <span className="material-symbols-outlined text-[22px]" style={{ fontVariationSettings: app.is_interested ? "'FILL' 1" : "'FILL' 0" }}>
-                        star
-                      </span>
-                    </button>
+                {/* Actions */}
+                <div className="flex items-center gap-sm flex-shrink-0">
+                  <button
+                    onClick={e => handleInterested(e, app.application_id, app.is_interested)}
+                    title={app.is_interested ? 'Remove from interested' : 'Mark as interested'}
+                    className={`p-xs transition-colors ${
+                      app.is_interested
+                        ? 'text-yellow-500 hover:text-yellow-600'
+                        : 'text-outline-variant hover:text-yellow-500'
+                    }`}
+                  >
+                    <span className="material-symbols-outlined text-[20px]" style={{ fontVariationSettings: app.is_interested ? "'FILL' 1" : "'FILL' 0" }}>
+                      star
+                    </span>
+                  </button>
 
-                    {/* View profile */}
-                    <button
-                      onClick={e => { e.stopPropagation(); navigate(`/recruiter/postings/${postingId}/candidates/${app.application_id}`) }}
-                      className="bg-primary hover:bg-accent-hover text-on-primary font-bold text-label-sm px-lg py-xs rounded-xl transition-all active:scale-95 shadow-sm"
-                    >
-                      View Profile
-                    </button>
-
-                    {/* Delete */}
-                    <button
-                      onClick={e => handleDelete(e, app.application_id, app.name)}
-                      title="Remove from this posting"
-                      className="p-xs rounded-lg text-outline-variant hover:text-error transition-colors"
-                    >
-                      <span className="material-symbols-outlined text-[18px]">delete</span>
-                    </button>
-                  </div>
+                  <button
+                    onClick={e => handleDelete(e, app.application_id, app.name)}
+                    title="Remove from this posting"
+                    className="p-xs text-outline-variant hover:text-error transition-colors"
+                  >
+                    <span className="material-symbols-outlined text-[16px]">delete</span>
+                  </button>
                 </div>
               </div>
             )
@@ -284,7 +269,7 @@ export default function PostingCandidatesPage() {
           aria-modal="true"
           aria-labelledby="applicants-help-title"
         >
-          <div className="w-full max-w-lg rounded-xl border border-outline-variant bg-surface-container-lowest shadow-modal">
+          <div className="w-full max-w-lg rounded-none border border-outline-variant bg-surface-container-lowest shadow-modal">
             <div className="flex items-center justify-between border-b border-outline-variant px-lg py-md">
               <h3 id="applicants-help-title" className="text-headline-md font-bold text-on-surface">Applicants Help</h3>
               <button

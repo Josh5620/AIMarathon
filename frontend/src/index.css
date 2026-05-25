@@ -4,7 +4,7 @@
 
 @layer components {
   .form-input {
-    @apply w-full px-md py-sm border border-outline-variant rounded-lg bg-surface-container-low text-on-surface text-body-md font-sans
+    @apply w-full px-md py-sm border border-outline-variant rounded-none bg-surface-container-low text-on-surface text-body-md font-sans
       focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent
       placeholder:text-on-surface-variant transition-all duration-150;
   }
@@ -13,40 +13,48 @@
 /* ── HireLite semantic design tokens (light) ─── */
 :root {
   --hl-primary:                 #1E488F;
-  --hl-primary-container:       #1E488F;
-  --hl-on-primary-container:    #9bbaff;
-  --hl-secondary:               #476083;
-  --hl-secondary-container:     #bdd6ff;
-  --hl-on-secondary-container:  #445d80;
+  --hl-primary-container:       #d8e2ff;
+  --hl-on-primary-container:    #001a41;
+  --hl-secondary:               #001F3F;
+  --hl-secondary-container:     #DBE64C;
+  --hl-on-secondary-container:  #001f3f;
+  --hl-tertiary:                #74C365;
+  --hl-tertiary-container:      #e6f4e0;
+  --hl-on-tertiary-container:   #00210b;
   --hl-surface:                 #F6F7ED;
-  --hl-surface-dim:             #dadbd1;
+  --hl-surface-dim:             #dadada;
   --hl-surface-bright:          #F6F7ED;
   --hl-surface-container-lowest: #ffffff;
-  --hl-surface-container-low:   #f3f4ea;
-  --hl-surface-container:       #eeefe5;
-  --hl-surface-container-high:  #e8e9df;
-  --hl-surface-container-highest: #e2e3da;
-  --hl-on-surface:              #1a1c17;
-  --hl-on-surface-variant:      #434751;
-  --hl-outline:                 #747782;
-  --hl-outline-variant:         #c3c6d2;
+  --hl-surface-container-low:   #f3f3f4;
+  --hl-surface-container:       #eeeeef;
+  --hl-surface-container-high:  #e8e8e9;
+  --hl-surface-container-highest: #e2e2e4;
+  --hl-on-surface:              #001F3F;
+  --hl-on-surface-variant:      #44474e;
+  --hl-outline:                 #74777f;
+  --hl-outline-variant:         #c4c6d0;
+  --hl-error:                   #bf360c;
+  --hl-error-container:         #ffdad6;
 }
 
 /* ── HireLite semantic design tokens (dark) ──── */
 .dark {
   /* Update legacy vars so global html background + text also flip */
   --bg:       #0d1b2e;
-  --text:     #e4eaf2;
-  --text-h:   #e4eaf2;
+  --text:     #e0e2ec;
+  --text-h:   #e0e2ec;
   --card-bg:  #152236;
   --code-bg:  #09131e;
 
-  --hl-primary:                 #5b8dd4;
-  --hl-primary-container:       #1a3356;
-  --hl-on-primary-container:    #9bbaff;
-  --hl-secondary:               #8aabd4;
-  --hl-secondary-container:     #1a3356;
-  --hl-on-secondary-container:  #cce0ff;
+  --hl-primary:                 #adc6ff;
+  --hl-primary-container:       #14397a;
+  --hl-on-primary-container:    #d8e2ff;
+  --hl-secondary:               #c8cad3;
+  --hl-secondary-container:     #2d4a00;
+  --hl-on-secondary-container:  #c8e04a;
+  --hl-tertiary:                #8fd87f;
+  --hl-tertiary-container:      #005321;
+  --hl-on-tertiary-container:   #a8f59a;
   --hl-surface:                 #0d1b2e;
   --hl-surface-dim:             #090f18;
   --hl-surface-bright:          #162030;
@@ -55,10 +63,12 @@
   --hl-surface-container:       #152236;
   --hl-surface-container-high:  #1e3048;
   --hl-surface-container-highest: #26405e;
-  --hl-on-surface:              #e4eaf2;
-  --hl-on-surface-variant:      #7e9ab8;
-  --hl-outline:                 #3a5578;
-  --hl-outline-variant:         #1e3048;
+  --hl-on-surface:              #F6F7ED;
+  --hl-on-surface-variant:      #8e9199;
+  --hl-outline:                 #58595f;
+  --hl-outline-variant:         #2a2d35;
+  --hl-error:                   #ffb4a9;
+  --hl-error-container:         #930006;
 }
 
 /* ── Legacy CSS vars (kept for non-Tailwind references) ─ */
@@ -84,8 +94,9 @@
   --overlay: rgba(0, 0, 0, 0.45);
   --shadow: rgba(0, 0, 0, 0.18);
 
-  --sans: 'Noto Sans', sans-serif;
-  --heading: 'Noto Sans', sans-serif;
+  --sans: 'Public Sans', system-ui, sans-serif;
+  --heading: 'Hanken Grotesk', system-ui, sans-serif;
+  --display: 'Instrument Serif', Georgia, serif;
   --mono: ui-monospace, Consolas, monospace;
 
   font: 16px/1.5 var(--sans);
@@ -151,19 +162,7 @@ body {
 h1,
 h2,
 h3 {
-  font-family: var(--heading);
-  font-weight: 600;
-  color: var(--text-h);
-}
-
-h1 {
-  font-size: 2rem;
-  margin: 24px 0;
-}
-
-h2 {
-  font-size: 1.25rem;
-  margin: 0 0 8px;
+  margin: 0;
 }
 
 p {
@@ -180,12 +179,3 @@ code {
   word-break: break-all;
 }
 
-@media (max-width: 600px) {
-  h1 {
-    font-size: 1.5rem;
-    margin: 16px 0;
-  }
-  h2 {
-    font-size: 1.1rem;
-  }
-}

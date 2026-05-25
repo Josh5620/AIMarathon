@@ -52,7 +52,7 @@ export default function PostingFormPage() {
   }
 
   return (
-    <div className="p-page-margin max-w-3xl">
+    <div className="max-w-[960px] px-[48px] py-[40px]">
       {/* Header */}
       <header className="mb-xl">
         <button
@@ -62,21 +62,21 @@ export default function PostingFormPage() {
           <span className="material-symbols-outlined text-[18px]">arrow_back</span>
           Back to postings
         </button>
-        <h1 className="text-page-title font-bold text-primary mb-xs">Create New Posting</h1>
+        <h1 className="font-serif text-[2.2rem] leading-[1.2] font-normal tracking-[-0.02em] text-on-surface mb-xs">Create New Posting</h1>
         <p className="text-body-md text-on-surface-variant">
           The job description will be processed by AI to extract keywords and generate a searchable embedding.
         </p>
       </header>
 
       {error && (
-        <div className="flex items-center gap-sm bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-xl px-md py-sm mb-gutter text-error text-label-sm">
+        <div className="flex items-center gap-sm bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-none px-md py-sm mb-gutter text-error text-label-sm">
           <span className="material-symbols-outlined text-[18px]">error</span>
           {error}
         </div>
       )}
 
       <form onSubmit={handleSubmit}>
-        <div className="bg-surface-container border border-outline-variant rounded-2xl p-lg md:p-xl flex flex-col gap-gutter shadow-sm">
+        <div className="bg-surface-container border border-outline-variant rounded-none p-lg md:p-xl flex flex-col gap-gutter">
           {/* Two-column row: Company + Title */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-md">
             <Field label="Company Name" required>
@@ -130,14 +130,14 @@ export default function PostingFormPage() {
               type="button"
               onClick={() => navigate('/recruiter')}
               disabled={submitting}
-              className="px-lg py-sm border border-outline-variant rounded-xl text-label-sm text-on-surface-variant hover:bg-surface-container transition-colors disabled:opacity-50"
+              className="px-[14px] py-[6px] border border-outline-variant rounded-none text-[0.78rem] font-medium text-on-surface-variant hover:border-outline hover:text-on-surface transition-colors disabled:opacity-50"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={submitting}
-              className="flex items-center gap-sm bg-primary hover:bg-accent-hover disabled:opacity-60 disabled:cursor-not-allowed text-on-primary font-bold text-label-sm px-xl py-sm rounded-xl transition-all duration-200 active:scale-95 shadow-sm"
+              className="flex items-center gap-[6px] bg-primary hover:bg-accent-hover disabled:opacity-60 disabled:cursor-not-allowed text-on-primary font-semibold text-[0.78rem] px-[14px] py-[6px] rounded-none transition-all duration-200 active:scale-95"
             >
               {submitting ? (
                 <>
