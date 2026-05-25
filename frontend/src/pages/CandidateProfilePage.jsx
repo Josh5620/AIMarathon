@@ -218,13 +218,6 @@ export default function CandidateProfilePage() {
                 </button>
               )}
 
-              <button
-                onClick={() => navigate(`/recruiter/postings/${postingId}/report`)}
-                className="flex items-center gap-xs border border-outline-variant text-on-surface-variant hover:bg-surface-container text-label-sm px-lg py-sm rounded-xl transition-all"
-              >
-                <span className="material-symbols-outlined text-[18px]">bar_chart</span>
-                View Report
-              </button>
             </div>
           </section>
 

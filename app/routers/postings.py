@@ -351,7 +351,7 @@ async def get_report(posting_id: str):
 
     jd_text = f"{posting['description']}\n{posting.get('requirements') or ''}".strip()
     top5_missing = [
-        a for a in applicants[:5]
+        a for a in applicants
         if not a.get("explanation") and a.get("full_text")
     ]
 
