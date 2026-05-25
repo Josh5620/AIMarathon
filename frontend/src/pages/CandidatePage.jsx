@@ -113,13 +113,13 @@ export default function CandidatePage() {
         <div className="flex items-center gap-sm ml-auto">
           <ThemeToggle inline />
           <img src="/logo.png" alt="HireLite" className="w-7 h-7 object-contain" />
-          <span className="text-section-head font-bold text-primary">HireLite</span>
+          <span className="text-[1.1rem] font-semibold text-primary" style={{ fontFamily: "'Hanken Grotesk', sans-serif" }}>HireLite</span>
         </div>
       </header>
 
       {/* Page content */}
       <div className="max-w-3xl mx-auto px-page-margin py-gutter">
-        <h1 className="text-page-title font-bold text-on-surface mb-xs">Open Positions</h1>
+        <h1 className="font-heading text-[2rem] font-normal text-on-surface mb-sm">Open Positions</h1>
         <p className="text-body-md text-on-surface-variant mb-gutter">
           Browse available roles and apply by uploading your CV. No account required.
         </p>
@@ -144,7 +144,7 @@ export default function CandidatePage() {
             <button
               key={posting.id}
               onClick={() => openPosting(posting.id)}
-              className="w-full text-left bg-surface-container-lowest border border-outline-variant rounded-xl p-card-padding hover:shadow-card transition-all duration-200 group"
+              className="w-full text-left bg-surface-container-lowest border-b border-outline-variant py-lg px-md hover:bg-surface-container-low transition-colors duration-200 group"
             >
               <div className="flex justify-between items-start gap-md">
                 <div className="flex-1 min-w-0">
@@ -155,7 +155,7 @@ export default function CandidatePage() {
                 </div>
                 <span className={`flex-shrink-0 px-sm py-xs rounded-full text-meta font-semibold ${
                   posting.status === 'open'
-                    ? 'bg-green-50 dark:bg-green-900/30 text-picture-book-green dark:text-green-400'
+                    ? 'bg-complement/10 text-picture-book-green dark:bg-complement/15 dark:text-complement'
                     : 'bg-pink-50 dark:bg-pink-900/30 text-pink-700 dark:text-pink-400'
                 }`}>
                   {posting.status === 'open' ? 'Open' : 'Closed'}
@@ -201,7 +201,7 @@ export default function CandidatePage() {
                     {modalPosting && (
                       <span className={`flex-shrink-0 px-sm py-xs rounded-full text-meta font-semibold ${
                         modalPosting.status === 'open'
-                          ? 'bg-green-50 dark:bg-green-900/30 text-picture-book-green dark:text-green-400'
+                          ? 'bg-complement/10 text-picture-book-green dark:bg-complement/15 dark:text-complement'
                           : 'bg-pink-50 dark:bg-pink-900/30 text-pink-700 dark:text-pink-400'
                       }`}>
                         {modalPosting.status === 'open' ? 'Open' : 'Closed'}

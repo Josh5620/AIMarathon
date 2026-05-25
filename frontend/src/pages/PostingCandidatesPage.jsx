@@ -377,18 +377,17 @@ export default function PostingCandidatesPage() {
                   app.is_interested ? 'border-mantis' : 'border-outline-variant'
                 }`}
               >
-                <div className="flex items-center gap-md">
-                  {/* Rank */}
-                  <div className="w-9 h-9 rounded-full bg-surface-container flex items-center justify-center text-label-sm font-bold text-on-surface-variant flex-shrink-0">
+                {/* Top: rank + info + score */}
+                <div className="flex items-start gap-md">
+                  <div className="w-9 h-9 bg-surface-container flex items-center justify-center text-label-sm font-bold text-on-surface-variant flex-shrink-0">
                     #{globalRank}
                   </div>
 
-                  {/* Main info */}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-sm flex-wrap mb-xs">
                       <span className="text-headline-md font-bold text-on-surface">{app.name || 'Unknown'}</span>
                       {app.seniority && (
-                        <span className="px-sm py-xs rounded-full text-meta font-semibold bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400">
+                        <span className="px-sm py-xs text-meta font-semibold bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400">
                           {app.seniority}
                         </span>
                       )}
@@ -400,7 +399,7 @@ export default function PostingCandidatesPage() {
                     {app.overlap_keywords?.length > 0 && (
                       <div className="flex flex-wrap gap-xs">
                         {app.overlap_keywords.slice(0, 6).map(kw => (
-                          <span key={kw} className="px-sm py-xs rounded-full text-meta font-medium bg-green-50 dark:bg-green-900/30 text-picture-book-green dark:text-green-400">
+                          <span key={kw} className="px-sm py-xs text-meta font-medium bg-green-50 dark:bg-green-900/30 text-picture-book-green dark:text-green-400">
                             {kw}
                           </span>
                         ))}
@@ -413,43 +412,42 @@ export default function PostingCandidatesPage() {
                     )}
                   </div>
 
-                  {/* Score badge */}
-                  <div className={`flex-shrink-0 px-md py-sm rounded-xl text-center min-w-[4rem] ${scoreBg(app.rank_score)}`}>
+                  <div className={`flex-shrink-0 px-md py-sm text-center min-w-[4rem] ${scoreBg(app.rank_score)}`}>
                     <div className="text-headline-md font-bold">{scoreLabel(app.rank_score)}</div>
                     <div className="text-meta opacity-70">match</div>
                   </div>
+                </div>
 
-                  {/* Action buttons */}
-                  <div className="flex items-center gap-sm flex-shrink-0">
-                    <button
-                      onClick={e => handleInterested(e, app.application_id, app.is_interested)}
-                      title={app.is_interested ? 'Remove from interested' : 'Mark as interested'}
-                      className={`p-xs rounded-lg transition-colors ${
-                        app.is_interested
-                          ? 'text-yellow-500 hover:text-yellow-600'
-                          : 'text-outline-variant hover:text-yellow-500'
-                      }`}
-                    >
-                      <span className="material-symbols-outlined text-[22px]" style={{ fontVariationSettings: app.is_interested ? "'FILL' 1" : "'FILL' 0" }}>
-                        star
-                      </span>
-                    </button>
+                {/* Bottom: actions */}
+                <div className="flex items-center justify-end gap-sm mt-md pt-sm border-t border-outline-variant">
+                  <button
+                    onClick={e => handleInterested(e, app.application_id, app.is_interested)}
+                    title={app.is_interested ? 'Remove from interested' : 'Mark as interested'}
+                    className={`p-xs transition-colors ${
+                      app.is_interested
+                        ? 'text-yellow-500 hover:text-yellow-600'
+                        : 'text-outline-variant hover:text-yellow-500'
+                    }`}
+                  >
+                    <span className="material-symbols-outlined text-[22px]" style={{ fontVariationSettings: app.is_interested ? "'FILL' 1" : "'FILL' 0" }}>
+                      star
+                    </span>
+                  </button>
 
-                    <button
-                      onClick={e => { e.stopPropagation(); navigate(`/recruiter/postings/${postingId}/candidates/${app.application_id}`) }}
-                      className="bg-primary hover:bg-accent-hover text-on-primary font-bold text-label-sm px-lg py-xs rounded-xl transition-all active:scale-95 shadow-sm"
-                    >
-                      View Profile
-                    </button>
+                  <button
+                    onClick={e => { e.stopPropagation(); navigate(`/recruiter/postings/${postingId}/candidates/${app.application_id}`) }}
+                    className="bg-primary hover:bg-accent-hover text-on-primary font-bold text-label-sm px-lg py-xs transition-all active:scale-95 shadow-sm"
+                  >
+                    View Profile
+                  </button>
 
-                    <button
-                      onClick={e => handleDelete(e, app.application_id, app.name)}
-                      title="Remove from this posting"
-                      className="p-xs rounded-lg text-outline-variant hover:text-error transition-colors"
-                    >
-                      <span className="material-symbols-outlined text-[18px]">delete</span>
-                    </button>
-                  </div>
+                  <button
+                    onClick={e => handleDelete(e, app.application_id, app.name)}
+                    title="Remove from this posting"
+                    className="p-xs text-on-surface-variant hover:text-error transition-colors"
+                  >
+                    <span className="material-symbols-outlined text-[18px]">delete</span>
+                  </button>
                 </div>
               </div>
             )

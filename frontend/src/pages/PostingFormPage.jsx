@@ -52,7 +52,7 @@ export default function PostingFormPage() {
   }
 
   return (
-    <div className="p-page-margin max-w-3xl">
+    <div className="p-md md:p-page-margin max-w-3xl">
       {/* Header */}
       <header className="mb-xl">
         <button

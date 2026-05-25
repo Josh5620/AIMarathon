@@ -135,27 +135,39 @@ export default function CandidateProfilePage() {
 
                 {/* Links */}
                 <div className="flex flex-wrap gap-sm">
-                  {links.linkedin && (
+                  {links.linkedin?.trim().startsWith('http') ? (
                     <a href={links.linkedin} target="_blank" rel="noopener noreferrer"
-                      className="flex items-center gap-xs px-md py-xs border border-outline-variant rounded-lg text-label-sm text-on-surface hover:bg-surface-container transition-colors">
+                      className="flex items-center gap-xs px-md py-xs border border-outline-variant text-label-sm text-on-surface-variant hover:border-outline hover:text-on-surface transition-colors">
                       <span className="material-symbols-outlined text-[16px]">link</span> LinkedIn
                     </a>
+                  ) : (
+                    <span className="flex items-center gap-xs px-md py-xs border border-outline-variant text-label-sm text-on-surface-variant opacity-40 cursor-not-allowed">
+                      <span className="material-symbols-outlined text-[16px]">link</span> LinkedIn
+                    </span>
                   )}
-                  {links.github && (
+                  {links.github?.trim().startsWith('http') ? (
                     <a href={links.github} target="_blank" rel="noopener noreferrer"
-                      className="flex items-center gap-xs px-md py-xs border border-outline-variant rounded-lg text-label-sm text-on-surface hover:bg-surface-container transition-colors">
+                      className="flex items-center gap-xs px-md py-xs border border-outline-variant text-label-sm text-on-surface-variant hover:border-outline hover:text-on-surface transition-colors">
                       <span className="material-symbols-outlined text-[16px]">code</span> GitHub
                     </a>
+                  ) : (
+                    <span className="flex items-center gap-xs px-md py-xs border border-outline-variant text-label-sm text-on-surface-variant opacity-40 cursor-not-allowed">
+                      <span className="material-symbols-outlined text-[16px]">code</span> GitHub
+                    </span>
                   )}
-                  {links.portfolio && (
+                  {links.portfolio?.trim().startsWith('http') ? (
                     <a href={links.portfolio} target="_blank" rel="noopener noreferrer"
-                      className="flex items-center gap-xs px-md py-xs border border-outline-variant rounded-lg text-label-sm text-on-surface hover:bg-surface-container transition-colors">
+                      className="flex items-center gap-xs px-md py-xs border border-outline-variant text-label-sm text-on-surface-variant hover:border-outline hover:text-on-surface transition-colors">
                       <span className="material-symbols-outlined text-[16px]">open_in_new</span> Portfolio
                     </a>
+                  ) : (
+                    <span className="flex items-center gap-xs px-md py-xs border border-outline-variant text-label-sm text-on-surface-variant opacity-40 cursor-not-allowed">
+                      <span className="material-symbols-outlined text-[16px]">open_in_new</span> Portfolio
+                    </span>
                   )}
                   {app.file_url && (
                     <a href={app.file_url} target="_blank" rel="noopener noreferrer"
-                      className="flex items-center gap-xs px-md py-xs bg-primary text-on-primary rounded-lg text-label-sm font-semibold hover:bg-accent-hover transition-colors">
+                      className="flex items-center gap-xs px-md py-xs bg-primary text-on-primary text-label-sm font-semibold hover:bg-accent-hover transition-colors">
                       <span className="material-symbols-outlined text-[16px]">download</span> Download CV
                     </a>
                   )}
@@ -225,13 +237,13 @@ export default function CandidateProfilePage() {
 
           {/* AI Explanation */}
           {app.explanation && (
-            <section className="bg-primary text-on-primary rounded-xl p-card-padding shadow-xl relative overflow-hidden">
+            <section className="bg-nuit-blanche dark:bg-complement rounded-xl p-card-padding shadow-xl relative overflow-hidden">
               <div className="absolute inset-0 opacity-10 pointer-events-none" style={{ background: 'radial-gradient(circle at 80% 20%, #74C365 0%, transparent 60%)' }} />
-              <h2 className="text-section-head font-bold uppercase tracking-wider text-on-primary/80 mb-md flex items-center gap-sm">
+              <h2 className="text-section-head font-bold uppercase tracking-wider text-white/80 dark:text-midnight-mirage/70 mb-md flex items-center gap-sm">
                 <span className="material-symbols-outlined text-[20px]">auto_awesome</span>
                 AI Insights
               </h2>
-              <p className="text-body-md leading-relaxed">{app.explanation}</p>
+              <p className="text-body-md leading-relaxed text-white/90 dark:text-midnight-mirage/85">{app.explanation}</p>
             </section>
           )}
 

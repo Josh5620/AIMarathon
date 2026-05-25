@@ -13,6 +13,8 @@
 /* ── HireLite semantic design tokens (light) ─── */
 :root {
   --hl-primary:                 #1E488F;
+  --hl-on-primary:              #ffffff;
+  --hl-accent-hover:            #163A73;
   --hl-primary-container:       #1E488F;
   --hl-on-primary-container:    #9bbaff;
   --hl-secondary:               #476083;
@@ -32,33 +34,34 @@
   --hl-outline-variant:         #c3c6d2;
 }
 
-/* ── HireLite semantic design tokens (dark) ──── */
+/* ── HireLite semantic design tokens (dark · Yellow Forward) ── */
 .dark {
-  /* Update legacy vars so global html background + text also flip */
-  --bg:       #0d1b2e;
-  --text:     #e4eaf2;
-  --text-h:   #e4eaf2;
-  --card-bg:  #152236;
-  --code-bg:  #09131e;
+  --bg:       #0A1628;
+  --text:     #F6F7ED;
+  --text-h:   #DBE64C;
+  --card-bg:  #111E30;
+  --code-bg:  #070E1A;
 
-  --hl-primary:                 #5b8dd4;
-  --hl-primary-container:       #1a3356;
-  --hl-on-primary-container:    #9bbaff;
-  --hl-secondary:               #8aabd4;
-  --hl-secondary-container:     #1a3356;
-  --hl-on-secondary-container:  #cce0ff;
-  --hl-surface:                 #0d1b2e;
-  --hl-surface-dim:             #090f18;
-  --hl-surface-bright:          #162030;
-  --hl-surface-container-lowest: #09131e;
-  --hl-surface-container-low:   #101e2c;
-  --hl-surface-container:       #152236;
-  --hl-surface-container-high:  #1e3048;
-  --hl-surface-container-highest: #26405e;
-  --hl-on-surface:              #e4eaf2;
-  --hl-on-surface-variant:      #7e9ab8;
-  --hl-outline:                 #3a5578;
-  --hl-outline-variant:         #1e3048;
+  --hl-primary:                 #DBE64C;
+  --hl-on-primary:              #0A1628;
+  --hl-accent-hover:            #c5cf3a;
+  --hl-primary-container:       #1A2A10;
+  --hl-on-primary-container:    #DBE64C;
+  --hl-secondary:               #74C365;
+  --hl-secondary-container:     #0F2A12;
+  --hl-on-secondary-container:  #A8E89E;
+  --hl-surface:                 #0A1628;
+  --hl-surface-dim:             #060D17;
+  --hl-surface-bright:          #12202F;
+  --hl-surface-container-lowest: #0D1825;
+  --hl-surface-container-low:   #101D2B;
+  --hl-surface-container:       #132133;
+  --hl-surface-container-high:  #1A2D42;
+  --hl-surface-container-highest: #223A52;
+  --hl-on-surface:              #F6F7ED;
+  --hl-on-surface-variant:      #8A9A7E;
+  --hl-outline:                 #2A3D28;
+  --hl-outline-variant:         #1C2B1A;
 }
 
 /* ── Legacy CSS vars (kept for non-Tailwind references) ─ */
@@ -85,7 +88,7 @@
   --shadow: rgba(0, 0, 0, 0.18);
 
   --sans: 'Noto Sans', sans-serif;
-  --heading: 'Noto Sans', sans-serif;
+  --heading: 'Instrument Serif', serif;
   --mono: ui-monospace, Consolas, monospace;
 
   font: 16px/1.5 var(--sans);
@@ -100,10 +103,10 @@
 
 [data-theme="dark"] {
   --text: #F6F7ED;
-  --text-h: #F6F7ED;
-  --bg: #001F3F;
-  --card-bg: #002b56;
-  --code-bg: #002244;
+  --text-h: #DBE64C;
+  --bg: #0A1628;
+  --card-bg: #111E30;
+  --code-bg: #070E1A;
   --overlay: rgba(0, 0, 0, 0.6);
   --shadow: rgba(0, 0, 0, 0.4);
 }
@@ -148,10 +151,15 @@ body {
   flex-direction: column;
 }
 
-h1,
+h1 {
+  font-family: var(--heading);
+  font-weight: 400;
+  color: var(--text-h);
+}
+
 h2,
 h3 {
-  font-family: var(--heading);
+  font-family: 'Hanken Grotesk', sans-serif;
   font-weight: 600;
   color: var(--text-h);
 }

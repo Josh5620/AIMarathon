@@ -67,23 +67,23 @@ export default function Landing() {
         {/* Logo */}
         <div className="animate-fade-up mb-lg">
           <img src="/logo.png" alt="HireLite" className="w-20 h-20 object-contain mx-auto mb-md" />
-          <h1 className="text-page-title font-bold text-midnight-mirage dark:text-on-surface tracking-tight">
+          <h1 className="text-[2.5rem] font-bold text-midnight-mirage dark:text-complement tracking-tight" style={{ fontFamily: "'Hanken Grotesk', sans-serif" }}>
             HireLite
           </h1>
-          <p className="text-body-md text-on-surface-variant mt-xs">
-            Intelligent recruiting, powered by AI.
+          <p className="text-meta font-mono text-on-surface-variant mt-sm tracking-wide">
+            Recruiting, simplified.
           </p>
         </div>
 
         {/* Glass card */}
-        <div className="animate-fade-up w-full bg-white/80 dark:bg-surface-container/80 backdrop-blur-sm border border-outline-variant rounded-xl shadow-modal p-card-padding flex flex-col gap-md">
+        <div className="animate-fade-up w-full bg-white/80 dark:bg-surface-container-lowest/90 backdrop-blur-sm border-t-2 border-primary dark:border-complement rounded-none shadow-card p-card-padding pt-xl flex flex-col gap-lg">
           <p className="text-label-sm text-on-surface-variant">How would you like to continue?</p>
 
           {/* Primary: Google login */}
           <button
             type="button"
             onClick={() => signInWithGoogle()}
-            className="w-full flex items-center justify-center gap-3 bg-nuit-blanche hover:bg-accent-hover text-on-primary font-semibold text-section-head py-4 px-lg rounded-lg shadow-sm transition-all duration-200 active:scale-95"
+            className="w-full flex items-center justify-center gap-3 bg-nuit-blanche dark:bg-complement dark:text-midnight-mirage hover:bg-accent-hover font-semibold text-on-primary text-section-head py-4 px-lg rounded-sm transition-all duration-200 active:scale-95"
           >
             <img src="/google.svg" alt="Google" className="w-5 h-5" onError={e => e.target.style.display='none'} />
             Login with Google (Recruiter)
@@ -93,7 +93,7 @@ export default function Landing() {
           <button
             type="button"
             onClick={() => navigate('/candidate')}
-            className="w-full flex items-center justify-center gap-3 bg-transparent border-2 border-mantis hover:bg-mantis/10 text-midnight-mirage font-semibold text-section-head py-4 px-lg rounded-lg transition-all duration-200 active:scale-95"
+            className="w-full flex items-center justify-center gap-3 bg-transparent border-2 border-mantis dark:border-complement hover:bg-mantis/10 text-midnight-mirage dark:text-midnight-mirage font-semibold text-section-head py-4 px-lg rounded-sm transition-all duration-200 active:scale-95"
           >
             <span className="material-symbols-outlined text-[20px]">person</span>
             Continue as Guest (Candidate)

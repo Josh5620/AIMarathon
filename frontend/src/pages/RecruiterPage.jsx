@@ -55,7 +55,7 @@ export default function RecruiterPage() {
   const statusBadge = (status) => (
     <span className={`px-sm py-xs rounded-full text-meta font-semibold flex-shrink-0 ${
       status === 'open'
-        ? 'bg-green-50 dark:bg-green-900/30 text-picture-book-green dark:text-green-400'
+        ? 'bg-complement/10 text-picture-book-green dark:bg-complement/15 dark:text-complement'
         : 'bg-pink-50 dark:bg-pink-900/30 text-pink-700 dark:text-pink-400'
     }`}>
       {status === 'open' ? 'Open' : 'Closed'}
@@ -63,18 +63,18 @@ export default function RecruiterPage() {
   )
 
   return (
-    <div className="p-page-margin">
+    <div className="p-md md:p-page-margin">
       {/* Page header */}
-      <header className="flex flex-col md:flex-row justify-between items-start md:items-center mb-gutter gap-md">
+      <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-gutter gap-md">
         <div>
-          <h1 className="text-headline-lg font-semibold text-on-surface">Hello, Recruiter</h1>
-          <p className="text-body-md text-on-surface-variant mt-xs">
-            Manage your job postings and find the best candidates.
+          <h1 className="font-heading text-[1.5rem] sm:text-[2rem] font-normal text-on-surface tracking-tight">Dashboard</h1>
+          <p className="text-meta font-mono text-on-surface-variant mt-sm tracking-wide uppercase">
+            {new Date().toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' })}
           </p>
         </div>
         <button
           onClick={() => navigate('/recruiter/postings/new')}
-          className="flex items-center gap-sm bg-primary hover:bg-accent-hover text-on-primary font-bold text-label-sm px-lg py-sm rounded-xl transition-all duration-200 active:scale-95 shadow-sm"
+          className="w-full sm:w-auto flex items-center justify-center gap-sm bg-primary hover:bg-accent-hover text-on-primary font-bold text-label-sm px-lg py-sm rounded-xl transition-all duration-200 active:scale-95 shadow-sm"
         >
           <span className="material-symbols-outlined text-[18px]">add</span>
           New Posting
@@ -83,29 +83,28 @@ export default function RecruiterPage() {
 
       {/* Stats bento grid */}
       <section className="grid grid-cols-1 md:grid-cols-3 gap-md mb-gutter">
-        <div className="bg-surface-container-lowest border border-outline-variant rounded-xl p-card-padding shadow-sm">
+        <div className="bg-surface-container-lowest border border-outline-variant p-card-padding shadow-sm">
           <div className="flex items-center gap-sm mb-sm">
             <span className="material-symbols-outlined text-primary text-[20px]">work</span>
             <span className="text-label-sm text-on-surface-variant font-semibold uppercase tracking-wider">Total Postings</span>
           </div>
-          <div className="text-headline-lg font-bold text-on-surface">{loading ? '—' : totalPostings}</div>
+          <div className="text-headline-lg font-brand font-bold text-on-surface">{loading ? '—' : totalPostings}</div>
         </div>
 
-        <div className="bg-surface-container-lowest border border-outline-variant rounded-xl p-card-padding shadow-sm">
+        <div className="bg-surface-container-lowest border border-outline-variant p-card-padding shadow-sm">
           <div className="flex items-center gap-sm mb-sm">
             <span className="material-symbols-outlined text-primary text-[20px]">folder_open</span>
             <span className="text-label-sm text-on-surface-variant font-semibold uppercase tracking-wider">Active Postings</span>
           </div>
-          <div className="text-headline-lg font-bold text-on-surface">{loading ? '—' : openPostings}</div>
+          <div className="text-headline-lg font-brand font-bold text-on-surface">{loading ? '—' : openPostings}</div>
         </div>
 
-        {/* ToDo: Total Applicants stat — no dedicated API endpoint yet */}
-        <div className="bg-surface-container-lowest border border-outline-variant rounded-xl p-card-padding shadow-sm">
+        <div className="bg-surface-container-lowest border border-outline-variant p-card-padding shadow-sm">
           <div className="flex items-center gap-sm mb-sm">
             <span className="material-symbols-outlined text-primary text-[20px]">group</span>
             <span className="text-label-sm text-on-surface-variant font-semibold uppercase tracking-wider">Total Applicants</span>
           </div>
-          <div className="text-headline-lg font-bold text-on-surface">
+          <div className="text-headline-lg font-brand font-bold text-on-surface">
             {statsLoading ? '—' : (postingStats?.total_open_posting_applicants ?? 0)}
           </div>
         </div>
@@ -113,7 +112,7 @@ export default function RecruiterPage() {
 
       {/* My Postings section */}
       <section>
-        <h2 className="text-headline-md font-semibold text-on-surface mb-md">My Postings</h2>
+        <h2 className="font-brand text-[1.5rem] font-semibold text-on-surface mb-lg">Postings</h2>
 
         {loading && (
           <div className="flex items-center gap-sm text-on-surface-variant text-body-md py-xl">
@@ -141,9 +140,9 @@ export default function RecruiterPage() {
             <div
               key={posting.id}
               onClick={() => navigate(`/recruiter/postings/${posting.id}`)}
-              className="bg-surface-container-lowest border border-outline-variant rounded-xl p-card-padding cursor-pointer group hover:-translate-y-0.5 hover:shadow-card transition-all duration-200"
+              className="bg-surface-container-lowest border-b border-outline-variant py-lg px-md cursor-pointer group hover:bg-surface-container-low transition-colors duration-200"
             >
-              <div className="flex justify-between items-start gap-md">
+              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-sm sm:gap-md">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-sm mb-xs flex-wrap">
                     <h3 className="text-headline-md font-bold text-on-surface group-hover:text-primary transition-colors">
@@ -152,7 +151,7 @@ export default function RecruiterPage() {
                     {statusBadge(posting.status)}
                   </div>
                   <p className="text-body-md text-on-surface-variant mb-sm">{posting.company_name}</p>
-                  <div className="flex gap-md text-meta text-on-surface-variant">
+                  <div className="flex gap-md text-meta text-on-surface-variant flex-wrap">
                     <span>{posting.applicant_count ?? 0} applicant{posting.applicant_count !== 1 ? 's' : ''}</span>
                     <span>Posted {new Date(posting.created_at).toLocaleDateString()}</span>
                   </div>
@@ -161,15 +160,15 @@ export default function RecruiterPage() {
                 <div className="flex gap-sm flex-shrink-0 items-center">
                   <button
                     onClick={e => { e.stopPropagation(); navigate(`/recruiter/postings/${posting.id}/report`) }}
-                    className="flex items-center gap-xs px-md py-xs border border-outline-variant rounded-lg text-label-sm text-on-surface-variant hover:bg-surface-container transition-colors"
+                    className="flex items-center gap-xs px-sm sm:px-md py-xs border border-outline-variant rounded-lg text-label-sm text-on-surface-variant hover:bg-surface-container transition-colors"
                     title="View report"
                   >
                     <span className="material-symbols-outlined text-[16px]">bar_chart</span>
-                    Report
+                    <span className="hidden sm:inline">Report</span>
                   </button>
                   <button
                     onClick={e => handleDelete(e, posting.id)}
-                    className="flex items-center gap-xs px-md py-xs border border-red-200 dark:border-red-800 rounded-lg text-label-sm text-error hover:bg-red-50 dark:hover:bg-red-900/30 transition-colors"
+                    className="flex items-center gap-xs px-sm sm:px-md py-xs border border-red-200 dark:border-red-800 rounded-lg text-label-sm text-error hover:bg-red-50 dark:hover:bg-red-900/30 transition-colors"
                     title="Delete posting"
                   >
                     <span className="material-symbols-outlined text-[16px]">delete</span>
@@ -183,23 +182,6 @@ export default function RecruiterPage() {
         <Pagination page={page} totalPages={totalPages} onChange={setPage} />
       </section>
 
-      {/* ToDo: "Grow your team intelligently" CTA — decorative only, no action wired */}
-      {!loading && totalPostings > 0 && (
-        <section className="mt-gutter bg-nuit-blanche text-on-primary rounded-xl p-card-padding flex flex-col md:flex-row items-center gap-gutter">
-          <div className="flex-1">
-            <h3 className="text-headline-md font-bold mb-xs text-white">Grow your team intelligently</h3>
-            <p className="text-body-md opacity-80">
-              AI-powered matching finds the best candidates for every role automatically.
-            </p>
-          </div>
-          <button
-            onClick={() => navigate('/recruiter/postings/new')}
-            className="flex-shrink-0 bg-white/20 hover:bg-white/30 text-on-primary border border-white/30 font-bold text-label-sm px-lg py-sm rounded-xl transition-all active:scale-95"
-          >
-            Post a new role
-          </button>
-        </section>
-      )}
     </div>
   )
 }
