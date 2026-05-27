@@ -99,6 +99,65 @@ Postgres with the `pgvector` extension hosts the `candidates` table. Row-Level S
 
 ---
 
+## Environment Setup
+
+> **Security notice:** Never commit live API keys or credentials to the repository. Use the placeholder files below and keep your real secrets out of version control (`.env` is already listed in `.gitignore`).
+
+### Backend — `/.env`
+
+Copy the template below to `.env` at the project root and fill in your values:
+
+```env
+# Supabase — database + auth
+SUPABASE_URL=your_supabase_project_url_here          # Project URL (Project Settings → API)
+SUPABASE_SERVICE_ROLE_KEY=your_service_role_key_here  # Service-role key — bypasses RLS; backend-only, never expose to browser
+SUPABASE_DB_URL=your_supabase_db_connection_string    # Direct psycopg2 connection string (Project Settings → Database → Connection string)
+
+# Chutes — primary LLM provider (OpenAI-compatible)
+CHUTES_API_KEY=your_chutes_api_key_here              # API key from chutes.ai; used for chat completions and extraction
+CHUTES_BASE_URL=https://llm.chutes.ai/v1             # Chutes endpoint — change only if self-hosting
+CHUTES_CHAT_MODEL=deepseek-ai/DeepSeek-V3-TEE        # Chat model served by Chutes
+
+# Google Gemini — embeddings + chat fallback
+GOOGLE_API_KEY=your_google_api_key_here              # Google Cloud API key with "Generative Language API" enabled; used for text-embedding-004 embeddings and as a fallback when Chutes is unavailable
+
+# Embedding config (must match VECTOR(N) in db/schema.sql)
+CHUTES_EMBED_MODEL=gemini-embedding-001
+EMBED_DIM=3072
+```
+
+**Role of each credential:**
+
+| Variable | Role |
+|---|---|
+| `SUPABASE_URL` | Identifies your Supabase project; used by the Python client to reach the REST and Auth APIs |
+| `SUPABASE_SERVICE_ROLE_KEY` | Full-access key that bypasses Row-Level Security — used server-side to write candidate data and enforce the recruiter allowlist |
+| `SUPABASE_DB_URL` | Direct Postgres connection string used by psycopg2 for pgvector queries and migrations |
+| `CHUTES_API_KEY` | Authenticates requests to Chutes' OpenAI-compatible endpoint for profile extraction and match explanations |
+| `GOOGLE_API_KEY` | Authenticates Gemini API calls — generates `text-embedding-004` vectors for all resumes and job descriptions, and provides a chat fallback if Chutes is unavailable |
+
+### Frontend — `/frontend/.env`
+
+Copy the template below to `frontend/.env`:
+
+```env
+VITE_API_BASE=http://localhost:8000          # URL of the running backend (change to your VPS URL in production)
+
+# Supabase — browser client (public / safe to expose)
+VITE_SUPABASE_URL=https://<PROJECT-REF>.supabase.co   # Same project URL as the backend
+VITE_SUPABASE_ANON_KEY=your_supabase_anon_key_here    # Anon/publishable key (Project Settings → API); restricted by RLS and safe to ship in the browser
+```
+
+**Role of each credential:**
+
+| Variable | Role |
+|---|---|
+| `VITE_API_BASE` | Points the React app at the backend; switch to your deployed URL for production |
+| `VITE_SUPABASE_URL` | Allows the Supabase JS client to reach your project's Auth and REST APIs |
+| `VITE_SUPABASE_ANON_KEY` | Public key used for Google OAuth sign-in and reading data gated by RLS; safe to include in browser bundles |
+
+---
+
 ## Future Improvements
 
 - **Batch resume ingestion** — bulk upload via ZIP or folder for high-volume hiring pipelines
